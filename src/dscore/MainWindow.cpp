@@ -1,0 +1,233 @@
+#include "MainWindow.h"
+
+#include <QApplication>
+#include <QBitmap>
+#include <QCloseEvent>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QSystemTrayIcon>
+#include <QTimer>
+#include <QtGlobal>
+
+#include "dscore/CoreConstants.h"
+#include "dscore/ICommandManager.h"
+#include "ui_MainWindow.h"
+
+// #include <spdlog/spdlog.h>
+
+sss::dscore::MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent), ui_(new sss::dscore::Ui::MainWindow), application_hidden_(false) {
+  // spdlog::set_level(spdlog::level::trace);
+
+  ui_->setupUi(this);
+
+  qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
+
+  showMaximized();
+
+  setWindowTitle(QString(tr("Ds")));
+}
+
+sss::dscore::MainWindow::~MainWindow() { delete ui_; }
+
+auto sss::dscore::MainWindow::updateTitlebar() -> void {}
+
+auto sss::dscore::MainWindow::Initialise() -> void {
+  createDefaultCommands();
+  registerDefaultCommands();
+}
+
+auto sss::dscore::MainWindow::createDefaultCommands() -> void {
+  // create the commands, these are essentially placeholders.  Commands can be added to menus, buttons,
+  // shortcut keys etc.
+
+  createCommand(sss::dscore::constants::commands::kOpen, nullptr);
+  createCommand(sss::dscore::constants::commands::kAbout, nullptr, QAction::ApplicationSpecificRole);
+  createCommand(sss::dscore::constants::commands::kAboutComponents, nullptr, QAction::ApplicationSpecificRole);
+  createCommand(sss::dscore::constants::commands::kPreferences, nullptr, QAction::PreferencesRole);
+  createCommand(sss::dscore::constants::commands::kQuit, nullptr, QAction::QuitRole);
+
+  // create the menus, we create a main menu bar, then sub menus on that (File, Edit, Help etc).  In each
+  // menu we then create groups, this allows us to reserve sections of the menu for specific items, components
+  // can use these groups to add their commands at specific locations in a menu.
+
+  createMenu(sss::dscore::constants::menubars::kApplication);
+
+  auto* file_menu = createMenu(sss::dscore::constants::menus::kFile, sss::dscore::constants::menubars::kApplication);
+
+  file_menu->AddGroupBefore(sss::dscore::constants::menugroups::kTop, sss::dscore::constants::menugroups::kFileNew);
+
+  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kFileNew, sss::dscore::constants::menugroups::kFileOpen);
+
+  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kFileOpen,
+                           sss::dscore::constants::menugroups::kFileSave);
+
+  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kBottom, sss::dscore::constants::menugroups::kBottom);
+
+  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kBottom, sss::dscore::constants::menugroups::kFileExit);
+
+  createMenu(sss::dscore::constants::menus::kEdit, sss::dscore::constants::menubars::kApplication);
+  createMenu(sss::dscore::constants::menus::kHelp, sss::dscore::constants::menubars::kApplication);
+
+  addMenuCommand(sss::dscore::constants::commands::kOpen, sss::dscore::constants::menus::kFile);
+  addMenuCommand(sss::dscore::constants::commands::kPreferences, sss::dscore::constants::menus::kFile);
+  addMenuCommand(sss::dscore::constants::commands::kQuit, sss::dscore::constants::menus::kFile);
+
+  addMenuCommand(sss::dscore::constants::commands::kAbout, sss::dscore::constants::menus::kHelp);
+  addMenuCommand(sss::dscore::constants::commands::kAboutComponents, sss::dscore::constants::menus::kHelp);
+
+  addMenuCommand(sss::dscore::constants::commands::kCut, sss::dscore::constants::menus::kEdit);
+  addMenuCommand(sss::dscore::constants::commands::kCopy, sss::dscore::constants::menus::kEdit);
+  addMenuCommand(sss::dscore::constants::commands::kPaste, sss::dscore::constants::menus::kEdit);
+
+  if (sss::dscore::IContextManager::GetInstance() != nullptr) {
+    sss::dscore::IContextManager::GetInstance()->SetContext(sss::dscore::kGlobalContext);
+  }
+}
+
+auto sss::dscore::MainWindow::registerDefaultCommands() -> void {
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+
+  auto* about_components_action =
+      new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kAboutComponents));
+
+  about_components_action->setEnabled(true);
+  about_components_action->setMenuRole(QAction::ApplicationSpecificRole);
+
+  command_manager->RegisterAction(about_components_action, sss::dscore::constants::commands::kAboutComponents,
+                                  sss::dscore::kGlobalContext);
+
+  preferences_action_ =
+      new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kPreferences));
+
+  preferences_action_->setEnabled(true);
+  preferences_action_->setMenuRole(QAction::PreferencesRole);
+
+  command_manager->RegisterAction(preferences_action_, sss::dscore::constants::commands::kPreferences,
+                                  sss::dscore::kGlobalContext);
+
+  quit_action_ = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kQuit));
+
+  quit_action_->setEnabled(true);
+  quit_action_->setMenuRole(QAction::QuitRole);
+
+  command_manager->RegisterAction(quit_action_, sss::dscore::constants::commands::kQuit, sss::dscore::kGlobalContext);
+
+  connect(quit_action_, &QAction::triggered, [this](bool) { QGuiApplication::quit(); });
+
+  about_action_ = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kAbout));
+
+  about_action_->setEnabled(true);
+  about_action_->setMenuRole(QAction::ApplicationSpecificRole);
+
+  command_manager->RegisterAction(about_action_, sss::dscore::constants::commands::kAbout, sss::dscore::kGlobalContext);
+
+  show_application_ =
+      new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kShowApplication));
+
+  show_application_->setEnabled(true);
+  show_application_->setMenuRole(QAction::ApplicationSpecificRole);
+
+  command_manager->RegisterAction(show_application_, sss::dscore::constants::commands::kShowApplication,
+                                  sss::dscore::kGlobalContext);
+
+  hide_application_ =
+      new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kHideApplication));
+
+  hide_application_->setEnabled(true);
+  hide_application_->setMenuRole(QAction::ApplicationSpecificRole);
+
+  command_manager->RegisterAction(hide_application_, sss::dscore::constants::commands::kHideApplication,
+                                  sss::dscore::kGlobalContext);
+}
+
+auto sss::dscore::MainWindow::createCommand(QString command_id, QAbstractButton* button,  // NOLINT
+                                            QAction::MenuRole menu_role) -> sss::dscore::ICommand* {
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+
+  if (command_manager == nullptr) {
+    return nullptr;
+  }
+
+  auto* action = new QAction(sss::dscore::constants::CommandText(command_id));
+
+  action->setMenuRole(menu_role);
+
+  auto* command = command_manager->RegisterAction(action, command_id, sss::dscore::kGlobalContext);
+
+  if (button != nullptr) {
+    command->AttachToWidget(button);
+  }
+
+  action->setEnabled(false);
+
+  return command;
+}
+
+auto sss::dscore::MainWindow::createMenu(const QString& menu_id, const QString& parent_menu_id)  // NOLINT
+    -> sss::dscore::IMenu* {
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+
+  if (command_manager == nullptr) {
+    return nullptr;
+  }
+
+  sss::dscore::IMenu* parent_menu = nullptr;
+
+  if (!parent_menu_id.isNull()) {
+    parent_menu = command_manager->FindMenu(parent_menu_id);
+  }
+
+  return command_manager->CreateMenu(menu_id, parent_menu);
+}
+
+auto sss::dscore::MainWindow::findMenu(const QString& menu_id) -> sss::dscore::IMenu* {  // NOLINT
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+
+  if (command_manager == nullptr) {
+    return nullptr;
+  }
+
+  return command_manager->FindMenu(menu_id);
+}
+
+auto sss::dscore::MainWindow::addMenuCommand(const QString& command_id, const QString& menu_id,  // NOLINT
+                                             QString group_id) -> void {
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+
+  if (command_manager == nullptr) {
+    return;
+  }
+
+  auto* menu = command_manager->FindMenu(menu_id);
+
+  if (menu == nullptr) {
+    return;
+  }
+
+  auto* command = command_manager->FindCommand(command_id);
+
+  if (group_id.isNull()) {
+    group_id = sss::dscore::constants::menugroups::kTop;
+  }
+
+  menu->AppendCommand(command, group_id);
+}
+
+void sss::dscore::MainWindow::CloseEvent(QCloseEvent* close_event) { QMainWindow::closeEvent(close_event); }
+
+auto sss::dscore::MainWindow::ApplicationContextMenu() -> sss::dscore::IMenu* {  // NOLINT
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+
+  auto* context_menu = command_manager->CreatePopupMenu(QString());
+
+  context_menu->AppendCommand(sss::dscore::constants::commands::kAbout, sss::dscore::constants::menugroups::kBottom);
+
+  context_menu->AppendCommand(sss::dscore::constants::commands::kPreferences,
+                              sss::dscore::constants::menugroups::kBottom);
+
+  context_menu->AppendCommand(sss::dscore::constants::commands::kQuit, sss::dscore::constants::menugroups::kBottom);
+
+  return context_menu;
+}

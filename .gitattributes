@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# python files force to lf
+*.py text eol=lf
+*.py.in text eol=lf

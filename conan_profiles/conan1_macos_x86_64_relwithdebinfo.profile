@@ -1,0 +1,9 @@
+[settings]
+os=Macos
+os_build=Macos
+arch=x86_64
+arch_build=x86_64
+build_type=RelWithDebInfo
+compiler=clang
+compiler.libcxx=libc++
+compiler.version=17

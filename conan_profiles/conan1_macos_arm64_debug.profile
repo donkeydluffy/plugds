@@ -1,0 +1,9 @@
+[settings]
+os=Macos
+os_build=Macos
+arch=armv8
+arch_build=armv8
+compiler=clang
+compiler.version=17
+compiler.libcxx=libc++
+build_type=Debug

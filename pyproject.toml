@@ -1,0 +1,20 @@
+[project]
+# 项目名称，符合 PEP 621 标准
+name = "cpp_project_manager"
+# 项目版本
+version = "0.1.0"
+# 项目描述
+description = "A Python script to manage C++ subprojects with CMake and Conan, managed by PDM."
+# 作者信息
+authors = [{ name = "Zhang Haifeng", email = "haifeng.zhang@3d-scantech.com" }]
+# 项目依赖的 Python 版本
+requires-python = ">=3.12"
+# 项目的主要依赖项
+dependencies = [
+  "conan>=1.59, <2.0", # 如果使用 Conan 2.x 则 "conan>=2.0" 
+  "jinja2>=3.0",
+  "ruamel.yaml>=0.18",
+]
+
+[tool.pyprojectx]
+main = ["pdm"]

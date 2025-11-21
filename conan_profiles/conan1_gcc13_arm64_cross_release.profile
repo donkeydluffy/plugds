@@ -1,0 +1,13 @@
+[settings]
+os=Linux
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.libcxx=libstdc++
+compiler.version=13
+[env]
+CC=aarch64-linux-gnu-gcc
+CXX=aarch64-linux-gnu-g++
+STRIP=aarch64-linux-gnu-strip
+AR=aarch64-linux-gnu-ar
+RANLIB=aarch64-linux-gnu-ranlib

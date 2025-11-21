@@ -1,0 +1,15 @@
+[settings]
+os=Macos
+os_build=Macos
+arch=armv8
+arch_build=armv8
+compiler=clang
+compiler.version=17
+compiler.libcxx=libc++
+build_type=Debug
+[options]
+[build_requires]
+[env]
+AR=arm64-apple-darwin24-ar
+CC=arm64-apple-darwin24-clang
+CXX=arm64-apple-darwin24-clang++

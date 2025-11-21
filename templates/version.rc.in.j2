@@ -1,0 +1,39 @@
+// version.rc.in
+#include <windows.h>
+#include <winver.h>
+
+LANGUAGE LANG_CHINESE, SUBLANG_DEFAULT
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION     @{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR@,@{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR@,@{{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH@,@{{ conan_pkg_name_upper }}_PRODUCT_VERSION_TWEAK@
+ PRODUCTVERSION  @{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR@,@{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR@,@{{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH@,0
+ FILEFLAGSMASK   0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS          0x40004L
+ FILETYPE        {% if project_type == 'lib' %}0x2L{% else %}0x1L{% endif %}
+
+ FILESUBTYPE     0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "SCANTECH (HANGZHOU) CO., LTD."
+            VALUE "LegalCopyright", "@{{ conan_pkg_name_upper }}_PRODUCT_COMPANY_COPYRIGHT@\0"
+            VALUE "FileDescription", "@{{ conan_pkg_name_upper }}_PRODUCT_NAME@\0"
+            VALUE "FileVersion", "@{{ conan_pkg_name_upper }}_PRODUCT_FILE_FULL_VERSION@\0"
+            VALUE "ProductVersion", "@{{ conan_pkg_name_upper }}_PRODUCT_FULL_VERSION@\0"
+            VALUE "InternalName", "@{{ conan_pkg_name_upper }}_PRODUCT_NAME@\0"
+            VALUE "OriginalFilename", "@{{ conan_pkg_name_upper }}_PRODUCT_NAME@\0"
+            VALUE "ProductName", "@{{ conan_pkg_name_upper }}_PRODUCT_NAME@\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

@@ -1,0 +1,620 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default-config",
+      "description": "The project's default configuration settings, from which other presets will inherit.",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_CXX_STANDARD": "17",
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CONAN_USER_FOR_CMAKE": "sss",
+        "CONAN_CHANNEL_FOR_CMAKE": "testing",
+        "CONAN_REMOTE_FOR_CMAKE": "conan-local",
+        "CONAN_REMOTE_URL_FOR_CMAKE": "http://192.168.21.117:8081/artifactory/api/conan/conan-local"
+      }
+    },
+    {
+      "name": "windows-vs2017-config",
+      "displayName": "Windows Visual Studio 2017 Config",
+      "inherits": "default-config",
+      "generator": "Visual Studio 15 2017",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_INIT": "/FS"
+      }
+    },
+    {
+      "name": "windows-vs2022-config",
+      "displayName": "Windows Visual Studio 2022 Config",
+      "inherits": "default-config",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/${presetName}"
+    },
+    {
+      "name": "ninja-debug",
+      "displayName": "Ninja Debug",
+      "inherits": "default-config",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "ninja-release",
+      "displayName": "Ninja Release",
+      "inherits": "default-config",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "make-debug",
+      "displayName": "Make Debug",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "make-release",
+      "displayName": "Make Release",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "make-debug-arm64-cross",
+      "displayName": "Make Debug",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_SYSTEM_PROCESSOR": "aarch64",
+        "CMAKE_SYSTEM_NAME": "Linux",
+        "CMAKE_C_COMPILER": "aarch64-linux-gnu-gcc",
+        "CMAKE_CXX_COMPILER": "aarch64-linux-gnu-g++"
+      }
+    },
+    {
+      "name": "make-release-arm64-cross",
+      "displayName": "Make Release",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_SYSTEM_PROCESSOR": "aarch64",
+        "CMAKE_SYSTEM_NAME": "Linux",
+        "CMAKE_C_COMPILER": "aarch64-linux-gnu-gcc",
+        "CMAKE_CXX_COMPILER": "aarch64-linux-gnu-g++"
+      }
+    },
+    {
+      "name": "android-debug",
+      "displayName": "Android Debug",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_SYSTEM_NAME": "Android",
+        "CMAKE_SYSTEM_PROCESSOR": "aarch64",
+        "CMAKE_ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "CMAKE_ANDROID_API": "24",
+        "CMAKE_ANDROID_ARCH_ABI": "arm64-v8a",
+        "CMAKE_ANDROID_PLATFORM": "android-24",
+        "ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "ANDROID_TOOLCHAIN": "clang",
+        "ANDROID_ABI": "arm64-v8a",
+        "ANDROID_PLATFORM": "android-24",
+        "ANDROID_STL": "c++_shared"
+      }
+    },
+    {
+      "name": "android-release",
+      "displayName": "Android Release",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_SYSTEM_NAME": "Android",
+        "CMAKE_SYSTEM_PROCESSOR": "aarch64",
+        "CMAKE_ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "CMAKE_ANDROID_API": "24",
+        "CMAKE_ANDROID_ARCH_ABI": "arm64-v8a",
+        "CMAKE_ANDROID_PLATFORM": "android-24",
+        "ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "ANDROID_TOOLCHAIN": "clang",
+        "ANDROID_ABI": "arm64-v8a",
+        "ANDROID_PLATFORM": "android-24",
+        "ANDROID_STL": "c++_shared"
+      }
+    },
+    {
+      "name": "android-debug-ninja",
+      "displayName": "Android Debug",
+      "inherits": "default-config",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_SYSTEM_NAME": "Android",
+        "CMAKE_SYSTEM_PROCESSOR": "aarch64",
+        "CMAKE_ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "CMAKE_ANDROID_API": "24",
+        "CMAKE_ANDROID_ARCH_ABI": "arm64-v8a",
+        "CMAKE_ANDROID_PLATFORM": "android-24",
+        "ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "ANDROID_TOOLCHAIN": "clang",
+        "ANDROID_ABI": "arm64-v8a",
+        "ANDROID_PLATFORM": "android-24",
+        "ANDROID_STL": "c++_shared"
+      }
+    },
+    {
+      "name": "android-release-ninja",
+      "displayName": "Android Release",
+      "inherits": "default-config",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_SYSTEM_NAME": "Android",
+        "CMAKE_SYSTEM_PROCESSOR": "aarch64",
+        "CMAKE_ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "CMAKE_ANDROID_API": "24",
+        "CMAKE_ANDROID_ARCH_ABI": "arm64-v8a",
+        "CMAKE_ANDROID_PLATFORM": "android-24",
+        "ANDROID_NDK": "$env{ANDROID_NDK_PATH}",
+        "ANDROID_TOOLCHAIN": "clang",
+        "ANDROID_ABI": "arm64-v8a",
+        "ANDROID_PLATFORM": "android-24",
+        "ANDROID_STL": "c++_shared"
+      }
+    },
+    {
+      "name": "macos-arm64-debug-cross",
+      "displayName": "macOS ARM64 Debug",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_SYSTEM_PROCESSOR": "arm64",
+        "CMAKE_SYSTEM_NAME": "Darwin",
+        "CMAKE_C_COMPILER": "arm64-apple-darwin24-clang",
+        "CMAKE_CXX_COMPILER": "arm64-apple-darwin24-clang++",
+        "CMAKE_OSX_SYSROOT": "/opt/cross-tools/osxcross/SDK/MacOSX15.0.sdk/"
+      }
+    },
+    {
+      "name": "macos-arm64-release-cross",
+      "displayName": "macOS ARM64 Release",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_SYSTEM_PROCESSOR": "arm64",
+        "CMAKE_SYSTEM_NAME": "Darwin",
+        "CMAKE_C_COMPILER": "arm64-apple-darwin24-clang",
+        "CMAKE_CXX_COMPILER": "arm64-apple-darwin24-clang++",
+        "CMAKE_OSX_SYSROOT": "/opt/cross-tools/osxcross/SDK/MacOSX15.0.sdk/"
+      }
+    },
+    {
+      "name": "macos-arm64-debug",
+      "displayName": "macOS ARM64 Debug",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "macos-arm64-release",
+      "displayName": "macOS ARM64 Release",
+      "inherits": "default-config",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "publish-all",
+      "displayName": "Publish All Conan Package",
+      "description": "Trigger the 'publish_all_conan_packages' CMake target.",
+      "configurePreset": "default-config",
+      "targets": [
+        "publish_all_conan_packages"
+      ]
+    },
+    {
+      "name": "build-all-ninja-debug",
+      "displayName": "Build All (Ninja Debug)",
+      "configurePreset": "ninja-debug",
+      "targets": []
+    },
+    {
+      "name": "build-all-ninja-release",
+      "displayName": "Build All (Ninja Release)",
+      "configurePreset": "ninja-release",
+      "targets": []
+    },
+    {
+      "name": "build-all-make-debug",
+      "displayName": "Build All (Make Debug)",
+      "configurePreset": "make-debug",
+      "targets": []
+    },
+    {
+      "name": "build-all-make-release",
+      "displayName": "Build All (Make Release)",
+      "configurePreset": "make-release",
+      "targets": []
+    },
+    {
+      "name": "build-all-vs2017-debug",
+      "displayName": "Build All (VS2017 Debug)",
+      "configurePreset": "windows-vs2017-config",
+      "configuration": "Debug",
+      "targets": []
+    },
+    {
+      "name": "build-all-vs2017-release",
+      "displayName": "Build All (VS2017 Release)",
+      "configurePreset": "windows-vs2017-config",
+      "configuration": "Release",
+      "targets": []
+    },
+    {
+      "name": "build-all-vs2022-debug",
+      "displayName": "Build All (VS2022 Debug)",
+      "configurePreset": "windows-vs2022-config",
+      "configuration": "Debug",
+      "targets": []
+    },
+    {
+      "name": "build-all-vs2022-release",
+      "displayName": "Build All (VS2022 Release)",
+      "configurePreset": "windows-vs2022-config",
+      "configuration": "Release",
+      "targets": []
+    },
+    {
+      "name": "build-all-android-debug",
+      "displayName": "Build All (Android Debug)",
+      "configurePreset": "android-debug",
+      "targets": []
+    },
+    {
+      "name": "build-all-android-release",
+      "displayName": "Build All (Android Release)",
+      "configurePreset": "android-release",
+      "targets": []
+    },
+    {
+      "name": "build-all-macos-arm64-debug",
+      "displayName": "Build All (macOS ARM64 Debug)",
+      "configurePreset": "macos-arm64-debug",
+      "targets": []
+    },
+    {
+      "name": "build-all-macos-arm64-release",
+      "displayName": "Build All (macOS ARM64 Release)",
+      "configurePreset": "macos-arm64-release",
+      "targets": []
+    },
+    {
+      "name": "publish-extsystem-debug-using-windows_vs2017_config",
+      "displayName": "Publish extsystem (Debug) using windows-vs2017-config",
+      "configurePreset": "windows-vs2017-config",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-windows_vs2017_config",
+      "displayName": "Publish extsystem (Release) using windows-vs2017-config",
+      "configurePreset": "windows-vs2017-config",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-windows_vs2022_config",
+      "displayName": "Publish extsystem (Debug) using windows-vs2022-config",
+      "configurePreset": "windows-vs2022-config",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-windows_vs2022_config",
+      "displayName": "Publish extsystem (Release) using windows-vs2022-config",
+      "configurePreset": "windows-vs2022-config",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-ninja_debug",
+      "displayName": "Publish extsystem (Debug) using ninja-debug",
+      "configurePreset": "ninja-debug",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-ninja_release",
+      "displayName": "Publish extsystem (Release) using ninja-release",
+      "configurePreset": "ninja-release",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-make_debug",
+      "displayName": "Publish extsystem (Debug) using make-debug",
+      "configurePreset": "make-debug",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-make_release",
+      "displayName": "Publish extsystem (Release) using make-release",
+      "configurePreset": "make-release",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-make_debug_arm64_cross",
+      "displayName": "Publish extsystem (Debug) using make-debug-arm64-cross",
+      "configurePreset": "make-debug-arm64-cross",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-make_release_arm64_cross",
+      "displayName": "Publish extsystem (Release) using make-release-arm64-cross",
+      "configurePreset": "make-release-arm64-cross",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-android_debug",
+      "displayName": "Publish extsystem (Debug) using android-debug",
+      "configurePreset": "android-debug",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-android_release",
+      "displayName": "Publish extsystem (Release) using android-release",
+      "configurePreset": "android-release",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-android_debug_ninja",
+      "displayName": "Publish extsystem (Debug) using android-debug-ninja",
+      "configurePreset": "android-debug-ninja",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-android_release_ninja",
+      "displayName": "Publish extsystem (Release) using android-release-ninja",
+      "configurePreset": "android-release-ninja",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-macos_arm64_debug_cross",
+      "displayName": "Publish extsystem (Debug) using macos-arm64-debug-cross",
+      "configurePreset": "macos-arm64-debug-cross",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-macos_arm64_release_cross",
+      "displayName": "Publish extsystem (Release) using macos-arm64-release-cross",
+      "configurePreset": "macos-arm64-release-cross",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-extsystem-debug-using-macos_arm64_debug",
+      "displayName": "Publish extsystem (Debug) using macos-arm64-debug",
+      "configurePreset": "macos-arm64-debug",
+      "targets": [
+        "publish_extsystem_debug"
+      ]
+    },
+    {
+      "name": "publish-extsystem-release-using-macos_arm64_release",
+      "displayName": "Publish extsystem (Release) using macos-arm64-release",
+      "configurePreset": "macos-arm64-release",
+      "targets": [
+        "publish_extsystem_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-windows_vs2017_config",
+      "displayName": "Publish dscore (Debug) using windows-vs2017-config",
+      "configurePreset": "windows-vs2017-config",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-windows_vs2017_config",
+      "displayName": "Publish dscore (Release) using windows-vs2017-config",
+      "configurePreset": "windows-vs2017-config",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-windows_vs2022_config",
+      "displayName": "Publish dscore (Debug) using windows-vs2022-config",
+      "configurePreset": "windows-vs2022-config",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-windows_vs2022_config",
+      "displayName": "Publish dscore (Release) using windows-vs2022-config",
+      "configurePreset": "windows-vs2022-config",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-ninja_debug",
+      "displayName": "Publish dscore (Debug) using ninja-debug",
+      "configurePreset": "ninja-debug",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-ninja_release",
+      "displayName": "Publish dscore (Release) using ninja-release",
+      "configurePreset": "ninja-release",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-make_debug",
+      "displayName": "Publish dscore (Debug) using make-debug",
+      "configurePreset": "make-debug",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-make_release",
+      "displayName": "Publish dscore (Release) using make-release",
+      "configurePreset": "make-release",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-make_debug_arm64_cross",
+      "displayName": "Publish dscore (Debug) using make-debug-arm64-cross",
+      "configurePreset": "make-debug-arm64-cross",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-make_release_arm64_cross",
+      "displayName": "Publish dscore (Release) using make-release-arm64-cross",
+      "configurePreset": "make-release-arm64-cross",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-android_debug",
+      "displayName": "Publish dscore (Debug) using android-debug",
+      "configurePreset": "android-debug",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-android_release",
+      "displayName": "Publish dscore (Release) using android-release",
+      "configurePreset": "android-release",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-android_debug_ninja",
+      "displayName": "Publish dscore (Debug) using android-debug-ninja",
+      "configurePreset": "android-debug-ninja",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-android_release_ninja",
+      "displayName": "Publish dscore (Release) using android-release-ninja",
+      "configurePreset": "android-release-ninja",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-macos_arm64_debug_cross",
+      "displayName": "Publish dscore (Debug) using macos-arm64-debug-cross",
+      "configurePreset": "macos-arm64-debug-cross",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-macos_arm64_release_cross",
+      "displayName": "Publish dscore (Release) using macos-arm64-release-cross",
+      "configurePreset": "macos-arm64-release-cross",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    },
+    {
+      "name": "publish-dscore-debug-using-macos_arm64_debug",
+      "displayName": "Publish dscore (Debug) using macos-arm64-debug",
+      "configurePreset": "macos-arm64-debug",
+      "targets": [
+        "publish_dscore_debug"
+      ]
+    },
+    {
+      "name": "publish-dscore-release-using-macos_arm64_release",
+      "displayName": "Publish dscore (Release) using macos-arm64-release",
+      "configurePreset": "macos-arm64-release",
+      "targets": [
+        "publish_dscore_release"
+      ]
+    }
+  ]
+}

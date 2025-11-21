@@ -1,0 +1,11 @@
+.pyprojectx/
+.venv/
+.pdm-python
+build/
+.cache/
+compile_commands.json
+.conan_home/
+.DS_Store
+src/cpp_project_manager*
+cpp-templates/
+conanfile.py

@@ -1,0 +1,406 @@
+# {{ project_name }} 的 CMakeLists.txt
+cmake_minimum_required(VERSION 3.23)
+
+project(
+  {{ project_name }}
+  LANGUAGES CXX
+  VERSION {{ project_version }})
+
+# find_package
+set(PACKAGES_VAR "{{ project_name_upper }}_FIND_PACKAGE_NAMES")
+if(NOT DEFINED ${PACKAGES_VAR})
+  message(STATUS "No packages defined for project ${PROJECT_NAME}")
+endif()
+
+# 获取当前平台信息用于平台特定处理
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+  set(CURRENT_PLATFORM "ANDROID")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set(CURRENT_PLATFORM "WINDOWS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  set(CURRENT_PLATFORM "MACOS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(CURRENT_PLATFORM "LINUX")
+else()
+  set(CURRENT_PLATFORM "UNKNOWN")
+endif()
+
+if(CURRENT_PLATFORM AND DEFINED {{ project_name_upper }}_FIND_PACKAGE_NAMES_${CURRENT_PLATFORM})
+  set(PACKAGE_VAR_PLATFORM "{{ project_name_upper }}_FIND_PACKAGE_NAMES_${CURRENT_PLATFORM}")
+  list(APPEND {{ project_name_upper }}_FIND_PACKAGE_NAMES "${${PACKAGE_VAR_PLATFORM}}")
+endif()
+
+set(PACKAGE_LIST "${${PACKAGES_VAR}}")
+
+if(NOT PACKAGE_LIST)
+  message(STATUS "No packages to find for project ${PROJECT_NAME}")
+endif()
+
+message(STATUS "Finding packages for ${PROJECT_NAME}: ${PACKAGE_LIST}")
+
+set(FOUND_PACKAGES "")
+set(FAILED_PACKAGES "")
+
+# 遍历包列表
+foreach(PACKAGE_NAME ${PACKAGE_LIST})
+  message(STATUS "  Finding ${PACKAGE_NAME}...")
+
+  find_package(${PACKAGE_NAME} CONFIG REQUIRED)
+
+  if(${PACKAGE_NAME}_FOUND)
+    list(APPEND FOUND_PACKAGES ${PACKAGE_NAME})
+    message(STATUS "  OK Found ${PACKAGE_NAME}")
+  else()
+    list(APPEND FAILED_PACKAGES ${PACKAGE_NAME})
+    message(FATAL_ERROR "  ERROR Required package not found: ${PACKAGE_NAME}")
+  endif()
+endforeach()
+
+if(FOUND_PACKAGES)
+  message(STATUS "Successfully found packages for ${PROJECT_NAME}: ${FOUND_PACKAGES}")
+endif()
+
+# --- 项目类型和选项 ---
+# project_type 是从 Python 脚本传入的 Jinja2 变量（值为 "lib" 或 "exe"）
+set(PROJECT_TYPE_CMAKE_VAR "{{ project_type | default('lib') }}")
+
+option({{ project_name_upper }}_BUILD_SHARED_LIBS "Build shared library (when project type is 'lib')" {% if project_type == 'lib' and build_shared_default %}ON{% else %}OFF{% endif %})
+
+# 使用 CMake 的 if 语句处理 CMake 变量
+if(PROJECT_TYPE_CMAKE_VAR STREQUAL "exe")
+  # 可执行文件不能像库那样设为 SHARED。若是可执行文件，则取消或确保 {{ project_name_upper }}_BUILD_SHARED_LIBS 为 OFF。
+  set({{ project_name_upper }}_BUILD_SHARED_LIBS OFF CACHE BOOL "Executables cannot be built as shared libraries" FORCE)
+endif()
+
+# --- 自动查找所有源文件和头文件 ---
+file(
+  GLOB_RECURSE
+  PROJECT_SOURCES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx"
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.cc")
+file(
+  GLOB_RECURSE
+  PROJECT_HEADERS_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.hxx"
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.inl")
+file(
+  GLOB_RECURSE
+  PROJECT_PUBLIC_HEADERS
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hxx"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl")
+
+# 定义 API 导出/导入宏，主要用于共享库。使用 Jinja2 的 if 根据 Jinja2 变量做逻辑判断，再转换为 CMake 变量
+{% if project_type == 'lib' %}
+# 只有当项目为库时才考虑 {{ project_name_upper }}_BUILD_SHARED_LIBS
+if({{ project_name_upper }}_BUILD_SHARED_LIBS)
+  set(GENERATE_API_MACROS TRUE)
+else()
+  set(GENERATE_API_MACROS FALSE)
+endif()
+{% else %}
+set(GENERATE_API_MACROS FALSE)
+{% endif %}
+
+# 为库生成只包含头文件的方案
+{% if project_type == 'lib' %}
+if(NOT PROJECT_HEADERS_GLOBBED)
+  # 根据 CMake 变量 GENERATE_API_MACROS 决定预处理器条件
+  if(GENERATE_API_MACROS)
+    message(
+      STATUS
+        "No headers found in ${CMAKE_CURRENT_SOURCE_DIR}. Generating default .h file for shared library '${PROJECT_NAME}'."
+    )
+    set(EXPORT_MACROS_HEADER_FILE "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/export_macros.h")
+    file(
+      WRITE ${EXPORT_MACROS_HEADER_FILE}
+      "#pragma once
+
+#if defined(_WIN32)
+#if defined(${PROJECT_NAME}_EXPORTS)
+#define {{ conan_pkg_name_upper }}_API __declspec(dllexport)
+#else
+#define {{ conan_pkg_name_upper }}_API __declspec(dllimport)
+#endif
+#else  // Non-Windows
+#define {{ conan_pkg_name_upper }}_API __attribute__((visibility(\"default\")))
+#endif
+")
+    list(APPEND PROJECT_HEADERS_GLOBBED ${EXPORT_MACROS_HEADER_FILE})
+  endif()
+endif()
+
+{% endif %}
+
+# --- 版本号等信息 ---
+set({{ conan_pkg_name_upper }}_PRODUCT_NAME ${PROJECT_NAME})
+set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_TWEAK ${PROJECT_VERSION_TWEAK})
+# 如果 {{ conan_pkg_name_upper }}_PRODUCT_VERSION 不为空, 则解析 {{ conan_pkg_name_upper }}_PRODUCT_VERSION 并替换版本号
+if({{ conan_pkg_name_upper }}_PRODUCT_VERSION EQUAL 0
+   OR ({{ conan_pkg_name_upper }}_PRODUCT_VERSION
+       AND NOT
+           "{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION{% raw %}}{% endraw %}"
+           STREQUAL
+           ""
+      ))
+  # 初始化版本号
+  set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR 0)
+  set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR 0)
+  set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH 0)
+  set({{ conan_pkg_name_upper }}_PRODUCT_VERSION_TWEAK 0)
+  # 用正则表达式匹配版本号
+  string(
+    REGEX MATCHALL
+          "[0-9]+"
+          VERSION_LIST
+          {% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION{% raw %}}{% endraw %})
+  list(LENGTH VERSION_LIST VERSION_LIST_LENGTH)
+  # 根据版本号长度设置版本号, 最多支持 4 位版本号
+  if(VERSION_LIST_LENGTH GREATER 0)
+    list(
+      GET
+      VERSION_LIST
+      0
+      {{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR)
+  endif()
+  if(VERSION_LIST_LENGTH GREATER 1)
+    list(
+      GET
+      VERSION_LIST
+      1
+      {{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR)
+  endif()
+  if(VERSION_LIST_LENGTH GREATER 2)
+    list(
+      GET
+      VERSION_LIST
+      2
+      {{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH)
+  endif()
+  if(VERSION_LIST_LENGTH GREATER 3)
+    list(
+      GET
+      VERSION_LIST
+      3
+      {{ conan_pkg_name_upper }}_PRODUCT_VERSION_TWEAK)
+  endif()
+endif()
+
+# 设置完整产品版本号
+if(NOT {{ conan_pkg_name_upper }}_PRODUCT_VERSION_REVISION OR "{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_REVISION{% raw %}}{% endraw %}" STREQUAL "")
+  set({{ conan_pkg_name_upper }}_PRODUCT_FULL_VERSION
+      "{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_TWEAK{% raw %}}{% endraw %}")
+else()
+  set({{ conan_pkg_name_upper }}_PRODUCT_FULL_VERSION
+      "{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH{% raw %}}{% endraw %}+{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_REVISION{% raw %}}{% endraw %}")
+endif()
+
+# 设置完整文件版本号
+set({{ conan_pkg_name_upper }}_PRODUCT_FILE_FULL_VERSION
+    "{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MAJOR{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_MINOR{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_PATCH{% raw %}}{% endraw %}.{% raw %}${{% endraw %}{{ conan_pkg_name_upper }}_PRODUCT_VERSION_TWEAK{% raw %}}{% endraw %}")
+
+# 设置公司版权信息
+string(TIMESTAMP PRODUCT_CURRENT_YEAR "%Y")
+# 由于会存在乱码问题, 所有采用 (c) 代替 ©
+set({{ conan_pkg_name_upper }}_PRODUCT_COMPANY_COPYRIGHT
+    "Copyright (c) 2016-${PRODUCT_CURRENT_YEAR} SCANTECH (HANGZHOU) CO., LTD. All Rights Reserved.")
+
+# --- 添加目标（可执行文件或库） ---
+# 使用 CMake 的 if 语句处理 CMake 变量
+set(IS_INTERFACE_LIBRARY FALSE) # 是否为 INTERFACE 库
+if(NOT PROJECT_SOURCES_GLOBBED AND PROJECT_TYPE_CMAKE_VAR STREQUAL "lib")
+  message(STATUS "${PROJECT_NAME}: Building as INTERFACE library (no sources found or provided).")
+  add_library(${PROJECT_NAME} INTERFACE)
+  add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+  set(IS_INTERFACE_LIBRARY TRUE) # 标记为 INTERFACE 库
+elseif(PROJECT_TYPE_CMAKE_VAR STREQUAL "exe")
+  message(STATUS "${PROJECT_NAME}: Building as executable.")
+  add_executable(${PROJECT_NAME} ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED})
+  add_executable(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+  set(_VersionResourceFile ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+  # 生成 version.rc 文件, 用于配置版本信息
+  configure_file(${CMAKE_CURRENT_LIST_DIR}/version.rc.in ${_VersionResourceFile} @ONLY)
+  target_sources(${PROJECT_NAME} PRIVATE ${_VersionResourceFile})
+else() # PROJECT_TYPE_CMAKE_VAR STREQUAL "lib"（且存在源文件）
+  if({{ project_name_upper }}_BUILD_SHARED_LIBS)
+    message(STATUS "${PROJECT_NAME}: Building as shared library.")
+    add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED})
+    add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+    if(WIN32 AND GENERATE_API_MACROS)
+      list(APPEND PROJECT_COMPILE_DEFINITIONS ${PROJECT_NAME}_EXPORTS)
+      set(_VersionResourceFile ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+      # 生成 version.rc 文件, 用于配置版本信息
+      configure_file(${CMAKE_CURRENT_LIST_DIR}/version.rc.in ${_VersionResourceFile} @ONLY)
+      target_sources(${PROJECT_NAME} PRIVATE ${_VersionResourceFile})
+    endif()
+  else()
+    message(STATUS "${PROJECT_NAME}: Building as static library.")
+    add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED})
+    add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+  endif()
+endif()
+
+# --- 为 IDE（如 Visual Studio）整理源文件分组 ---
+# 这有助于在 IDE 中组织文件以匹配磁盘结构。分组将根据相对于
+# CMAKE_CURRENT_SOURCE_DIR 的文件路径直接创建。
+if(PROJECT_SOURCES_GLOBBED)
+  source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PROJECT_SOURCES_GLOBBED})
+endif()
+if(PROJECT_HEADERS_GLOBBED AND PROJECT_TYPE_CMAKE_VAR STREQUAL "lib")
+  source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PROJECT_HEADERS_GLOBBED})
+endif()
+
+# --- 公共头文件 ---
+if(PROJECT_PUBLIC_HEADERS)
+  target_sources(
+    ${PROJECT_NAME}
+    PUBLIC FILE_SET
+           HEADERS
+           BASE_DIRS
+           "${CMAKE_CURRENT_SOURCE_DIR}/include"
+           FILES
+           ${PROJECT_PUBLIC_HEADERS})
+endif()
+
+# --- 包含路径 ---
+if(IS_INTERFACE_LIBRARY)
+  target_include_directories(${PROJECT_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
+  target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+else()
+  target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                                                    $<INSTALL_INTERFACE:include>)
+  target_include_directories(${PROJECT_NAME} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+  target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+endif()
+
+foreach(OUTPUT_CONFIG IN ITEMS RUNTIME LIBRARY)
+  set_target_properties(${PROJECT_NAME} PROPERTIES ${OUTPUT_CONFIG}_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>")
+endforeach()
+
+# linking 依赖包
+set(PKGS_TO_LINK "{{ conan_pkg_name_upper }}_TARGETS_TO_LINK")
+if(CURRENT_PLATFORM AND DEFINED {{ conan_pkg_name_upper }}_TARGETS_TO_LINK_${CURRENT_PLATFORM})
+  set(PKGS_TO_LINK_PLATFROM "{{ conan_pkg_name_upper }}_TARGETS_TO_LINK_${CURRENT_PLATFORM}")
+  list(APPEND {{ conan_pkg_name_upper }}_TARGETS_TO_LINK "${${PKGS_TO_LINK_PLATFROM}}")
+endif()
+foreach(PACKAGE_NAME ${${PKGS_TO_LINK}})
+  if(IS_INTERFACE_LIBRARY)
+    target_link_libraries(${PROJECT_NAME} INTERFACE ${PACKAGE_NAME})
+  else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PACKAGE_NAME})
+  endif()
+  message(STATUS "Linking ${PACKAGE_NAME} to ${PROJECT_NAME}")
+endforeach()
+
+# 包含用户自定义的配置文件
+include(${CMAKE_CURRENT_SOURCE_DIR}/user_config.cmake)
+
+# --- 编译选项 ---
+if(DEFINED PROJECT_COMPILE_OPTIONS AND PROJECT_COMPILE_OPTIONS)
+  if(IS_INTERFACE_LIBRARY)
+    target_compile_options(${PROJECT_NAME} INTERFACE ${PROJECT_COMPILE_OPTIONS})
+  else()
+    target_compile_options(${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
+  endif()
+endif()
+# 自动为所有目标添加 -fPIC
+if(NOT WIN32)
+  if(IS_INTERFACE_LIBRARY)
+    target_compile_options(${PROJECT_NAME} INTERFACE -fPIC)
+  else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
+  endif()
+endif()
+
+# --- 编译定义 ---
+if(DEFINED PROJECT_COMPILE_DEFINITIONS AND PROJECT_COMPILE_DEFINITIONS)
+  if(IS_INTERFACE_LIBRARY)
+    target_compile_definitions(${PROJECT_NAME} INTERFACE ${PROJECT_COMPILE_DEFINITIONS})
+  else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
+  endif()
+endif()
+
+# --- 安装规则（用于 Conan 打包） ---
+# 根据项目类型和是否有头文件来决定 install 命令的参数
+{% if project_type == 'lib' %}
+if(PROJECT_HEADERS_GLOBBED) # 检查 CMake 变量
+  install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+            FILE_SET HEADERS
+            DESTINATION include)
+else()
+  # 库类型，但 PROJECT_HEADERS_GLOBBED 为空（例如，没有头文件的接口库，或编译库但无头文件）
+  # 如果为 INTERFACE 库且没有头文件集，通常只导出目标信息。如果为编译库但无头文件，则不安装 FILE_SET HEADERS。
+  install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
+endif()
+{% else %} {# project_type == 'exe' #}
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION bin)
+{% endif %}
+
+
+if(MSVC
+   AND NOT IS_INTERFACE_LIBRARY
+   AND {{ project_name_upper }}_BUILD_SHARED_LIBS)
+  # Release 启用调试信息
+  target_compile_options(${PROJECT_NAME} PRIVATE $<$<AND:$<CONFIG:Release>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:/Zi>)
+  target_link_options(
+    ${PROJECT_NAME}
+    PRIVATE
+    $<$<CONFIG:Release>:/DEBUG>
+    $<$<CONFIG:Release>:/OPT:REF>
+    $<$<CONFIG:Release>:/OPT:ICF>)
+  # 如果是共享库且不是 INTERFACE 库，则安装 PDB 文件（仅在 Debug/Release 或 RelWithDebInfo 配置下）
+  install(
+    FILES $<TARGET_PDB_FILE:${PROJECT_NAME}>
+    DESTINATION bin
+    CONFIGURATIONS Debug Release RelWithDebInfo)
+endif()
+
+install(
+  EXPORT ${PROJECT_NAME}Targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION lib/cmake/${PROJECT_NAME})
+
+include(CMakePackageConfigHelpers)
+if(NOT DEFINED CONAN_PACKAGE_VERSION_FOR_CMAKE)
+  message(
+    WARNING "CONAN_PACKAGE_VERSION_FOR_CMAKE is not defined for ${PROJECT_NAME}. Falling back to project version.")
+  set(CONAN_PACKAGE_VERSION_FOR_CMAKE ${PROJECT_VERSION}) # 备用方案
+endif()
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  VERSION ${CONAN_PACKAGE_VERSION_FOR_CMAKE}
+  COMPATIBILITY AnyNewerVersion)
+
+configure_package_config_file("${PROJECT_NAME}Config.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                              INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION lib/cmake/${PROJECT_NAME})
+
+message(STATUS "CMakeLists.txt configured for ${PROJECT_NAME} (type: ${PROJECT_TYPE_CMAKE_VAR}).")
