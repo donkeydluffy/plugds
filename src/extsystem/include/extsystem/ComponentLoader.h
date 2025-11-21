@@ -22,7 +22,7 @@ class Component;
  *
  * @class       sss::extsystem::ComponentLoader ComponentLoader.h <ComponentLoader>
  */
-class COMPONENT_SYSTEM_DLLSPEC ComponentLoader : public QObject {
+class EXT_SYSTEM_DLLSPEC ComponentLoader : public QObject {
  private:
   Q_OBJECT
 

@@ -1,28 +1,6 @@
-/*
- * Copyright (C) 2020 Adrian Carpenter
- *
- * This file is part of Pingnoo (https://github.com/nedrysoft/pingnoo)
- *
- * An open-source cross-platform traceroute analyser.
- *
- * Created by Adrian Carpenter on 27/03/2020.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <QApplication>
 #include <QDir>
@@ -159,7 +137,7 @@ int main(int argc, char** argv) {
     bool should_load = !disabled_components.contains(component_id);
 
     SPDLOG_INFO("Component {}: CanBeDisabled={}, ShouldLoad={}", component_id.toStdString(),
-                 component->CanBeDisabled() ? "true" : "false", should_load ? "true" : "false");
+                component->CanBeDisabled() ? "true" : "false", should_load ? "true" : "false");
 
     return should_load;
   });
@@ -170,7 +148,7 @@ int main(int argc, char** argv) {
   SPDLOG_INFO("Component loading completed.");
 
   int exit_code;
-  auto main_window = (sss::extsystem::GetObject<QMainWindow>());
+  auto* main_window = (sss::extsystem::GetObject<QMainWindow>());
 
   if (main_window != nullptr) {
     SPDLOG_INFO("Found main window: {}", (void*)main_window);

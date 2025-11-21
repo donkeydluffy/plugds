@@ -18,7 +18,7 @@ class SystemTrayIconManager;
  * @details     The core component provides the SDK base for the application, it provides the core
  *              mechanisms that allow other components to extend the application
  */
-class NEDRYSOFT_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::IComponent {
+class DS_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::IComponent {
  private:
   Q_OBJECT
 
@@ -71,7 +71,6 @@ class NEDRYSOFT_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsyst
   sss::dscore::Core* core_;
   sss::dscore::ContextManager* context_manager_;
   sss::dscore::CommandManager* command_manager_;
-  sss::dscore::SystemTrayIconManager* system_tray_icon_manager_;
 
   //! @endcond
 };

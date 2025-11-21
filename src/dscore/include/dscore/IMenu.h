@@ -20,7 +20,7 @@ enum class MenuTypes : uint8_t { kIsMenuBar, kIsMenu, kIsSubMenu };
  *
  * @class       sss::dscore::IMenu IMenu.h <IMenu>
  */
-class NEDRYSOFT_CORE_DLLSPEC IMenu : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC IMenu : public sss::extsystem::IInterface {
  private:
   Q_OBJECT
 

@@ -35,7 +35,8 @@ sss::SplashScreen::SplashScreen() : QSplashScreen(QPixmap(), Qt::WindowStaysOnTo
   }
 
   // Ensure we don't divide by zero if pixmap was null
-  scale_factor_ = scaled_pixmap.isNull() ? 1.0f : static_cast<float>(scaled_pixmap.width()) / static_cast<float>(pixmap.width());
+  scale_factor_ =
+      scaled_pixmap.isNull() ? 1.0F : static_cast<float>(scaled_pixmap.width()) / static_cast<float>(pixmap.width());
 
   setPixmap(scaled_pixmap);
 

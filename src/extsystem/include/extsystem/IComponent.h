@@ -15,7 +15,7 @@ namespace sss::extsystem {
  *
  * @class       sss::extsystem::IComponent IComponent.h <IComponent>
  */
-class COMPONENT_SYSTEM_DLLSPEC IComponent {
+class EXT_SYSTEM_DLLSPEC IComponent {
  public:
   /**
    * @brief       Destroys the IComponent.

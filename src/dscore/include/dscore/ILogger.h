@@ -1,6 +1,6 @@
 #pragma once
 
-// #include <spdlog/spdlog.h>
+#include <spdlog/spdlog.h>
 
 #include "dscore/CoreSpec.h"
 
@@ -10,7 +10,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::ILogger ILogger.h <ILogger>
  */
-class NEDRYSOFT_CORE_DLLSPEC ILogger {
+class DS_CORE_DLLSPEC ILogger {
  public:
   ILogger() {
 
@@ -21,7 +21,7 @@ class NEDRYSOFT_CORE_DLLSPEC ILogger {
    *
    * @returns     the logger
    */
-  // virtual auto logger() -> std::shared_ptr<spdlog::logger> = 0;
+  virtual auto logger() -> std::shared_ptr<spdlog::logger> = 0;
 
   // Classes with virtual functions should not have a public non-virtual destructor:
   virtual ~ILogger() = default;

@@ -19,7 +19,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::ICore ICore.h <ICore>
  */
-class NEDRYSOFT_CORE_DLLSPEC ICore : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC ICore : public sss::extsystem::IInterface {
  private:
   Q_OBJECT
 

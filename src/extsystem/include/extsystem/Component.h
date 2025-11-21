@@ -16,7 +16,7 @@ namespace sss::extsystem {
  *
  * @class       sss::extsystem::Component Component.h <Component>
  */
-class COMPONENT_SYSTEM_DLLSPEC Component {
+class EXT_SYSTEM_DLLSPEC Component {
  public:
   /**
    * @brief       Constructs a new Component.

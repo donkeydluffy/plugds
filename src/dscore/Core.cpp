@@ -1,13 +1,13 @@
 #include "Core.h"
 
+#include <spdlog/spdlog.h>
+
 #include <QApplication>
 #include <QDir>
 #include <QMenu>
 #include <QStandardPaths>
 
 #include "MainWindow.h"
-
-#include <spdlog/spdlog.h>
 
 sss::dscore::Core::Core() : main_window_(new sss::dscore::MainWindow) {
   SPDLOG_INFO("[Core] Core constructor called");

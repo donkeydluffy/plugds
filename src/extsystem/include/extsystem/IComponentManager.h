@@ -13,7 +13,7 @@ namespace sss::extsystem {
  *
  * @class       sss::extsystem::IComponentManager IComponentManager.h <IComponentManager>
  */
-class COMPONENT_SYSTEM_DLLSPEC IComponentManager : public QObject {
+class EXT_SYSTEM_DLLSPEC IComponentManager : public QObject {
  private:
   Q_OBJECT
 

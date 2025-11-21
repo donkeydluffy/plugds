@@ -20,7 +20,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::ICommandManager ICommandManager.h <ICommandManager>
  */
-class NEDRYSOFT_CORE_DLLSPEC ICommandManager : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC ICommandManager : public sss::extsystem::IInterface {
  private:
   Q_OBJECT
 

@@ -11,7 +11,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::IConfiguration IConfiguration.h <IConfiguration>
  */
-class NEDRYSOFT_CORE_DLLSPEC IConfiguration {
+class DS_CORE_DLLSPEC IConfiguration {
  public:
   /**
    * @brief       Saves the configuration to a JSON object.

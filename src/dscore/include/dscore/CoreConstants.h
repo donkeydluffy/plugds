@@ -6,14 +6,14 @@
 
 namespace sss::dscore::constants {
 namespace menubars {
-constexpr auto kApplication = "Pingnoo.Application";
+constexpr auto kApplication = "Ds.Application";
 };
 
 namespace menus {
-constexpr auto kFile = "Pingnoo.File";
-constexpr auto kEdit = "Pingnoo.Edit";
-constexpr auto kHelp = "Pingnoo.Help";
-constexpr auto kApplication = "Pingnoo.Application";
+constexpr auto kFile = "Ds.File";
+constexpr auto kEdit = "Ds.Edit";
+constexpr auto kHelp = "Ds.Help";
+constexpr auto kApplication = "Ds.Application";
 
 const QMap<QString, QString> kMap = {{kFile, QT_TR_NOOP("File")},
                                      {kEdit, QT_TR_NOOP("Edit")},
@@ -22,9 +22,9 @@ const QMap<QString, QString> kMap = {{kFile, QT_TR_NOOP("File")},
 }  // namespace menus
 
 namespace menugroups {
-constexpr auto kTop = "Pingnoo.Top";
-constexpr auto kMiddle = "Pingnoo.Middle";
-constexpr auto kBottom = "Pingnoo.Bottom";
+constexpr auto kTop = "Ds.Top";
+constexpr auto kMiddle = "Ds.Middle";
+constexpr auto kBottom = "Ds.Bottom";
 
 constexpr auto kFileNew = "File.New";
 constexpr auto kFileOpen = "File.Open";
@@ -34,21 +34,21 @@ constexpr auto kFileExit = "File.Exit";
 }  // namespace menugroups
 
 namespace commands {
-constexpr auto kPreferences = "Pingnoo.Preferences";
+constexpr auto kPreferences = "Ds.Preferences";
 
-constexpr auto kOpen = "Pingnoo.Open";
-constexpr auto kQuit = "Pingnoo.Quit";
+constexpr auto kOpen = "Ds.Open";
+constexpr auto kQuit = "Ds.Quit";
 
-constexpr auto kCut = "Pingnoo.Cut";
-constexpr auto kCopy = "Pingnoo.Copy";
-constexpr auto kPaste = "Pingnoo.Paste";
+constexpr auto kCut = "Ds.Cut";
+constexpr auto kCopy = "Ds.Copy";
+constexpr auto kPaste = "Ds.Paste";
 
-constexpr auto kAbout = "Pingnoo.About";
+constexpr auto kAbout = "Ds.About";
 
-constexpr auto kAboutComponents = "Pingnoo.AboutComponents";
+constexpr auto kAboutComponents = "Ds.AboutComponents";
 
-constexpr auto kShowApplication = "Pingnoo.ShowApplication";
-constexpr auto kHideApplication = "Pingnoo.HideApplication";
+constexpr auto kShowApplication = "Ds.ShowApplication";
+constexpr auto kHideApplication = "Ds.HideApplication";
 
 const QMap<QString, QString> kMap = {{kPreferences, QT_TR_NOOP("Preferences")},
 
@@ -59,7 +59,7 @@ const QMap<QString, QString> kMap = {{kPreferences, QT_TR_NOOP("Preferences")},
                                      {kOpen, QT_TR_NOOP("Open...")},
                                      {kQuit, QT_TR_NOOP("Exit")},
 
-                                     {kAbout, QT_TR_NOOP("About Pingnoo")},
+                                     {kAbout, QT_TR_NOOP("About DefinSight")},
                                      {kAboutComponents, QT_TR_NOOP("About Components")},
 
                                      {kShowApplication, QT_TR_NOOP("Show Application")},

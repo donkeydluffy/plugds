@@ -16,7 +16,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::IStatusbarManager IStatusbarManager.h <IStatusbarManager>
  */
-class NEDRYSOFT_CORE_DLLSPEC IStatusbarManager : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC IStatusbarManager : public sss::extsystem::IInterface {
  private:
   Q_OBJECT
 

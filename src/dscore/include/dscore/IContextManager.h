@@ -21,7 +21,7 @@ constexpr int kGlobalContext = 0;
  *
  * @class       sss::dscore::IContextManager IContextManager.h <IContextManager>
  */
-class NEDRYSOFT_CORE_DLLSPEC IContextManager : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC IContextManager : public sss::extsystem::IInterface {
  private:
   Q_OBJECT
 

@@ -13,7 +13,7 @@ namespace sss::extsystem {
  *
  * @class       sss::extsystem::IInterface IInterface.h <IInterface>
  */
-class COMPONENT_SYSTEM_DLLSPEC IInterface : public QObject {
+class EXT_SYSTEM_DLLSPEC IInterface : public QObject {
  private:
   Q_OBJECT
 

@@ -1,12 +1,11 @@
 #include "CoreComponent.h"
 
+#include <spdlog/spdlog.h>
+
 #include "CommandManager.h"
 #include "ContextManager.h"
 #include "Core.h"
 #include "MainWindow.h"
-#include "SystemTrayIconManager.h"
-
-#include <spdlog/spdlog.h>
 
 CoreComponent::CoreComponent() : core_(nullptr), context_manager_(nullptr), command_manager_(nullptr) {}
 
@@ -27,10 +26,6 @@ auto CoreComponent::InitialiseEvent() -> void {
   SPDLOG_INFO("[CoreComponent] Created CommandManager instance: {}", (void*)command_manager_);
   sss::extsystem::AddObject(command_manager_);
 
-  system_tray_icon_manager_ = new sss::dscore::SystemTrayIconManager();
-  SPDLOG_INFO("[CoreComponent] Created SystemTrayIconManager instance: {}", (void*)system_tray_icon_manager_);
-  sss::extsystem::AddObject(system_tray_icon_manager_);
-
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
   SPDLOG_INFO("[CoreComponent] MainWindow obtained: {}", (void*)main_window);
 
@@ -47,7 +42,7 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
   sss::dscore::Core* core = nullptr;
   for (auto* object : sss::extsystem::AllObjects()) {
     core = qobject_cast<sss::dscore::Core*>(object);
-    if (core) {
+    if (core != nullptr) {
       break;
     }
   }
@@ -68,9 +63,6 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
 
 auto CoreComponent::FinaliseEvent() -> void {
   SPDLOG_INFO("[CoreComponent] FinaliseEvent started");
-
-  delete system_tray_icon_manager_;
-  SPDLOG_INFO("[CoreComponent] SystemTrayIconManager deleted");
 
   delete core_;
   SPDLOG_INFO("[CoreComponent] Core deleted");
