@@ -7,7 +7,6 @@
 #include "dscore/CoreSpec.h"
 #include "dscore/IMenu.h"
 #include "extsystem/IComponentManager.h"
-#include "extsystem/IInterface.h"
 
 namespace sss::dscore {
 
@@ -19,7 +18,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::ICore ICore.h <ICore>
  */
-class DS_CORE_DLLSPEC ICore : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC ICore : public QObject {
  private:
   Q_OBJECT
 
@@ -98,4 +97,4 @@ inline auto MainWindowInstance() -> QMainWindow* {
 }
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::ICore, "com.nedrysoft.core.ICore/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::ICore, "sss.dscore.ICore/1.0.0")

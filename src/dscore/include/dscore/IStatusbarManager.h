@@ -2,7 +2,6 @@
 
 #include "dscore/CoreSpec.h"
 #include "extsystem/IComponentManager.h"
-#include "extsystem/IInterface.h"
 
 namespace sss::dscore {
 /**
@@ -16,7 +15,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::IStatusbarManager IStatusbarManager.h <IStatusbarManager>
  */
-class DS_CORE_DLLSPEC IStatusbarManager : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC IStatusbarManager : public QObject {
  private:
   Q_OBJECT
 
@@ -30,4 +29,4 @@ class DS_CORE_DLLSPEC IStatusbarManager : public sss::extsystem::IInterface {
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::IStatusbarManager, "com.nedrysoft.core.IStatusbarManager/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::IStatusbarManager, "sss.dscore.IStatusbarManager/1.0.0")

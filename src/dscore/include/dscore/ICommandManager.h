@@ -9,7 +9,6 @@
 #include "dscore/ICommand.h"
 #include "dscore/IContextManager.h"
 #include "dscore/IMenu.h"
-#include "extsystem/IInterface.h"
 
 namespace sss::dscore {
 /**
@@ -20,7 +19,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::ICommandManager ICommandManager.h <ICommandManager>
  */
-class DS_CORE_DLLSPEC ICommandManager : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC ICommandManager : public QObject {
  private:
   Q_OBJECT
 
@@ -160,4 +159,4 @@ class DS_CORE_DLLSPEC ICommandManager : public sss::extsystem::IInterface {
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::ICommandManager, "com.nedrysoft.core.ICommandManager/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::ICommandManager, "sss.dscore.ICommandManager/1.0.0")

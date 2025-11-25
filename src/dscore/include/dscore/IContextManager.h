@@ -4,7 +4,6 @@
 
 #include "dscore/CoreSpec.h"
 #include "extsystem/IComponentManager.h"
-#include "extsystem/IInterface.h"
 
 namespace sss::dscore {
 using ContextList = QList<int>;
@@ -21,7 +20,7 @@ constexpr int kGlobalContext = 0;
  *
  * @class       sss::dscore::IContextManager IContextManager.h <IContextManager>
  */
-class DS_CORE_DLLSPEC IContextManager : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC IContextManager : public QObject {
  private:
   Q_OBJECT
 
@@ -88,4 +87,4 @@ class DS_CORE_DLLSPEC IContextManager : public sss::extsystem::IInterface {
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::IContextManager, "com.nedrysoft.core.IContextManager/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::IContextManager, "sss.dscore.IContextManager/1.0.0")

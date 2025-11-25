@@ -4,7 +4,7 @@
 
 #include "extsystem/ComponentSystemSpec.h"
 
-#define SsssoftComponentInterfaceIID "com.sss.IComponent/1.0"
+#define SSSComponentInterfaceIID "sss.IComponent/1.0"
 
 namespace sss::extsystem {
 /**
@@ -48,4 +48,4 @@ class EXT_SYSTEM_DLLSPEC IComponent {
 };
 }  // namespace sss::extsystem
 
-Q_DECLARE_INTERFACE(sss::extsystem::IComponent, SsssoftComponentInterfaceIID)
+Q_DECLARE_INTERFACE(sss::extsystem::IComponent, SSSComponentInterfaceIID)

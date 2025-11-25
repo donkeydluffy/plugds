@@ -34,4 +34,4 @@ class DS_CORE_DLLSPEC IConfiguration {
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::IConfiguration, "com.nedrysoft.core.IConfiguration/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::IConfiguration, "sss.dscore.IConfiguration/1.0.0")

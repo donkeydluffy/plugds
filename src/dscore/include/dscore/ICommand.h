@@ -1,7 +1,5 @@
 #pragma once
 
-#include <extsystem/IInterface.h>
-
 #include <QAbstractButton>
 #include <QAction>
 #include <QObject>
@@ -19,7 +17,7 @@ namespace sss::dscore {
  *
  * @class       sss::dscore::ICommand ICommand.h <ICommand>
  */
-class DS_CORE_DLLSPEC ICommand : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC ICommand : public QObject {
  private:
   Q_OBJECT
 
@@ -64,4 +62,4 @@ class DS_CORE_DLLSPEC ICommand : public sss::extsystem::IInterface {
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::ICommand, "com.nedrysoft.core.ICommand/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::ICommand, "sss.dscore.ICommand/1.0.0")

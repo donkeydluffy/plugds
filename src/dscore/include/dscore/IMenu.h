@@ -4,7 +4,6 @@
 #include <QMenuBar>
 
 #include "dscore/CoreSpec.h"
-#include "extsystem/IInterface.h"
 
 namespace sss::dscore {
 
@@ -20,11 +19,9 @@ enum class MenuTypes : uint8_t { kIsMenuBar, kIsMenu, kIsSubMenu };
  *
  * @class       sss::dscore::IMenu IMenu.h <IMenu>
  */
-class DS_CORE_DLLSPEC IMenu : public sss::extsystem::IInterface {
+class DS_CORE_DLLSPEC IMenu : public QObject {
  private:
   Q_OBJECT
-
-  Q_INTERFACES(sss::extsystem::IInterface)
 
  public:
   /**
@@ -139,4 +136,4 @@ class DS_CORE_DLLSPEC IMenu : public sss::extsystem::IInterface {
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::IMenu, "com.nedrysoft.core.IMenu/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::IMenu, "sss.dscore.IMenu/1.0.0")
