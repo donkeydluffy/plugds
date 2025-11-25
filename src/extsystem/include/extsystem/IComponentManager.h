@@ -104,7 +104,7 @@ inline auto AllObjects() -> QList<QObject*> { return IComponentManager::GetInsta
  * @returns     the object of type T.
  */
 template <typename T>
-inline auto GetObject() -> T* {
+inline auto GetTObject() -> T* {
   for (auto* object : IComponentManager::GetInstance()->AllObjects()) {
     auto cast_object = qobject_cast<T*>(object);
 
@@ -120,7 +120,7 @@ inline auto GetObject() -> T* {
  * @returns     the list of objects implementing type T.
  */
 template <typename T>
-inline auto GetObjects() -> QList<T*> {
+inline auto GetTObjects() -> QList<T*> {
   QList<T*> object_list;
 
   for (auto* object : IComponentManager::GetInstance()->AllObjects()) {

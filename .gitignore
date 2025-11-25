@@ -1,5 +1,5 @@
 .pyprojectx/
-.venv/
+.venv*/
 .pdm-python
 build/
 .cache/
@@ -9,3 +9,4 @@ compile_commands.json
 src/cpp_project_manager*
 cpp-templates/
 conanfile.py
+*.log

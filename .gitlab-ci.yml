@@ -48,7 +48,8 @@ workflow:
       variables:
         CONAN_USER_FROM_CI: "sss"
         CONAN_CHANNEL_FROM_CI: "staging"
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE ==
+        "push"
       when: never
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -61,8 +62,9 @@ cppcheck:
     # run cppcheck
     - ./check_code.bat
     # upload results to Sonarqube
-    - sonar-scanner -D"sonar.token=${SONAR_TOKEN}" -D"sonar.host.url=${SONAR_URL}"
-      -D"sonar.projectVersion=$CI_COMMIT_SHA" -D"sonar.projectName=$CI_PROJECT_NAME"
+    - sonar-scanner -D"sonar.token=${SONAR_TOKEN}" 
+      -D"sonar.host.url=${SONAR_URL}" -D"sonar.projectVersion=$CI_COMMIT_SHA" 
+      -D"sonar.projectName=$CI_PROJECT_NAME" 
       -D"sonar.projectKey=$CI_PROJECT_NAME"
   rules:
     - changes:
@@ -118,11 +120,13 @@ publish_extsystem_windowsvs2017_x64:
     - 'echo "Publishing Conan Package: extsystem for platform WindowsVS2017_x64 (Build
       Type: debug)"'
     - cmake --preset "windows-vs2017-config"
-    - cmake --build --preset "publish-extsystem-debug-using-windows_vs2017_config"
+    - cmake --build --preset 
+      "publish-extsystem-debug-using-windows_vs2017_config"
     - 'echo "Publishing Conan Package: extsystem for platform WindowsVS2017_x64 (Build
       Type: release)"'
     - cmake --preset "windows-vs2017-config"
-    - cmake --build --preset "publish-extsystem-release-using-windows_vs2017_config"
+    - cmake --build --preset 
+      "publish-extsystem-release-using-windows_vs2017_config"
   image: "192.168.21.161:80/library/buildtool:vs2017withcache"
 publish_extsystem_windowsvs2022_x64:
   extends: ".job_template_conan_publish"
@@ -143,11 +147,13 @@ publish_extsystem_windowsvs2022_x64:
     - 'echo "Publishing Conan Package: extsystem for platform WindowsVS2022_x64 (Build
       Type: debug)"'
     - cmake --preset "windows-vs2022-config"
-    - cmake --build --preset "publish-extsystem-debug-using-windows_vs2022_config"
+    - cmake --build --preset 
+      "publish-extsystem-debug-using-windows_vs2022_config"
     - 'echo "Publishing Conan Package: extsystem for platform WindowsVS2022_x64 (Build
       Type: release)"'
     - cmake --preset "windows-vs2022-config"
-    - cmake --build --preset "publish-extsystem-release-using-windows_vs2022_config"
+    - cmake --build --preset 
+      "publish-extsystem-release-using-windows_vs2022_config"
   image: "192.168.21.161:80/library/buildtool:vs2022withcache"
 publish_extsystem_linuxgcc_arm64_cross_on_x64:
   extends: ".job_template_conan_publish"
@@ -170,11 +176,13 @@ publish_extsystem_linuxgcc_arm64_cross_on_x64:
     - 'echo "Publishing Conan Package: extsystem for platform LinuxGCC_Arm64_Cross_on_x64
       (Build Type: debug)"'
     - cmake --preset "make-debug-arm64-cross"
-    - cmake --build --preset "publish-extsystem-debug-using-make_debug_arm64_cross"
+    - cmake --build --preset 
+      "publish-extsystem-debug-using-make_debug_arm64_cross"
     - 'echo "Publishing Conan Package: extsystem for platform LinuxGCC_Arm64_Cross_on_x64
       (Build Type: release)"'
     - cmake --preset "make-release-arm64-cross"
-    - cmake --build --preset "publish-extsystem-release-using-make_release_arm64_cross"
+    - cmake --build --preset 
+      "publish-extsystem-release-using-make_release_arm64_cross"
   image: "192.168.21.161:80/library/buildtool:gcc9_cross_arm64_withcache"
 publish_extsystem_android_cross_on_x64:
   extends: ".job_template_conan_publish"
@@ -221,11 +229,13 @@ publish_extsystem_macos_arm64_cross_on_x64:
     - 'echo "Publishing Conan Package: extsystem for platform macOS_arm64_Cross_on_x64
       (Build Type: debug)"'
     - cmake --preset "macos-arm64-debug-cross"
-    - cmake --build --preset "publish-extsystem-debug-using-macos_arm64_debug_cross"
+    - cmake --build --preset 
+      "publish-extsystem-debug-using-macos_arm64_debug_cross"
     - 'echo "Publishing Conan Package: extsystem for platform macOS_arm64_Cross_on_x64
       (Build Type: release)"'
     - cmake --preset "macos-arm64-release-cross"
-    - cmake --build --preset "publish-extsystem-release-using-macos_arm64_release_cross"
+    - cmake --build --preset 
+      "publish-extsystem-release-using-macos_arm64_release_cross"
   image: "192.168.21.161:80/library/buildtool:gcc13_cross_macos"
 publish_dscore_linuxgcc_x64:
   extends: ".job_template_conan_publish"
@@ -276,7 +286,8 @@ publish_dscore_windowsvs2017_x64:
     - 'echo "Publishing Conan Package: dscore for platform WindowsVS2017_x64 (Build
       Type: release)"'
     - cmake --preset "windows-vs2017-config"
-    - cmake --build --preset "publish-dscore-release-using-windows_vs2017_config"
+    - cmake --build --preset 
+      "publish-dscore-release-using-windows_vs2017_config"
   image: "192.168.21.161:80/library/buildtool:vs2017withcache"
 publish_dscore_windowsvs2022_x64:
   extends: ".job_template_conan_publish"
@@ -301,7 +312,8 @@ publish_dscore_windowsvs2022_x64:
     - 'echo "Publishing Conan Package: dscore for platform WindowsVS2022_x64 (Build
       Type: release)"'
     - cmake --preset "windows-vs2022-config"
-    - cmake --build --preset "publish-dscore-release-using-windows_vs2022_config"
+    - cmake --build --preset 
+      "publish-dscore-release-using-windows_vs2022_config"
   image: "192.168.21.161:80/library/buildtool:vs2022withcache"
 publish_dscore_linuxgcc_arm64_cross_on_x64:
   extends: ".job_template_conan_publish"
@@ -328,7 +340,8 @@ publish_dscore_linuxgcc_arm64_cross_on_x64:
     - 'echo "Publishing Conan Package: dscore for platform LinuxGCC_Arm64_Cross_on_x64
       (Build Type: release)"'
     - cmake --preset "make-release-arm64-cross"
-    - cmake --build --preset "publish-dscore-release-using-make_release_arm64_cross"
+    - cmake --build --preset 
+      "publish-dscore-release-using-make_release_arm64_cross"
   image: "192.168.21.161:80/library/buildtool:gcc9_cross_arm64_withcache"
 publish_dscore_android_cross_on_x64:
   extends: ".job_template_conan_publish"
@@ -375,9 +388,167 @@ publish_dscore_macos_arm64_cross_on_x64:
     - 'echo "Publishing Conan Package: dscore for platform macOS_arm64_Cross_on_x64
       (Build Type: debug)"'
     - cmake --preset "macos-arm64-debug-cross"
-    - cmake --build --preset "publish-dscore-debug-using-macos_arm64_debug_cross"
+    - cmake --build --preset 
+      "publish-dscore-debug-using-macos_arm64_debug_cross"
     - 'echo "Publishing Conan Package: dscore for platform macOS_arm64_Cross_on_x64
       (Build Type: release)"'
     - cmake --preset "macos-arm64-release-cross"
-    - cmake --build --preset "publish-dscore-release-using-macos_arm64_release_cross"
+    - cmake --build --preset 
+      "publish-dscore-release-using-macos_arm64_release_cross"
+  image: "192.168.21.161:80/library/buildtool:gcc13_cross_macos"
+publish_ws1_linuxgcc_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/ws1/**"
+    - when: manual
+  tags:
+    - "linux"
+    - "gcc9"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: ws1 for platform LinuxGCC_x64 (Build Type:
+      debug)"'
+    - cmake --preset "make-debug"
+    - cmake --build --preset "publish-ws1-debug-using-make_debug"
+    - 'echo "Publishing Conan Package: ws1 for platform LinuxGCC_x64 (Build Type:
+      release)"'
+    - cmake --preset "make-release"
+    - cmake --build --preset "publish-ws1-release-using-make_release"
+  image: "192.168.21.161:80/library/buildtool:gcc9withcache"
+publish_ws1_windowsvs2017_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/ws1/**"
+    - when: manual
+  tags:
+    - "vs2017"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: ws1 for platform WindowsVS2017_x64 (Build Type:
+      debug)"'
+    - cmake --preset "windows-vs2017-config"
+    - cmake --build --preset "publish-ws1-debug-using-windows_vs2017_config"
+    - 'echo "Publishing Conan Package: ws1 for platform WindowsVS2017_x64 (Build Type:
+      release)"'
+    - cmake --preset "windows-vs2017-config"
+    - cmake --build --preset "publish-ws1-release-using-windows_vs2017_config"
+  image: "192.168.21.161:80/library/buildtool:vs2017withcache"
+publish_ws1_windowsvs2022_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/ws1/**"
+    - when: manual
+  tags:
+    - "vs2022"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: ws1 for platform WindowsVS2022_x64 (Build Type:
+      debug)"'
+    - cmake --preset "windows-vs2022-config"
+    - cmake --build --preset "publish-ws1-debug-using-windows_vs2022_config"
+    - 'echo "Publishing Conan Package: ws1 for platform WindowsVS2022_x64 (Build Type:
+      release)"'
+    - cmake --preset "windows-vs2022-config"
+    - cmake --build --preset "publish-ws1-release-using-windows_vs2022_config"
+  image: "192.168.21.161:80/library/buildtool:vs2022withcache"
+publish_ws1_linuxgcc_arm64_cross_on_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/ws1/**"
+    - when: manual
+  tags:
+    - "linux"
+    - "gcc9"
+    - "x64"
+    - "docker"
+    - "cross-arm64"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: ws1 for platform LinuxGCC_Arm64_Cross_on_x64
+      (Build Type: debug)"'
+    - cmake --preset "make-debug-arm64-cross"
+    - cmake --build --preset "publish-ws1-debug-using-make_debug_arm64_cross"
+    - 'echo "Publishing Conan Package: ws1 for platform LinuxGCC_Arm64_Cross_on_x64
+      (Build Type: release)"'
+    - cmake --preset "make-release-arm64-cross"
+    - cmake --build --preset 
+      "publish-ws1-release-using-make_release_arm64_cross"
+  image: "192.168.21.161:80/library/buildtool:gcc9_cross_arm64_withcache"
+publish_ws1_android_cross_on_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/ws1/**"
+    - when: manual
+  tags:
+    - "linux"
+    - "gcc9"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: ws1 for platform Android_Cross_on_x64 (Build
+      Type: debug)"'
+    - cmake --preset "android-debug"
+    - cmake --build --preset "publish-ws1-debug-using-android_debug"
+    - 'echo "Publishing Conan Package: ws1 for platform Android_Cross_on_x64 (Build
+      Type: release)"'
+    - cmake --preset "android-release"
+    - cmake --build --preset "publish-ws1-release-using-android_release"
+  image: "192.168.21.161:80/library/buildtool:gcc9_cross_android24_withcache"
+publish_ws1_macos_arm64_cross_on_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/ws1/**"
+    - when: manual
+  tags:
+    - "macos"
+    - "clang17"
+    - "arm64"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: ws1 for platform macOS_arm64_Cross_on_x64 (Build
+      Type: debug)"'
+    - cmake --preset "macos-arm64-debug-cross"
+    - cmake --build --preset "publish-ws1-debug-using-macos_arm64_debug_cross"
+    - 'echo "Publishing Conan Package: ws1 for platform macOS_arm64_Cross_on_x64 (Build
+      Type: release)"'
+    - cmake --preset "macos-arm64-release-cross"
+    - cmake --build --preset 
+      "publish-ws1-release-using-macos_arm64_release_cross"
   image: "192.168.21.161:80/library/buildtool:gcc13_cross_macos"

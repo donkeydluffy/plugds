@@ -25,7 +25,7 @@ class DS_CORE_DLLSPEC IStatusbarManager : public QObject {
    *
    * @returns     the IStatusbarManager instance.
    */
-  static auto GetInstance() -> IStatusbarManager* { return sss::extsystem::GetObject<IStatusbarManager>(); }
+  static auto GetInstance() -> IStatusbarManager* { return sss::extsystem::GetTObject<IStatusbarManager>(); }
 };
 }  // namespace sss::dscore
 

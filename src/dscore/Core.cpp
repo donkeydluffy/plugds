@@ -8,6 +8,8 @@
 #include <QStandardPaths>
 
 #include "MainWindow.h"
+#include "PageManager.h"
+#include "extsystem/IComponentManager.h"
 
 sss::dscore::Core::Core() : main_window_(new sss::dscore::MainWindow) {
   SPDLOG_INFO("[Core] Core constructor called");
@@ -16,12 +18,22 @@ sss::dscore::Core::Core() : main_window_(new sss::dscore::MainWindow) {
   sss::extsystem::AddObject(main_window_);
   SPDLOG_INFO("[Core] Added MainWindow to object manager");
 
+  auto* tab_widget = main_window_->TabWidget();
+  page_manager_ = new PageManager(tab_widget);
+  sss::extsystem::AddObject(page_manager_);
+  SPDLOG_INFO("[Core] Created and registered PageManager");
+
   random_generator_ = new std::mt19937(random_device_());
   SPDLOG_INFO("[Core] Random generator initialized");
 }
 
 sss::dscore::Core::~Core() {
   SPDLOG_INFO("[Core] Core destructor called");
+
+  sss::extsystem::RemoveObject(page_manager_);
+  SPDLOG_INFO("[Core] Removed PageManager from object manager");
+  delete page_manager_;
+  SPDLOG_INFO("[Core] PageManager deleted");
 
   sss::extsystem::RemoveObject(main_window_);
   SPDLOG_INFO("[Core] Removed MainWindow from object manager");

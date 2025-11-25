@@ -29,7 +29,7 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    *
    * @returns     the ICommandManager instance.
    */
-  static auto GetInstance() -> ICommandManager* { return sss::extsystem::GetObject<ICommandManager>(); }
+  static auto GetInstance() -> ICommandManager* { return sss::extsystem::GetTObject<ICommandManager>(); }
 
   /**
    * @brief       Registers a QAction with a command for a given context.

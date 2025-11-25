@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
   SPDLOG_INFO("Component loading completed.");
 
   int exit_code;
-  auto* main_window = (sss::extsystem::GetObject<QMainWindow>());
+  auto* main_window = (sss::extsystem::GetTObject<QMainWindow>());
 
   if (main_window != nullptr) {
     SPDLOG_INFO("Found main window: {}", (void*)main_window);

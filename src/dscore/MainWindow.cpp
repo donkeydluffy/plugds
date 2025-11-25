@@ -7,6 +7,8 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QSystemTrayIcon>
+#include <QTabBar>
+#include <QTabWidget>
 #include <QTimer>
 #include <QtGlobal>
 
@@ -22,6 +24,12 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
 
   ui_->setupUi(this);
 
+  main_tab_widget_ = new QTabWidget(this);
+  main_tab_widget_->setObjectName("main_tab_widget");
+  main_tab_widget_->setTabPosition(QTabWidget::East);
+  main_tab_widget_->setVisible(false);
+  ui_->splitter->addWidget(main_tab_widget_);
+
   qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
 
   showMaximized();
@@ -32,6 +40,8 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
 sss::dscore::MainWindow::~MainWindow() { delete ui_; }
 
 auto sss::dscore::MainWindow::updateTitlebar() -> void {}
+
+auto sss::dscore::MainWindow::TabWidget() const -> QTabWidget* { return main_tab_widget_; }
 
 auto sss::dscore::MainWindow::Initialise() -> void {
   createDefaultCommands();

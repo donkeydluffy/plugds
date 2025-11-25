@@ -321,22 +321,16 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
 
   for (auto* component : resolved_load_list) {
     if (component->load_flags_ != 0) {
-      // SPDLOG_INFO(QString("component %1 was not loaded. (%2)")
-      //                 .arg(component->Name())
-      //                 .arg(loadFlagString(component->load_flags_))
-      //                 .toStdString());
-
+      SPDLOG_WARN("Component {} was not loaded because of pre-existing flags: {}", component->Name().toStdString(),
+                  loadFlagString(component->load_flags_).toStdString());
       continue;
     }
 
     component->ValidateDependencies();
 
     if (component->load_flags_ != 0) {
-      // SPDLOG_INFO(QString("component %1 was not loaded. (%2)")
-      //                 .arg(component->Name())
-      //                 .arg(loadFlagString(component->load_flags_))
-      //                 .toStdString());
-
+      SPDLOG_WARN("Component {} was not loaded after dependency validation. Flags: {}", component->Name().toStdString(),
+                  loadFlagString(component->load_flags_).toStdString());
       continue;
     }
 
@@ -344,11 +338,8 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
       if (!load_function(component)) {
         component->load_flags_.setFlag(sss::extsystem::ComponentLoader::kDisabled);
 
-        // SPDLOG_INFO(QString("component %1 was not loaded. (%2)")
-        //                 .arg(component->Name())
-        //                 .arg(loadFlagString(component->load_flags_))
-        //                 .toStdString());
-
+        SPDLOG_INFO("Component {} was not loaded because it is disabled by configuration.",
+                    component->Name().toStdString());
         continue;
       }
     }
@@ -360,12 +351,8 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
     if (!plugin_loader->load()) {
       component->load_flags_.setFlag(sss::extsystem::ComponentLoader::kUnableToLoad);
 
-      // SPDLOG_INFO(QString("component %1 was not loaded. (%2) [%3]")
-      //                 .arg(component->Name())
-      //                 .arg(loadFlagString(component->load_flags_))
-      //                 .arg(plugin_loader->errorString())
-      //                 .toStdString());
-
+      SPDLOG_ERROR("Component {} was not loaded. Unable to load library. Error: {}", component->Name().toStdString(),
+                   plugin_loader->errorString().toStdString());
       delete plugin_loader;
 
       continue;
@@ -375,14 +362,10 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
 
     if (component_interface == nullptr) {
       component->load_flags_.setFlag(sss::extsystem::ComponentLoader::kMissingInterface);
-
       delete plugin_loader;
 
-      // SPDLOG_INFO(QString("component %1 was not loaded. (%2)")
-      //                 .arg(component->Name())
-      //                 .arg(loadFlagString(component->load_flags_))
-      //                 .toStdString());
-
+      SPDLOG_ERROR("Component {} was not loaded. The library does not export a valid IComponent interface.",
+                   component->Name().toStdString());
       continue;
     }
 

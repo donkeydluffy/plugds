@@ -28,6 +28,10 @@
 #include <QAction>
 #include <QMainWindow>
 
+QT_BEGIN_NAMESPACE
+class QTabWidget;
+QT_END_NAMESPACE
+
 namespace sss::dscore {
 QT_BEGIN_NAMESPACE
 namespace Ui {  // NOLINT
@@ -69,6 +73,13 @@ class MainWindow : public QMainWindow {
    * @returns     the context menu.
    */
   auto ApplicationContextMenu() -> sss::dscore::IMenu*;
+
+  /**
+   * @brief       Returns the main tab widget.
+   *
+   * @returns     the main tab widget.
+   */
+  [[nodiscard]] auto TabWidget() const -> QTabWidget*;
 
  protected:
   /**
@@ -134,6 +145,7 @@ class MainWindow : public QMainWindow {
   //! @cond
 
   Ui::MainWindow* ui_;
+  QTabWidget* main_tab_widget_ = nullptr;
 
   QAction* about_action_;
   QAction* quit_action_;

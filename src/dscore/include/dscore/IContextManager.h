@@ -28,7 +28,7 @@ class DS_CORE_DLLSPEC IContextManager : public QObject {
   /**
    * @brief       Returns the IContextManager instance.
    */
-  static auto GetInstance() -> IContextManager* { return sss::extsystem::GetObject<IContextManager>(); }
+  static auto GetInstance() -> IContextManager* { return sss::extsystem::GetTObject<IContextManager>(); }
 
   /**
    * @brief       Registers a context with the application.

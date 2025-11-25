@@ -26,7 +26,7 @@ class DS_CORE_DLLSPEC ICore : public QObject {
   /**
    * @brief       Returns the sss::dscore::ICore instance.
    */
-  static auto GetInstance() -> ICore* { return sss::extsystem::GetObject<ICore>(); }
+  static auto GetInstance() -> ICore* { return sss::extsystem::GetTObject<ICore>(); }
 
   /**
    * @brief       Returns the main window instance.

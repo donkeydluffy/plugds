@@ -9,6 +9,10 @@
 #include "dscore/ICore.h"
 
 namespace sss::dscore {
+
+class PageManager;
+class IPageManager;
+
 /**
  * @brief       The Core class is the root component for the application.
  *
@@ -89,6 +93,7 @@ class Core : public sss::dscore::ICore {
   //! @cond
 
   QPointer<MainWindow> main_window_;
+  PageManager* page_manager_ = nullptr;
 
   std::random_device random_device_;
 

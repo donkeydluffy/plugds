@@ -1,0 +1,22 @@
+{
+  "Name": "ws1",
+  "Version": "0.1.0",
+  "Branch": "main",
+  "Revision": "",
+  "CompatVersion": "0.1.0",
+  "Vendor": "3d-scantech.com",
+  "Copyright": "",
+  "License": [],
+  "Category": "TabPages",
+  "Dependencies": [
+    {
+      "Name": "dscore",
+      "Version": "1.0.0"
+    }
+  ],
+  "Description": [
+    "Workspace 1 Tab Page Plugin"
+  ],
+  "Url": "https://www.3d-scantech.com",
+  "CanBeDisabled": true
+}
