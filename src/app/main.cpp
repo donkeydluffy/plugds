@@ -23,15 +23,15 @@ auto constexpr kSplashscreenTimeout = 3000;
 
 int main(int argc, char** argv) {
   // 初始化spdlog
-  auto file_logger = spdlog::basic_logger_mt("main", "pingnoo.log", true);
+  auto file_logger = spdlog::basic_logger_mt("main", "ds.log", true);
   spdlog::set_default_logger(file_logger);
   spdlog::set_level(spdlog::level::debug);
   spdlog::flush_on(spdlog::level::info);
 
   SPDLOG_INFO("Application starting...");
 
-  qApp->setApplicationName("Pingnoo");
-  qApp->setOrganizationName("Nedrysoft");
+  qApp->setApplicationName("DefinSight");
+  qApp->setOrganizationName("3d-scantech");
 
 #if (QT_VERSION_MAJOR < 6)
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
@@ -80,14 +80,14 @@ int main(int argc, char** argv) {
 
   // SPDLOG_DEBUG("Application started.");
 
-  QStringList component_locations = QStringList() << "APPDIR" << "PINGNOO_COMPONENT_DIR";
+  QStringList component_locations = QStringList() << "APPDIR" << "DS_COMPONENT_DIR";
 
   SPDLOG_INFO("Component locations: {}", component_locations.join(", ").toStdString());
 
   for (const auto& dir_name : component_locations) {
     if (QProcessEnvironment::systemEnvironment().contains(dir_name)) {
       auto dir_path = QProcessEnvironment::systemEnvironment().value(dir_name);
-      auto components_path = dir_path + "/Components";
+      auto components_path = dir_path + "/components";
 
       SPDLOG_INFO("Found component path via {}: {}", dir_name.toStdString(), components_path.toStdString());
 
@@ -95,8 +95,8 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (application_dir.exists("Components")) {
-    auto components_path = application_dir.absoluteFilePath("Components");
+  if (application_dir.exists("components")) {
+    auto components_path = application_dir.absoluteFilePath("components");
 
     SPDLOG_INFO("Found local component path: {}", components_path.toStdString());
 

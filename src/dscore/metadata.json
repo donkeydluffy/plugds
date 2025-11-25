@@ -1,0 +1,17 @@
+{
+  "Name": "dscore",
+  "Version": "1.0.0",
+  "Branch": "main",
+  "Revision": "",
+  "CompatVersion": "1.0.0",
+  "Vendor": "3d-scantech.com",
+  "Copyright": "",
+  "License": [],
+  "Category": "@pingnooComponentCategory@",
+  "Dependencies": [],
+  "Description": [
+    "Core plugin"
+  ],
+  "Url": "https://www.3d-scantech.com",
+  "CanBeDisabled": false
+}

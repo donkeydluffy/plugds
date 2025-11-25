@@ -22,7 +22,7 @@ class DS_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::ICo
  private:
   Q_OBJECT
 
-  Q_PLUGIN_METADATA(IID SSSComponentInterfaceIID)
+  Q_PLUGIN_METADATA(IID SSSComponentInterfaceIID FILE "metadata.json")
 
   Q_INTERFACES(sss::extsystem::IComponent)
 
