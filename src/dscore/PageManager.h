@@ -27,7 +27,7 @@ class PageManager : public IPageManager {
  private Q_SLOTS:
   void onCurrentTabChanged(int index);
 
- private:
+ private:  // NOLINT
   QTabWidget* tab_widget_ = nullptr;
   IContextManager* context_manager_ = nullptr;
   QHash<IPageProvider*, QWidget*> provider_to_widget_map_;

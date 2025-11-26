@@ -62,18 +62,18 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
 
 Ws1Page::~Ws1Page() = default;
 
-void Ws1Page::setSubContextId(int id) { sub_context_id_ = id; }
+void Ws1Page::SetSubContextId(int id) { sub_context_id_ = id; }
 
-void Ws1Page::onEnableSubContext() {
+void Ws1Page::onEnableSubContext() {  // NOLINT
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
-  if (context_manager && sub_context_id_ != 0) {
+  if ((context_manager != nullptr) && sub_context_id_ != 0) {
     context_manager->AddActiveContext(sub_context_id_);
   }
 }
 
-void Ws1Page::onDisableSubContext() {
+void Ws1Page::onDisableSubContext() {  // NOLINT
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
-  if (context_manager && sub_context_id_ != 0) {
+  if ((context_manager != nullptr) && sub_context_id_ != 0) {
     context_manager->RemoveActiveContext(sub_context_id_);
   }
 }

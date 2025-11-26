@@ -18,13 +18,13 @@ class Ws1Page : public QWidget {
   explicit Ws1Page(QWidget* parent = nullptr);
   ~Ws1Page() override;
 
-  void setSubContextId(int id);
+  void SetSubContextId(int id);
 
  private Q_SLOTS:
   void onEnableSubContext();
   void onDisableSubContext();
 
- private:
+ private:  // NOLINT
   void setupModel();
 
   QSplitter* splitter_;

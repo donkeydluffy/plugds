@@ -31,7 +31,7 @@ auto sss::dscore::CommandManager::RegisterAction(QAction* action, QString id,
     auto* command = command_map_[id];
 
     command->RegisterAction(action, visibility_contexts, enabled_contexts);
-    command->SetContext(sss::dscore::IContextManager::GetInstance()->getActiveContexts());
+    command->SetContext(sss::dscore::IContextManager::GetInstance()->GetActiveContexts());
 
     return command;
   }
@@ -42,7 +42,7 @@ auto sss::dscore::CommandManager::RegisterAction(QAction* action, QString id,
 
   command->Action()->setText(action->text());
 
-  command->SetContext(sss::dscore::IContextManager::GetInstance()->getActiveContexts());
+  command->SetContext(sss::dscore::IContextManager::GetInstance()->GetActiveContexts());
 
   command_map_[id] = command;
 
@@ -56,7 +56,7 @@ auto sss::dscore::CommandManager::RegisterAction(QAction* action, sss::dscore::I
 
   if (command_class != nullptr) {
     command_class->RegisterAction(action, visibility_contexts, enabled_contexts);
-    command_class->SetContext(sss::dscore::IContextManager::GetInstance()->getActiveContexts());
+    command_class->SetContext(sss::dscore::IContextManager::GetInstance()->GetActiveContexts());
   }
 
   return false;
@@ -73,7 +73,7 @@ void sss::dscore::CommandManager::onContextChanged(int new_context, int previous
     return;
   }
 
-  const sss::dscore::ContextList active_contexts = context_manager->getActiveContexts();
+  const sss::dscore::ContextList active_contexts = context_manager->GetActiveContexts();
 
   auto command_iterator = QMapIterator<QString, Command*>(command_map_);
 

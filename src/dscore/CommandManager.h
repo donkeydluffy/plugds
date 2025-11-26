@@ -42,7 +42,8 @@ class CommandManager : public sss::dscore::ICommandManager {
 
   auto SetContext(int context_id) -> void override;
 
-  auto CreateMenu(const QString& identifier, IActionContainer* parent_menu) -> sss::dscore::IActionContainer* override;
+  auto CreateMenu(const QString& identifier, IActionContainer* parent_container)
+      -> sss::dscore::IActionContainer* override;
   auto CreatePopupMenu(const QString& identifier) -> sss::dscore::IActionContainer* override;
   auto CreateToolBar(const QString& identifier) -> sss::dscore::IActionContainer* override;
 
@@ -53,7 +54,7 @@ class CommandManager : public sss::dscore::ICommandManager {
  private Q_SLOTS:
   void onContextChanged(int new_context, int previous_context);
 
- private:
+ private:  // NOLINT
   //! @cond
 
   QMap<QString, Command*> command_map_;

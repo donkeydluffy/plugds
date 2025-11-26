@@ -37,7 +37,7 @@ auto sss::dscore::ActionContainer::GetMenu() -> QMenu* { return menu_; }
 
 auto sss::dscore::ActionContainer::MenuBar() -> QMenuBar* { return menu_bar_; }
 
-auto sss::dscore::ActionContainer::toolBar() -> QToolBar* { return tool_bar_; }
+auto sss::dscore::ActionContainer::ToolBar() -> QToolBar* { return tool_bar_; }
 
 auto sss::dscore::ActionContainer::getInsertAction(QList<ActionContainer::GroupItem>::const_iterator group_iterator)
     -> QAction* {

@@ -78,7 +78,7 @@ class ActionContainer : public sss::dscore::IActionContainer {
 
   auto GetMenu() -> QMenu* override;
   auto MenuBar() -> QMenuBar* override;
-  auto toolBar() -> QToolBar* override;
+  auto ToolBar() -> QToolBar* override;
 
   auto InsertGroup(QString group_identifier) -> void override;
   auto AppendGroup(QString group_identifier) -> void override;

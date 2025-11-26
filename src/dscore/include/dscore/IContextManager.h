@@ -84,7 +84,7 @@ class DS_CORE_DLLSPEC IContextManager : public QObject {
    *
    * @returns     A list of active context identifiers.
    */
-  virtual auto getActiveContexts() const -> ContextList = 0;
+  [[nodiscard]] virtual auto GetActiveContexts() const -> ContextList = 0;
 
   /**
    * @brief       Gets the context id by name.

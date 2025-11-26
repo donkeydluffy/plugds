@@ -44,7 +44,7 @@ class DS_CORE_DLLSPEC IActionContainer : public QObject {
    *
    * @returns     the tool bar instance, or nullptr if not a tool bar.
    */
-  virtual auto toolBar() -> QToolBar* = 0;
+  virtual auto ToolBar() -> QToolBar* = 0;
 
   /**
    * @brief       Inserts a new group into the start of the container.

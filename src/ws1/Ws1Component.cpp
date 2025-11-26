@@ -49,10 +49,10 @@ void Ws1Component::InitialiseEvent() {
 
     // 3. Add the command's action to the main menu and toolbar
     auto* main_menu_bar = command_manager->FindMenu(sss::dscore::constants::menubars::kApplication);
-    if (main_menu_bar) {
+    if (main_menu_bar != nullptr) {
       // For simplicity, adding to the 'File' menu. A dedicated 'Ws1' menu could be created.
       auto* file_menu = command_manager->FindMenu(sss::dscore::constants::menus::kFile);
-      if (file_menu) {
+      if (file_menu != nullptr) {
         file_menu->AppendCommand(command, sss::dscore::constants::menugroups::kTop);
         SPDLOG_INFO("Added 'ws1.sample_command' to File menu.");
       } else {
@@ -63,7 +63,7 @@ void Ws1Component::InitialiseEvent() {
     }
 
     auto* main_toolbar = command_manager->FindMenu(sss::dscore::constants::toolbars::kMainToolbar);
-    if (main_toolbar) {
+    if (main_toolbar != nullptr) {
       main_toolbar->AppendCommand(command, sss::dscore::constants::menugroups::kTop);
       SPDLOG_INFO("Added 'ws1.sample_command' to Main toolbar.");
     } else {
@@ -102,7 +102,7 @@ void Ws1Component::FinaliseEvent() {
 auto Ws1Component::CreatePage(QWidget* parent) -> QWidget* {
   // Pass the sub_context_id to the page so it can control it
   auto* page = new Ws1Page(parent);
-  page->setSubContextId(sub_context_id_);
+  page->SetSubContextId(sub_context_id_);
   return page;
 }
 

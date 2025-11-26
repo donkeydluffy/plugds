@@ -1,7 +1,5 @@
 #include "ContextManager.h"
 
-#include "dscore/CoreConstants.h"
-
 sss::dscore::ContextManager::ContextManager() : next_context_id_(1) { active_contexts_.append(kGlobalContext); }
 
 auto sss::dscore::ContextManager::RegisterContext(QString context_identifier) -> int {
@@ -49,7 +47,7 @@ auto sss::dscore::ContextManager::Context() -> int {
   return kGlobalContext;
 }
 
-auto sss::dscore::ContextManager::getActiveContexts() const -> sss::dscore::ContextList { return active_contexts_; }
+auto sss::dscore::ContextManager::GetActiveContexts() const -> sss::dscore::ContextList { return active_contexts_; }
 
 auto sss::dscore::ContextManager::Context(QString context_name) -> int {
   if (context_ids_.contains(context_name)) {

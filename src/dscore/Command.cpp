@@ -4,22 +4,18 @@
 #include <utility>
 
 #include "ActionProxy.h"
-#include "dscore/CoreConstants.h"
 
-namespace sss::dscore {
+namespace {
 // Helper function to check if two ContextLists have any common elements
-static bool hasIntersection(const sss::dscore::ContextList& list1, const sss::dscore::ContextList& list2) {
+bool HasIntersection(const sss::dscore::ContextList& list1, const sss::dscore::ContextList& list2) {
   if (list1.isEmpty() || list2.isEmpty()) {
     return false;
   }
   QSet<int> set1(list1.begin(), list1.end());
-  for (int context_id : list2) {
-    if (set1.contains(context_id)) {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(list2.begin(), list2.end(), [&set1](int context_id) { return set1.contains(context_id); });
 }
+}  // namespace
+namespace sss::dscore {
 
 Command::Command(QString id) : action_(new ActionProxy()), id_(std::move(id)) {}
 
@@ -50,8 +46,8 @@ auto Command::RegisterAction(QAction* action, const sss::dscore::ContextList& vi
 
 auto sss::dscore::Command::SetContext(const sss::dscore::ContextList& active_contexts) -> void {
   // Determine visibility and enabled state based on the current active contexts
-  const bool is_visible = hasIntersection(visibility_contexts_, active_contexts);
-  const bool is_enabled = hasIntersection(enabled_contexts_, active_contexts);
+  const bool is_visible = HasIntersection(visibility_contexts_, active_contexts);
+  const bool is_enabled = HasIntersection(enabled_contexts_, active_contexts);
 
   action_->setVisible(is_visible);
   action_->setEnabled(is_enabled);

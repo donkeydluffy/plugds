@@ -57,7 +57,7 @@ class ContextManager : public sss::dscore::IContextManager {
   /**
    * @copydoc IContextManager::getActiveContexts
    */
-  auto getActiveContexts() const -> ContextList override;
+  [[nodiscard]] auto GetActiveContexts() const -> ContextList override;
 
   /**
    * @copydoc IContextManager::Context(QString)

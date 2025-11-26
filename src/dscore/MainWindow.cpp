@@ -65,7 +65,7 @@ auto sss::dscore::MainWindow::createDefaultCommands() -> void {
   createMenu(sss::dscore::constants::menubars::kApplication);
 
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
-  if (command_manager) {
+  if (command_manager != nullptr) {
     command_manager->CreateToolBar(sss::dscore::constants::toolbars::kMainToolbar);
   }
 

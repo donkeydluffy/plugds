@@ -3,7 +3,6 @@
 #include <QTabWidget>
 #include <QWidget>
 
-#include "dscore/CoreConstants.h"
 #include "dscore/IContextManager.h"
 #include "dscore/IPageProvider.h"
 
@@ -17,6 +16,11 @@ PageManager::PageManager(QTabWidget* tab_widget) : tab_widget_(tab_widget) {
 }
 
 void PageManager::AddPage(IPageProvider* provider) {
+  if (context_manager_ == nullptr) {
+    // TODO: 这里暂时先延时加载，以防止初始化顺序问题，后续可以考虑改进
+    context_manager_ = IContextManager::GetInstance();
+  }
+
   if ((provider == nullptr) || provider_to_widget_map_.contains(provider) || (context_manager_ == nullptr)) {
     return;
   }
