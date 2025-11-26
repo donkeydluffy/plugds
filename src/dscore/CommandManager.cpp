@@ -2,38 +2,47 @@
 
 #include <QMenu>
 #include <QMenuBar>
+#include <QToolBar>
 
+#include "ActionContainer.h"
 #include "Command.h"
+#include "MainWindow.h"
 #include "dscore/CoreConstants.h"
+#include "dscore/IContextManager.h"
 #include "dscore/ICore.h"
 
-sss::dscore::CommandManager::CommandManager() = default;
+sss::dscore::CommandManager::CommandManager() {
+  auto* context_manager = sss::dscore::IContextManager::GetInstance();
+  if (context_manager != nullptr) {
+    connect(context_manager, &sss::dscore::IContextManager::ContextChanged, this, &CommandManager::onContextChanged);
+  }
+}
 
 sss::dscore::CommandManager::~CommandManager() {
-  qDeleteAll(menu_map_);
+  qDeleteAll(action_container_map_);
   qDeleteAll(command_map_);
 }
 
-auto sss::dscore::CommandManager::RegisterAction(QAction* action, QString id, const sss::dscore::ContextList& contexts)
+auto sss::dscore::CommandManager::RegisterAction(QAction* action, QString id,
+                                                 const sss::dscore::ContextList& visibility_contexts,
+                                                 const sss::dscore::ContextList& enabled_contexts)
     -> sss::dscore::ICommand* {
   if (command_map_.contains(id)) {
     auto* command = command_map_[id];
 
-    command->RegisterAction(action, contexts);
-    command->SetContext(sss::dscore::IContextManager::GetInstance()->Context());
-
-    command->SetActive(action->isEnabled());
+    command->RegisterAction(action, visibility_contexts, enabled_contexts);
+    command->SetContext(sss::dscore::IContextManager::GetInstance()->getActiveContexts());
 
     return command;
   }
 
   auto* command = new Command(id);
 
-  command->RegisterAction(action, contexts);
+  command->RegisterAction(action, visibility_contexts, enabled_contexts);
 
   command->Action()->setText(action->text());
 
-  command->SetContext(sss::dscore::IContextManager::GetInstance()->Context());
+  command->SetContext(sss::dscore::IContextManager::GetInstance()->getActiveContexts());
 
   command_map_[id] = command;
 
@@ -41,88 +50,110 @@ auto sss::dscore::CommandManager::RegisterAction(QAction* action, QString id, co
 }
 
 auto sss::dscore::CommandManager::RegisterAction(QAction* action, sss::dscore::ICommand* command,
-                                                 const sss::dscore::ContextList& contexts) -> bool {
+                                                 const sss::dscore::ContextList& visibility_contexts,
+                                                 const sss::dscore::ContextList& enabled_contexts) -> bool {
   auto* command_class = qobject_cast<sss::dscore::Command*>(command);
 
   if (command_class != nullptr) {
-    command_class->RegisterAction(action, contexts);
-    command_class->SetContext(sss::dscore::IContextManager::GetInstance()->Context());
-
-    command_class->SetActive(action->isEnabled());
+    command_class->RegisterAction(action, visibility_contexts, enabled_contexts);
+    command_class->SetContext(sss::dscore::IContextManager::GetInstance()->getActiveContexts());
   }
 
   return false;
 }
 
-auto sss::dscore::CommandManager::SetContext(int context_id) -> void {
+auto sss::dscore::CommandManager::SetContext(int context_id) -> void { onContextChanged(context_id, -1); }
+
+void sss::dscore::CommandManager::onContextChanged(int new_context, int previous_context) {
+  Q_UNUSED(new_context);
+  Q_UNUSED(previous_context);
+
+  auto* context_manager = sss::dscore::IContextManager::GetInstance();
+  if (context_manager == nullptr) {
+    return;
+  }
+
+  const sss::dscore::ContextList active_contexts = context_manager->getActiveContexts();
+
   auto command_iterator = QMapIterator<QString, Command*>(command_map_);
 
   while (command_iterator.hasNext()) {
     command_iterator.next();
-
-    command_iterator.value()->SetContext(context_id);
+    command_iterator.value()->SetContext(active_contexts);
   }
 }
 
-auto sss::dscore::CommandManager::CreatePopupMenu(const QString& identifier) -> sss::dscore::IMenu* {
-  sss::dscore::Menu* new_menu;
+auto sss::dscore::CommandManager::CreatePopupMenu(const QString& identifier) -> sss::dscore::IActionContainer* {
+  sss::dscore::ActionContainer* new_container;
 
   if (!identifier.isNull()) {
-    if (menu_map_.contains(identifier)) {
-      return menu_map_[identifier];
+    if (action_container_map_.contains(identifier)) {
+      return action_container_map_[identifier];
     }
   }
 
-  new_menu = new sss::dscore::Menu(new QMenu);
+  new_container = new sss::dscore::ActionContainer(new QMenu);
 
   if (!identifier.isNull()) {
-    menu_map_[identifier] = new_menu;
+    action_container_map_[identifier] = new_container;
 
-    connect(new_menu, &QObject::destroyed, [this, identifier]() { menu_map_.remove(identifier); });
+    connect(new_container, &QObject::destroyed, [this, identifier]() { action_container_map_.remove(identifier); });
   }
 
-  return new_menu;
+  return new_container;
 }
 
-auto sss::dscore::CommandManager::CreateMenu(const QString& identifier, IMenu* parent_menu) -> sss::dscore::IMenu* {
-  sss::dscore::Menu* new_menu;
+auto sss::dscore::CommandManager::CreateMenu(const QString& identifier, IActionContainer* parent_container)
+    -> sss::dscore::IActionContainer* {
+  sss::dscore::ActionContainer* new_container;
 
-  if (menu_map_.contains(identifier)) {
-    return menu_map_[identifier];
+  if (action_container_map_.contains(identifier)) {
+    return action_container_map_[identifier];
   }
 
-  if (parent_menu == nullptr) {
+  if (parent_container == nullptr) {
     auto* main_window = sss::dscore::MainWindowInstance();
-
     main_window->menuBar()->show();
-
-    new_menu = new sss::dscore::Menu(main_window->menuBar());
+    new_container = new sss::dscore::ActionContainer(main_window->menuBar());
   } else {
-    auto* parent = qobject_cast<sss::dscore::Menu*>(parent_menu);
-
+    auto* parent = qobject_cast<sss::dscore::ActionContainer*>(parent_container);
     QMenuBar* parent_menu_bar = nullptr;
 
-    if (parent->menu_bar_ != nullptr) {
-      parent_menu_bar = parent->menu_bar_;
+    if (parent->MenuBar() != nullptr) {
+      parent_menu_bar = parent->MenuBar();
     }
 
     auto* menu = new QMenu(sss::dscore::constants::MenuText(identifier), parent_menu_bar);
-
-    new_menu = new sss::dscore::Menu(menu);
+    new_container = new sss::dscore::ActionContainer(menu);
 
     if (parent_menu_bar != nullptr) {
       parent_menu_bar->addAction(menu->menuAction());
     }
   }
 
-  menu_map_[identifier] = new_menu;
+  action_container_map_[identifier] = new_container;
 
-  return new_menu;
+  return new_container;
 }
 
-auto sss::dscore::CommandManager::FindMenu(const QString& identifier) -> sss::dscore::IMenu* {
-  if (menu_map_.contains(identifier)) {
-    return menu_map_[identifier];
+auto sss::dscore::CommandManager::CreateToolBar(const QString& identifier) -> sss::dscore::IActionContainer* {
+  if (action_container_map_.contains(identifier)) {
+    return action_container_map_[identifier];
+  }
+
+  auto* main_window = sss::dscore::MainWindowInstance();
+  auto* tool_bar = new QToolBar(identifier);
+  main_window->addToolBar(tool_bar);
+
+  auto* new_container = new sss::dscore::ActionContainer(tool_bar);
+  action_container_map_[identifier] = new_container;
+
+  return new_container;
+}
+
+auto sss::dscore::CommandManager::FindMenu(const QString& identifier) -> sss::dscore::IActionContainer* {
+  if (action_container_map_.contains(identifier)) {
+    return action_container_map_[identifier];
   }
 
   return nullptr;

@@ -44,24 +44,47 @@ class DS_CORE_DLLSPEC IContextManager : public QObject {
   virtual auto RegisterContext(QString context_identifier) -> int = 0;
 
   /**
-   * @brief       Sets the current context.
+   * @brief       Sets the main page context, clearing any other active sub-contexts.
    *
-   * @details     Sets the currently active context to the given identifier.
+   * @details     This will clear all active contexts (except for the global one) and set the
+   *              page-specific context to the given identifier. The global context always remains active.
    *
-   * @param[in]   contextIdentifier the id of the context being activated.
+   * @param[in]   contextIdentifier the id of the page context being activated.
    *
    * @returns     the status of the context switch.
    */
   virtual auto SetContext(int context_identifier) -> int = 0;
 
   /**
-   * @brief       Gets the current context.
+   * @brief       Adds a context to the list of active contexts.
+   * @param[in]   context_id The ID of the context to add.
+   */
+  virtual auto AddActiveContext(int context_id) -> void = 0;
+
+  /**
+   * @brief       Removes a context from the list of active contexts.
+   * @param[in]   context_id The ID of the context to remove.
+   */
+  virtual auto RemoveActiveContext(int context_id) -> void = 0;
+
+  /**
+   * @brief       Gets the current page-specific context.
    *
-   * @details     Gets the numeric identifier of the current context.
+   * @details     Gets the numeric identifier of the current page-specific context.
    *
    * @returns     the context identifier.
    */
   virtual auto Context() -> int = 0;
+
+  /**
+   * @brief       Gets the complete list of active contexts.
+   *
+   * @details     Gets the numeric identifiers of all active contexts, which typically includes the global
+   *              context and the current page-specific context.
+   *
+   * @returns     A list of active context identifiers.
+   */
+  virtual auto getActiveContexts() const -> ContextList = 0;
 
   /**
    * @brief       Gets the context id by name.

@@ -5,10 +5,9 @@
 #include <QObject>
 #include <utility>
 
-#include "dscore/CoreSpec.h"
+#include "dscore/IActionContainer.h"
 #include "dscore/ICommand.h"
 #include "dscore/IContextManager.h"
-#include "dscore/IMenu.h"
 
 namespace sss::dscore {
 /**
@@ -45,58 +44,24 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    *
    * @returns     a pointer to the ICommand
    */
-  virtual auto RegisterAction(QAction* action, QString id, const sss::dscore::ContextList& contexts)
-      -> sss::dscore::ICommand* = 0;
+  virtual auto RegisterAction(QAction* action, QString id, const sss::dscore::ContextList& visibility_contexts,
+                              const sss::dscore::ContextList& enabled_contexts) -> sss::dscore::ICommand* = 0;
 
-  /**
-   * @brief       Registers an action to the given command.
-   *
-   * @details     This function registers an action by command id, if the command already exists
-   *              then the action is added for the given context, otherwise a new command is created.
-   *
-   * @param[in]   action the action.
-   * @param[in]   id the identifier of the command.
-   * @param[in]   contextId the context this action is valid in.
-   *
-   * @returns     the sss::dscore::ICommand command.
-   *
-   */
   virtual auto RegisterAction(QAction* action, QString id, int context_id) -> sss::dscore::ICommand* {
-    return RegisterAction(action, std::move(id), sss::dscore::ContextList() << context_id);
+    sss::dscore::ContextList single_context_list;
+    single_context_list << context_id;
+    return RegisterAction(action, std::move(id), single_context_list, single_context_list);
   }
 
-  /**
-   * @brief       Registers a QAction with a command for a given context.
-   *
-   * @details     This function registers an action to the given ICommand.
-   *
-   * @see         sss::dscore::ICommandManager::registerAction
-   *
-   * @param[in]   action the action.
-   * @param[in]   command the identifier of the command.
-   * @param[in]   contextId the context this action is valid in.
-   *
-   * @returns     true if the QAction was registered; otherwise false.
-   */
+  virtual auto RegisterAction(QAction* action, sss::dscore::ICommand* command,
+                              const sss::dscore::ContextList& visibility_contexts,
+                              const sss::dscore::ContextList& enabled_contexts) -> bool = 0;
+
   virtual auto RegisterAction(QAction* action, sss::dscore::ICommand* command, int context_id) -> bool {
-    return RegisterAction(action, command, sss::dscore::ContextList() << context_id);
+    sss::dscore::ContextList single_context_list;
+    single_context_list << context_id;
+    return RegisterAction(action, command, single_context_list, single_context_list);
   }
-
-  /**
-   * @brief       Registers a QAction with a command for a given context.
-   *
-   * @details     This function registers an action to the given ICommand.
-   *
-   * @see         sss::dscore::ICommandManager::registerAction
-   *
-   * @param[in]   action the action.
-   * @param[in]   command the identifier of the command.
-   * @param[in]   contexts a list of contexts this action is valid in.
-   *
-   * @returns     true if the QAction was registered; otherwise false.
-   */
-  virtual auto RegisterAction(QAction* action, sss::dscore::ICommand* command, const sss::dscore::ContextList& contexts)
-      -> bool = 0;
 
   /**
    * @brief       Sets the currently active context.
@@ -110,14 +75,16 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
   /**
    * @brief       Create a menu.
    *
-   * @details     Creates an IMenu object, the given identifier should be unique.
+   * @details     Creates an IActionContainer object, the given identifier should be unique.
    *
    * @param[in]   identifier the unique identifier for this menu
-   * @param[in]   parentMenu  if the case of a submenu, parentMenu should be set to the parent IMenu instance.
+   * @param[in]   parentMenu  if the case of a submenu, parentMenu should be set to the parent IActionContainer
+   * instance.
    *
-   * @returns     a new IMenu instance for the menu.
+   * @returns     a new IActionContainer instance for the menu.
    */
-  virtual auto CreateMenu(const QString& identifier, IMenu* parent_menu) -> sss::dscore::IMenu* = 0;
+  virtual auto CreateMenu(const QString& identifier, IActionContainer* parent_menu)
+      -> sss::dscore::IActionContainer* = 0;
 
   /**
    * @brief       Find a menu.
@@ -127,21 +94,21 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    *
    * @param[in]   identifier the unique identifier for the menu.
    *
-   * @returns     the IMenu instance if the menu exists; otherwise nullptr.
+   * @returns     the IActionContainer instance if the menu exists; otherwise nullptr.
    */
-  virtual auto FindMenu(const QString& identifier) -> sss::dscore::IMenu* = 0;
+  virtual auto FindMenu(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
 
   /**
    * @brief       Create a popup menu.
    *
-   * @details     Creates an IMenu object, if an identifier is not given then the menu is a transient
+   * @details     Creates an IActionContainer object, if an identifier is not given then the menu is a transient
    *              one; otherwise the identifier should be unique.
    *
    * @param[in]   identifier the unique identifier for this menu.
    *
-   * @returns     a new IMenu instance for the menu.
+   * @returns     a new IActionContainer instance for the menu.
    */
-  virtual auto CreatePopupMenu(const QString& identifier) -> sss::dscore::IMenu* = 0;
+  virtual auto CreatePopupMenu(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
 
   /**
    * @brief       Find a command.
@@ -153,6 +120,17 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    * @returns     The ICommand instance if the command exists; otherwise nullptr;
    */
   virtual auto FindCommand(const QString& identifier) -> sss::dscore::ICommand* = 0;
+
+  /**
+   * @brief       Create a tool bar.
+   *
+   * @details     Creates an IActionContainer object representing a tool bar.
+   *
+   * @param[in]   identifier the unique identifier for this tool bar
+   *
+   * @returns     a new IActionContainer instance for the tool bar.
+   */
+  virtual auto CreateToolBar(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
 
   // Classes with virtual functions should not have a public non-virtual destructor:
   ~ICommandManager() override = default;

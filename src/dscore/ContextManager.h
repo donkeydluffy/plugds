@@ -43,44 +43,31 @@ class ContextManager : public sss::dscore::IContextManager {
   auto RegisterContext(QString context_identifier) -> int override;
 
   /**
-   * @brief       Sets the current context.
-   *
-   * @details     Sets the currently active context to the given identifier.
-   *
-   * @see         sss::dscore::IContextManager::setContext
-   *
-   * @param[in]   contextIdentifier the id of the context being activated.
-   *
-   * @returns     the status of the context switch.
+   * @copydoc IContextManager::SetContext
    */
   auto SetContext(int context_identifier) -> int override;
+  auto AddActiveContext(int context_id) -> void override;
+  auto RemoveActiveContext(int context_id) -> void override;
 
   /**
-   * @brief       Gets the current context.
-   *
-   * @details     Gets the numeric identifier of the current context.
-   *
-   * @see         sss::dscore::IContextManager::context
-   *
-   * @returns     the context identifier.
+   * @copydoc IContextManager::Context
    */
   auto Context() -> int override;
 
   /**
-   * @brief       Gets the context id by name.
-   *
-   * @details     Gets the numeric identifier of the given context.
-   *
-   * @param[in]   contextName the context name;
-   *
-   * @returns     the context identifier.
+   * @copydoc IContextManager::getActiveContexts
+   */
+  auto getActiveContexts() const -> ContextList override;
+
+  /**
+   * @copydoc IContextManager::Context(QString)
    */
   auto Context(QString context_name) -> int override;
 
  private:
   //! @cond
 
-  int current_context_id_;
+  QList<int> active_contexts_;
   int next_context_id_;
   QMap<QString, int> context_ids_;
 

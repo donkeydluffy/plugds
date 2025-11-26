@@ -2,6 +2,7 @@
 
 #include <QMenu>
 #include <QMenuBar>
+#include <QToolBar>
 
 #include "dscore/CoreSpec.h"
 
@@ -9,17 +10,17 @@ namespace sss::dscore {
 
 class ICommand;
 
-enum class MenuTypes : uint8_t { kIsMenuBar, kIsMenu, kIsSubMenu };
+enum class ActionContainerTypes : uint8_t { kIsMenuBar, kIsMenu, kIsSubMenu, kIsToolBar };
 
 /**
- * @brief       The IMenuInterface describes a menu or a menu bar.
+ * @brief       The IActionContainer interface describes a container for QActions, like a menu, menubar, or
+ * toolbar.
  *
- * @details     Represents a menu or menubar, allows commands to be registered in the menu and allows items
- *              to be logically grouped.
+ * @details     Represents a UI container for actions, allows commands to be registered and logically grouped.
  *
- * @class       sss::dscore::IMenu IMenu.h <IMenu>
+ * @class       sss::dscore::IActionContainer IActionContainer.h <IActionContainer>
  */
-class DS_CORE_DLLSPEC IMenu : public QObject {
+class DS_CORE_DLLSPEC IActionContainer : public QObject {
  private:
   Q_OBJECT
 
@@ -27,32 +28,39 @@ class DS_CORE_DLLSPEC IMenu : public QObject {
   /**
    * @brief       Returns the QMenu if this is a menu.
    *
-   * @returns     the menu instance.
+   * @returns     the menu instance, or nullptr if not a menu.
    */
   virtual auto GetMenu() -> QMenu* = 0;
 
   /**
    * @brief       Returns the QMenuBar if this is a menu bar.
    *
-   * @returns     the menubar instance.
+   * @returns     the menubar instance, or nullptr if not a menu bar.
    */
   virtual auto MenuBar() -> QMenuBar* = 0;
 
   /**
-   * @brief       Inserts a new group into the start of the menu.
+   * @brief       Returns the QToolBar if this is a tool bar.
    *
-   * @details     Creates a named grouped section for a menu, allows commands to be grouped by function.
-   *              The group will be inserted at the start of the menu.
+   * @returns     the tool bar instance, or nullptr if not a tool bar.
+   */
+  virtual auto toolBar() -> QToolBar* = 0;
+
+  /**
+   * @brief       Inserts a new group into the start of the container.
+   *
+   * @details     Creates a named grouped section, allows commands to be grouped by function.
+   *              The group will be inserted at the start.
    *
    * @param[in]   groupIdentifier the identifier of the group.
    */
   virtual auto InsertGroup(QString group_identifier) -> void = 0;
 
   /**
-   * @brief       Appends a new group to the end of the menu.
+   * @brief       Appends a new group to the end of the container.
    *
-   * @details     Creates a named grouped section for a menu, allows commands to be grouped by function.
-   *              The group will be appended to the end of the menu.
+   * @details     Creates a named grouped section, allows commands to be grouped by function.
+   *              The group will be appended to the end.
    *
    * @param[in]   groupIdentifier the identifier of the group.
    */
@@ -61,7 +69,7 @@ class DS_CORE_DLLSPEC IMenu : public QObject {
   /**
    * @brief       Adds a new group before the given identifier.
    *
-   * @details     Creates a named grouped section for a menu, allows commands to be grouped by function.
+   * @details     Creates a named grouped section, allows commands to be grouped by function.
    *              The group will be inserted directly before the given existing identifier.
    *
    * @param[in]   beforeIdentifier the identifier which this group is to be inserted before.
@@ -74,10 +82,10 @@ class DS_CORE_DLLSPEC IMenu : public QObject {
   /**
    * @brief       Adds a new group after the given identifier.
    *
-   * @details     Creates a named grouped section for a menu, allows commands to be grouped by function.
+   * @details     Creates a named grouped section, allows commands to be grouped by function.
    *              The group will be inserted directly after the given existing identifier.
    *
-   * @param[in]   afterIdentifier the identifier which this group is to be inserted after.
+   * @param[in]   afterIdentifier the existing identifier which the new group is to be inserted after.
    * @param[in]   groupIdentifier the identifier of the group.
    *
    * @returns     true if added; otherwise false.
@@ -125,15 +133,15 @@ class DS_CORE_DLLSPEC IMenu : public QObject {
   virtual auto InsertCommand(QString command_identifier, QString group_identifier) -> void = 0;
 
   /**
-   * @brief       Returns the type of menu (Menu Bar and Menu)
+   * @brief       Returns the type of container (Menu Bar, Menu, ToolBar, etc.)
    *
-   * @returns     The sss::dscore::MenuTypes type of the menu.
+   * @returns     The sss::dscore::ActionContainerTypes type of the container.
    */
-  virtual auto Type() -> sss::dscore::MenuTypes = 0;
+  virtual auto Type() -> sss::dscore::ActionContainerTypes = 0;
 
   // Classes with virtual functions should not have a public non-virtual destructor:
-  ~IMenu() override = default;
+  ~IActionContainer() override = default;
 };
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::IMenu, "sss.dscore.IMenu/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::IActionContainer, "sss.dscore.IActionContainer/1.0.0")

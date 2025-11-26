@@ -11,6 +11,7 @@ QT_END_NAMESPACE
 
 namespace sss::dscore {
 
+class IContextManager;
 class IPageProvider;
 
 class PageManager : public IPageManager {
@@ -23,9 +24,14 @@ class PageManager : public IPageManager {
   void AddPage(IPageProvider* provider) override;
   void RemovePage(IPageProvider* provider) override;
 
+ private Q_SLOTS:
+  void onCurrentTabChanged(int index);
+
  private:
   QTabWidget* tab_widget_ = nullptr;
+  IContextManager* context_manager_ = nullptr;
   QHash<IPageProvider*, QWidget*> provider_to_widget_map_;
+  QHash<QWidget*, int> page_to_context_id_map_;
 };
 
 }  // namespace sss::dscore

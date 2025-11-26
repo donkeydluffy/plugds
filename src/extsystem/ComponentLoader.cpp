@@ -301,20 +301,22 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
 
   // resolve the dependencies to create a load order
 
+  // Clear existing resolved_load_list to ensure a fresh start for dependency resolution
+  resolved_load_list.clear();
+
+  QList<sss::extsystem::Component*>
+      processed_list_global;  // Use a global processed list for cycle detection across all calls
+
   for (auto* current : component_load_list) {
-    QList<sss::extsystem::Component*> dependency_resolve_list;
-
-    if (!resolved_load_list.contains(current)) {
-      dependency_resolve_list.clear();
-
-      resolve(current, dependency_resolve_list);
-
-      for (auto* dependency : dependency_resolve_list) {
-        if (!resolved_load_list.contains(dependency)) {
-          resolved_load_list.append(dependency);
-        }
-      }
+    if (!resolved_load_list.contains(current) && !processed_list_global.contains(current)) {
+      QList<sss::extsystem::Component*> current_processed_list;  // This processed_list is for current recursion stack
+      resolve(current, resolved_load_list, current_processed_list);
     }
+  }
+
+  SPDLOG_INFO("Final component load order:");
+  for (auto* component : resolved_load_list) {
+    SPDLOG_INFO("- {}", component->Name().toStdString());
   }
 
   // load the components that we have satisfied dependencies for
@@ -407,20 +409,36 @@ auto sss::extsystem::ComponentLoader::resolve(sss::extsystem::Component* compone
 
 auto sss::extsystem::ComponentLoader::resolve(sss::extsystem::Component* component,
                                               QList<sss::extsystem::Component*>& resolved_list,
-                                              QList<sss::extsystem::Component*>& processed_list) -> void {
-  processed_list.append(component);
+                                              QList<sss::extsystem::Component*>& processed_list_current_branch)
+    -> void {
+  // If component is already in the final resolved list, skip it.
+  if (resolved_list.contains(component)) {
+    return;
+  }
+
+  // If component is already in the current processing branch, it's a circular dependency.
+  if (processed_list_current_branch.contains(component)) {
+    component->load_flags_.setFlag(LoadFlag::kCircularDependency);
+    SPDLOG_ERROR("Circular dependency detected involving component: {}", component->Name().toStdString());
+    return;  // Break this branch of recursion
+  }
+
+  processed_list_current_branch.append(component);  // Mark component as currently being processed
 
   for (auto* dependency : component->dependencies_) {
+    // Only resolve dependency if it's not already resolved
     if (!resolved_list.contains(dependency)) {
-      if (processed_list.contains(dependency)) {
-        continue;
-      }
-
-      resolve(dependency, resolved_list, processed_list);
+      resolve(dependency, resolved_list, processed_list_current_branch);
     }
   }
 
-  resolved_list.append(component);
+  // After resolving all its dependencies (or handling circular ones), add the component
+  // if it's not already resolved and not marked with a circular dependency.
+  if (!resolved_list.contains(component) && !component->load_flags_.testFlag(LoadFlag::kCircularDependency)) {
+    resolved_list.append(component);
+  }
+
+  processed_list_current_branch.removeAll(component);  // Remove from current processing branch once done
 }
 
 auto sss::extsystem::ComponentLoader::UnloadComponents() -> void {

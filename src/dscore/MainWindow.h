@@ -39,7 +39,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class IMenu;
+class IActionContainer;
 class ICommand;
 
 /**
@@ -72,7 +72,7 @@ class MainWindow : public QMainWindow {
    *
    * @returns     the context menu.
    */
-  auto ApplicationContextMenu() -> sss::dscore::IMenu*;
+  auto ApplicationContextMenu() -> sss::dscore::IActionContainer*;
 
   /**
    * @brief       Returns the main tab widget.
@@ -127,7 +127,7 @@ class MainWindow : public QMainWindow {
    *
    * @returns     an IMenu pointer to the menu.
    */
-  auto createMenu(const QString& menu_id, const QString& parent_menu_id = QString()) -> sss::dscore::IMenu*;
+  auto createMenu(const QString& menu_id, const QString& parent_menu_id = QString()) -> sss::dscore::IActionContainer*;
 
   /**
    * @brief       Returns the IMenu pointer for a named menu.
@@ -135,7 +135,7 @@ class MainWindow : public QMainWindow {
    *
    * @returns     The IMenu pointer if found; otherwise nullptr.
    */
-  auto findMenu(const QString& menu_id) -> sss::dscore::IMenu*;
+  auto findMenu(const QString& menu_id) -> sss::dscore::IActionContainer*;
 
   /**
    * @brief       Updates the title bar when light/dark mode changes.

@@ -22,3 +22,7 @@ endif()
 list(APPEND PROJECT_COMPILE_DEFINITIONS DS_COMPONENT_CORE_EXPORT)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+# Set the output directory for the plugin library
+set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/components"
+                                                 RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/components")

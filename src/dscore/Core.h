@@ -87,7 +87,7 @@ class Core : public sss::dscore::ICore {
    *
    * @returns     the context menu.
    */
-  auto ApplicationContextMenu() -> sss::dscore::IMenu* override;
+  auto ApplicationContextMenu() -> sss::dscore::IActionContainer* override;
 
  private:
   //! @cond

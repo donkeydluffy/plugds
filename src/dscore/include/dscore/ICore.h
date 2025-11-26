@@ -5,7 +5,7 @@
 #include <QObject>
 
 #include "dscore/CoreSpec.h"
-#include "dscore/IMenu.h"
+#include "dscore/IActionContainer.h"
 #include "extsystem/IComponentManager.h"
 
 namespace sss::dscore {
@@ -75,7 +75,7 @@ class DS_CORE_DLLSPEC ICore : public QObject {
    *
    * @returns     the context menu.
    */
-  virtual auto ApplicationContextMenu() -> sss::dscore::IMenu* = 0;
+  virtual auto ApplicationContextMenu() -> sss::dscore::IActionContainer* = 0;
 
   /**
    * Classes with virtual functions should not have a public non-virtual destructor:

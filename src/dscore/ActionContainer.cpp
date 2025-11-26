@@ -1,38 +1,45 @@
-#include "Menu.h"
+#include "ActionContainer.h"
+
+#include <cassert>
 
 #include "dscore/CoreConstants.h"
 #include "dscore/ICommand.h"
 #include "dscore/ICommandManager.h"
 
-sss::dscore::Menu::Menu() : menu_bar_(nullptr), menu_(nullptr) {
+sss::dscore::ActionContainer::ActionContainer() {
   group_list_.append(GroupItem(sss::dscore::constants::menugroups::kTop));
   group_list_.append(GroupItem(sss::dscore::constants::menugroups::kMiddle));
   group_list_.append(GroupItem(sss::dscore::constants::menugroups::kBottom));
 }
 
-sss::dscore::Menu::~Menu() = default;
+sss::dscore::ActionContainer::~ActionContainer() = default;
 
-sss::dscore::Menu::Menu(QMenuBar* menu_bar) : Menu() { menu_bar_ = menu_bar; }
+sss::dscore::ActionContainer::ActionContainer(QMenuBar* menu_bar) : ActionContainer() { menu_bar_ = menu_bar; }
 
-sss::dscore::Menu::Menu(QMenu* menu) : Menu() { menu_ = menu; }
+sss::dscore::ActionContainer::ActionContainer(QMenu* menu) : ActionContainer() { menu_ = menu; }
 
-auto sss::dscore::Menu::Type() -> sss::dscore::MenuTypes {
+sss::dscore::ActionContainer::ActionContainer(QToolBar* tool_bar) : ActionContainer() { tool_bar_ = tool_bar; }
+
+auto sss::dscore::ActionContainer::Type() -> sss::dscore::ActionContainerTypes {
+  if (tool_bar_ != nullptr) {
+    return sss::dscore::ActionContainerTypes::kIsToolBar;
+  }
   if (menu_bar_ != nullptr) {
-    return sss::dscore::MenuTypes::kIsMenuBar;
+    return sss::dscore::ActionContainerTypes::kIsMenuBar;
   }
-
   if ((menu_ != nullptr) && (qobject_cast<QMenuBar*>(menu_->parent()) == nullptr)) {
-    return sss::dscore::MenuTypes::kIsSubMenu;
+    return sss::dscore::ActionContainerTypes::kIsSubMenu;
   }
-
-  return sss::dscore::MenuTypes::kIsMenu;
+  return sss::dscore::ActionContainerTypes::kIsMenu;
 }
 
-auto sss::dscore::Menu::GetMenu() -> QMenu* { return menu_; }
+auto sss::dscore::ActionContainer::GetMenu() -> QMenu* { return menu_; }
 
-auto sss::dscore::Menu::MenuBar() -> QMenuBar* { return menu_bar_; }
+auto sss::dscore::ActionContainer::MenuBar() -> QMenuBar* { return menu_bar_; }
 
-auto sss::dscore::Menu::getInsertAction(QList<sss::dscore::Menu::GroupItem>::const_iterator group_iterator)
+auto sss::dscore::ActionContainer::toolBar() -> QToolBar* { return tool_bar_; }
+
+auto sss::dscore::ActionContainer::getInsertAction(QList<ActionContainer::GroupItem>::const_iterator group_iterator)
     -> QAction* {
   if (group_iterator->items_.count() != 0) {
     auto* cast_to_command = qobject_cast<sss::dscore::ICommand*>(group_iterator->items_.first());
@@ -65,7 +72,7 @@ auto sss::dscore::Menu::getInsertAction(QList<sss::dscore::Menu::GroupItem>::con
   return nullptr;
 }
 
-auto sss::dscore::Menu::getAppendAction(QList<sss::dscore::Menu::GroupItem>::const_iterator group_iterator)
+auto sss::dscore::ActionContainer::getAppendAction(QList<ActionContainer::GroupItem>::const_iterator group_iterator)
     -> QAction* {
   group_iterator++;
 
@@ -92,8 +99,18 @@ auto sss::dscore::Menu::getAppendAction(QList<sss::dscore::Menu::GroupItem>::con
   return nullptr;
 }
 
-auto sss::dscore::Menu::InsertCommand(sss::dscore::ICommand* command, QString group) -> void {
-  if ((menu_ == nullptr) || (command == nullptr)) {
+auto sss::dscore::ActionContainer::InsertCommand(sss::dscore::ICommand* command, QString group) -> void {
+  if (command == nullptr) {
+    return;
+  }
+
+  // For toolbars, insert is the same as append.
+  if (tool_bar_ != nullptr) {
+    AppendCommand(command, group);
+    return;
+  }
+
+  if (menu_ == nullptr) {
     return;
   }
 
@@ -110,14 +127,27 @@ auto sss::dscore::Menu::InsertCommand(sss::dscore::ICommand* command, QString gr
   group_list_[group_iterator - group_list_.constBegin()].items_.append(command);
 }
 
-auto sss::dscore::Menu::AppendCommand(sss::dscore::ICommand* command, QString group_identifier) -> void {
-  if ((menu_ == nullptr) || (command == nullptr)) {
+auto sss::dscore::ActionContainer::AppendCommand(sss::dscore::ICommand* command, QString group_identifier) -> void {
+  if (command == nullptr) {
     return;
   }
 
   auto group_iterator = findGroup(group_identifier);
-
   if (group_iterator == group_list_.constEnd()) {
+    return;
+  }
+
+  if (tool_bar_ != nullptr) {
+    if (group_list_[group_iterator - group_list_.constBegin()].items_.count() == 0 &&
+        group_iterator != group_list_.constBegin()) {
+      tool_bar_->addSeparator();
+    }
+    tool_bar_->addAction(command->Action());
+    group_list_[group_iterator - group_list_.constBegin()].items_.append(command);
+    return;
+  }
+
+  if (menu_ == nullptr) {
     return;
   }
 
@@ -125,7 +155,8 @@ auto sss::dscore::Menu::AppendCommand(sss::dscore::ICommand* command, QString gr
 
   QList<QAction*> action_list;
 
-  if (group_list_[group_iterator - group_list_.constBegin()].items_.count() == 0) {
+  if (group_list_[group_iterator - group_list_.constBegin()].items_.count() == 0 &&
+      group_iterator != group_list_.constBegin()) {
     menu_->insertSeparator(previous_action);
 
     auto* separator_action = new QAction();
@@ -142,9 +173,9 @@ auto sss::dscore::Menu::AppendCommand(sss::dscore::ICommand* command, QString gr
   group_list_[group_iterator - group_list_.constBegin()].items_.append(command);
 }
 
-auto sss::dscore::Menu::findGroup(const QString& group_identifier)
-    -> QList<sss::dscore::Menu::GroupItem>::const_iterator {
-  QList<sss::dscore::Menu::GroupItem>::const_iterator group_iterator = group_list_.constBegin();
+auto sss::dscore::ActionContainer::findGroup(const QString& group_identifier)
+    -> QList<ActionContainer::GroupItem>::const_iterator {
+  QList<ActionContainer::GroupItem>::const_iterator group_iterator = group_list_.constBegin();
 
   while (group_iterator != group_list_.constEnd()) {
     if (group_iterator->id_ == group_identifier) {
@@ -157,7 +188,7 @@ auto sss::dscore::Menu::findGroup(const QString& group_identifier)
   return group_iterator;
 }
 
-auto sss::dscore::Menu::AddGroupAfter(QString after_identifier, QString group_identifier) -> bool {
+auto sss::dscore::ActionContainer::AddGroupAfter(QString after_identifier, QString group_identifier) -> bool {
   auto group_iterator = findGroup(after_identifier);
 
   if (group_iterator == group_list_.constEnd()) {
@@ -171,7 +202,7 @@ auto sss::dscore::Menu::AddGroupAfter(QString after_identifier, QString group_id
   return true;
 }
 
-auto sss::dscore::Menu::AddGroupBefore(QString before_identifier, QString group_identifier) -> bool {
+auto sss::dscore::ActionContainer::AddGroupBefore(QString before_identifier, QString group_identifier) -> bool {
   auto group_iterator = findGroup(before_identifier);
 
   if (group_iterator == group_list_.constEnd()) {
@@ -189,15 +220,15 @@ auto sss::dscore::Menu::AddGroupBefore(QString before_identifier, QString group_
   return true;
 }
 
-auto sss::dscore::Menu::AppendGroup(QString group_identifier) -> void {
+auto sss::dscore::ActionContainer::AppendGroup(QString group_identifier) -> void {
   group_list_.append(GroupItem(group_identifier));
 }
 
-auto sss::dscore::Menu::InsertGroup(QString group_identifier) -> void {
+auto sss::dscore::ActionContainer::InsertGroup(QString group_identifier) -> void {
   group_list_.insert(0, GroupItem(group_identifier));
 }
 
-auto sss::dscore::Menu::AppendCommand(QString command_identifier, QString group_identifier) -> void {
+auto sss::dscore::ActionContainer::AppendCommand(QString command_identifier, QString group_identifier) -> void {
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
   assert(command_manager != nullptr);
@@ -209,7 +240,7 @@ auto sss::dscore::Menu::AppendCommand(QString command_identifier, QString group_
   }
 }
 
-auto sss::dscore::Menu::InsertCommand(QString command_identifier, QString group_identifier) -> void {
+auto sss::dscore::ActionContainer::InsertCommand(QString command_identifier, QString group_identifier) -> void {
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
   assert(command_manager != nullptr);

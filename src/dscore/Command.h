@@ -73,7 +73,8 @@ class Command : public sss::dscore::ICommand {
    * @param[in]   action the action.
    * @param[in]   contexts the list of contexts this action is used in.
    */
-  auto RegisterAction(QAction* action, const sss::dscore::ContextList& contexts) -> void;
+  auto RegisterAction(QAction* action, const sss::dscore::ContextList& visibility_contexts,
+                      const sss::dscore::ContextList& enabled_contexts) -> void;
 
   /**
    * @brief       Sets the current context for this command.
@@ -81,9 +82,9 @@ class Command : public sss::dscore::ICommand {
    * @brief       If there is a QAction registered with the contextId then it becomes the active
    *              active, if there is no QAction for the context then the command is disabled.
    *
-   * @param[in]   contextId the context id.
+   * @param[in]   active_contexts the list of currently active contexts.
    */
-  auto SetContext(int context_id) -> void;
+  auto SetContext(const sss::dscore::ContextList& active_contexts) -> void;
 
   friend class CommandManager;
   friend class RibbonBarManager;
@@ -92,6 +93,9 @@ class Command : public sss::dscore::ICommand {
   //! @cond
 
   QMap<int, QAction*> actions_;
+
+  sss::dscore::ContextList visibility_contexts_;
+  sss::dscore::ContextList enabled_contexts_;
 
   sss::dscore::ActionProxy* action_;
   QString id_;

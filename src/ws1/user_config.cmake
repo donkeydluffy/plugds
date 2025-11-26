@@ -24,3 +24,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/src/dsco
 # list(APPEND PROJECT_COMPILE_DEFINITIONS MY_DEFINE=1 MY_FLAG)
 
 # target_link_libraries(${PROJECT_NAME} PRIVATE dscore::dscore)
+
+# Set the output directory for the plugin library
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/components"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/components"
+)

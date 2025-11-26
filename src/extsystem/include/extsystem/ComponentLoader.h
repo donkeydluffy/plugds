@@ -41,7 +41,8 @@ class EXT_SYSTEM_DLLSPEC ComponentLoader : public QObject {
     kDisabled = 16,
     kIncompatibleVersion = 32,
     kUnableToLoad = 64,
-    kMissingInterface = 128
+    kMissingInterface = 128,
+    kCircularDependency = 256
   };
   Q_ENUM(LoadFlag)
   Q_DECLARE_FLAGS(LoadFlags, LoadFlag)

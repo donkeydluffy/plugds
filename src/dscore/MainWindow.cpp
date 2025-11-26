@@ -64,6 +64,11 @@ auto sss::dscore::MainWindow::createDefaultCommands() -> void {
 
   createMenu(sss::dscore::constants::menubars::kApplication);
 
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+  if (command_manager) {
+    command_manager->CreateToolBar(sss::dscore::constants::toolbars::kMainToolbar);
+  }
+
   auto* file_menu = createMenu(sss::dscore::constants::menus::kFile, sss::dscore::constants::menubars::kApplication);
 
   file_menu->AddGroupBefore(sss::dscore::constants::menugroups::kTop, sss::dscore::constants::menugroups::kFileNew);
@@ -176,14 +181,14 @@ auto sss::dscore::MainWindow::createCommand(QString command_id, QAbstractButton*
 }
 
 auto sss::dscore::MainWindow::createMenu(const QString& menu_id, const QString& parent_menu_id)  // NOLINT
-    -> sss::dscore::IMenu* {
+    -> sss::dscore::IActionContainer* {
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
   if (command_manager == nullptr) {
     return nullptr;
   }
 
-  sss::dscore::IMenu* parent_menu = nullptr;
+  sss::dscore::IActionContainer* parent_menu = nullptr;
 
   if (!parent_menu_id.isNull()) {
     parent_menu = command_manager->FindMenu(parent_menu_id);
@@ -192,7 +197,7 @@ auto sss::dscore::MainWindow::createMenu(const QString& menu_id, const QString& 
   return command_manager->CreateMenu(menu_id, parent_menu);
 }
 
-auto sss::dscore::MainWindow::findMenu(const QString& menu_id) -> sss::dscore::IMenu* {  // NOLINT
+auto sss::dscore::MainWindow::findMenu(const QString& menu_id) -> sss::dscore::IActionContainer* {  // NOLINT
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
   if (command_manager == nullptr) {
@@ -227,7 +232,7 @@ auto sss::dscore::MainWindow::addMenuCommand(const QString& command_id, const QS
 
 void sss::dscore::MainWindow::CloseEvent(QCloseEvent* close_event) { QMainWindow::closeEvent(close_event); }
 
-auto sss::dscore::MainWindow::ApplicationContextMenu() -> sss::dscore::IMenu* {  // NOLINT
+auto sss::dscore::MainWindow::ApplicationContextMenu() -> sss::dscore::IActionContainer* {  // NOLINT
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
   auto* context_menu = command_manager->CreatePopupMenu(QString());

@@ -9,6 +9,10 @@ namespace menubars {
 constexpr auto kApplication = "Ds.Application";
 };
 
+namespace toolbars {
+constexpr auto kMainToolbar = "Ds.MainToolbar";
+};
+
 namespace menus {
 constexpr auto kFile = "Ds.File";
 constexpr auto kEdit = "Ds.Edit";

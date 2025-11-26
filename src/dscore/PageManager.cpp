@@ -3,14 +3,21 @@
 #include <QTabWidget>
 #include <QWidget>
 
+#include "dscore/CoreConstants.h"
+#include "dscore/IContextManager.h"
 #include "dscore/IPageProvider.h"
 
 namespace sss::dscore {
 
-PageManager::PageManager(QTabWidget* tab_widget) : tab_widget_(tab_widget) {}
+PageManager::PageManager(QTabWidget* tab_widget) : tab_widget_(tab_widget) {
+  if (tab_widget_ != nullptr) {
+    connect(tab_widget_, &QTabWidget::currentChanged, this, &PageManager::onCurrentTabChanged);
+  }
+  context_manager_ = IContextManager::GetInstance();
+}
 
 void PageManager::AddPage(IPageProvider* provider) {
-  if ((provider == nullptr) || provider_to_widget_map_.contains(provider)) {
+  if ((provider == nullptr) || provider_to_widget_map_.contains(provider) || (context_manager_ == nullptr)) {
     return;
   }
 
@@ -20,9 +27,13 @@ void PageManager::AddPage(IPageProvider* provider) {
 
   auto* new_page = provider->CreatePage(tab_widget_);
   const auto title = provider->PageTitle();
+  const auto context_id = provider->PageContextId();
 
-  tab_widget_->addTab(new_page, title);
+  page_to_context_id_map_.insert(new_page, context_id);
   provider_to_widget_map_.insert(provider, new_page);
+
+  const auto index = tab_widget_->addTab(new_page, title);
+  tab_widget_->setCurrentIndex(index);
 }
 
 void PageManager::RemovePage(IPageProvider* provider) {
@@ -37,11 +48,29 @@ void PageManager::RemovePage(IPageProvider* provider) {
     tab_widget_->removeTab(index);
   }
 
-  // The widget is deleted by Qt because its parent (the tab_widget_) has been removed.
+  page_to_context_id_map_.remove(widget_to_remove);
   provider_to_widget_map_.remove(provider);
+  // The widget is deleted by Qt because its parent (the tab_widget_) has been removed.
 
   if ((tab_widget_ != nullptr) && tab_widget_->count() == 0) {
     tab_widget_->setVisible(false);
+  }
+}
+
+void PageManager::onCurrentTabChanged(int index) {
+  if (context_manager_ == nullptr) {
+    return;
+  }
+
+  if (index == -1) {
+    context_manager_->SetContext(kGlobalContext);
+    return;
+  }
+
+  auto* current_widget = tab_widget_->widget(index);
+  if (page_to_context_id_map_.contains(current_widget)) {
+    const auto context_id = page_to_context_id_map_.value(current_widget);
+    context_manager_->SetContext(context_id);
   }
 }
 

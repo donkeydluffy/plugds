@@ -69,4 +69,4 @@ auto sss::dscore::Core::StorageFolder() -> QString {
          "/" + qApp->applicationName();
 }
 
-auto sss::dscore::Core::ApplicationContextMenu() -> IMenu* { return main_window_->ApplicationContextMenu(); }
+auto sss::dscore::Core::ApplicationContextMenu() -> IActionContainer* { return main_window_->ApplicationContextMenu(); }

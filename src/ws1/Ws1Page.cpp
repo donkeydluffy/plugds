@@ -1,14 +1,22 @@
 #include "Ws1Page.h"
 
+#include <spdlog/spdlog.h>
+
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QLabel>
+#include <QPushButton>
 #include <QSplitter>
 #include <QStandardItemModel>
 #include <QTreeView>
+#include <QVBoxLayout>
+
+#include "dscore/IContextManager.h"
 
 namespace sss::ws1 {
 
 Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
+  SPDLOG_INFO("Ws1Page constructor called.");
   // Main layout for the page
   auto* main_layout = new QHBoxLayout(this);
   main_layout->setContentsMargins(0, 0, 0, 0);
@@ -21,20 +29,54 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
   tree_view_->header()->setVisible(false);
   setupModel();
 
-  // Right side: Placeholder
+  // Right side: Control Pane
   auto* right_pane = new QWidget(splitter_);
+  auto* right_layout = new QVBoxLayout(right_pane);
+
+  auto* label = new QLabel(
+      tr("Click buttons to change the sub-context.\nWatch the 'Ws1 Sample Command' in the File menu and toolbar."),
+      right_pane);
+  label->setWordWrap(true);
+
+  enable_button_ = new QPushButton(tr("Enable Sub-Context (Activate Command)"), right_pane);
+  disable_button_ = new QPushButton(tr("Disable Sub-Context (Deactivate Command)"), right_pane);
+
+  right_layout->addWidget(label);
+  right_layout->addWidget(enable_button_);
+  right_layout->addWidget(disable_button_);
+  right_layout->addStretch();
+  right_pane->setLayout(right_layout);
 
   splitter_->addWidget(tree_view_);
   splitter_->addWidget(right_pane);
 
   // Set initial size ratio 1:4
-  splitter_->setSizes({100, 400});
+  splitter_->setSizes({200, 400});
 
   main_layout->addWidget(splitter_);
   setLayout(main_layout);
+
+  connect(enable_button_, &QPushButton::clicked, this, &Ws1Page::onEnableSubContext);
+  connect(disable_button_, &QPushButton::clicked, this, &Ws1Page::onDisableSubContext);
 }
 
 Ws1Page::~Ws1Page() = default;
+
+void Ws1Page::setSubContextId(int id) { sub_context_id_ = id; }
+
+void Ws1Page::onEnableSubContext() {
+  auto* context_manager = sss::dscore::IContextManager::GetInstance();
+  if (context_manager && sub_context_id_ != 0) {
+    context_manager->AddActiveContext(sub_context_id_);
+  }
+}
+
+void Ws1Page::onDisableSubContext() {
+  auto* context_manager = sss::dscore::IContextManager::GetInstance();
+  if (context_manager && sub_context_id_ != 0) {
+    context_manager->RemoveActiveContext(sub_context_id_);
+  }
+}
 
 void Ws1Page::setupModel() {
   model_ = new QStandardItemModel(this);

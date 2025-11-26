@@ -32,6 +32,12 @@ class DS_CORE_DLLSPEC IPageProvider : public QObject {
    * @return The string to be displayed as the tab's title.
    */
   [[nodiscard]] virtual auto PageTitle() const -> QString = 0;
+
+  /**
+   * @brief Returns the context ID for the page.
+   * @return The context ID associated with this page.
+   */
+  [[nodiscard]] virtual auto PageContextId() const -> int = 0;
 };
 
 }  // namespace sss::dscore
