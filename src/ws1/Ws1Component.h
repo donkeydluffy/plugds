@@ -5,6 +5,11 @@
 #include "dscore/IPageProvider.h"
 #include "extsystem/IComponent.h"
 
+namespace sss::dscore {
+class ICommandManager;
+class ILanguageService;
+}  // namespace sss::dscore
+
 namespace sss::ws1 {
 
 class Ws1Component : public sss::dscore::IPageProvider, public sss::extsystem::IComponent {
@@ -28,6 +33,9 @@ class Ws1Component : public sss::dscore::IPageProvider, public sss::extsystem::I
   [[nodiscard]] auto PageOrder() const -> int override { return 50; }  // Should be first
 
  private:
+  void createSampleCommand(sss::dscore::ICommandManager* command_manager);
+  void createSwitchCommands(sss::dscore::ICommandManager* command_manager, sss::dscore::ILanguageService* lang_service);
+
   int page_context_id_ = 0;
   int sub_context_id_ = 0;
 };

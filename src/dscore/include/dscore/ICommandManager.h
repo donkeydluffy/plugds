@@ -108,6 +108,12 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    */
   virtual auto FindCommand(const QString& identifier) -> sss::dscore::ICommand* = 0;
 
+  /**
+   * @brief       Retranslates UI elements (Menus, Commands) managed by this manager.
+   *              Should be called when the application language changes.
+   */
+  virtual auto RetranslateUi() -> void = 0;
+
   // Classes with virtual functions should not have a public non-virtual destructor:
   ~ICommandManager() override = default;
 };

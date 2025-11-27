@@ -49,7 +49,9 @@ class CommandManager : public sss::dscore::ICommandManager {
 
   auto FindCommand(const QString& identifier) -> sss::dscore::ICommand* override;
 
- private Q_SLOTS:
+  auto RetranslateUi() -> void override;
+
+ private slots:
   void onContextChanged(int new_context, int previous_context);
 
  private:  // NOLINT

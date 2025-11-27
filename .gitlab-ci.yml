@@ -552,3 +552,165 @@ publish_ws1_macos_arm64_cross_on_x64:
     - cmake --build --preset 
       "publish-ws1-release-using-macos_arm64_release_cross"
   image: "192.168.21.161:80/library/buildtool:gcc13_cross_macos"
+publish_dsresources_linuxgcc_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/dsresources/**"
+    - when: manual
+  tags:
+    - "linux"
+    - "gcc9"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: dsresources for platform LinuxGCC_x64 (Build
+      Type: debug)"'
+    - cmake --preset "make-debug"
+    - cmake --build --preset "publish-dsresources-debug-using-make_debug"
+    - 'echo "Publishing Conan Package: dsresources for platform LinuxGCC_x64 (Build
+      Type: release)"'
+    - cmake --preset "make-release"
+    - cmake --build --preset "publish-dsresources-release-using-make_release"
+  image: "192.168.21.161:80/library/buildtool:gcc9withcache"
+publish_dsresources_windowsvs2017_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/dsresources/**"
+    - when: manual
+  tags:
+    - "vs2017"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: dsresources for platform WindowsVS2017_x64
+      (Build Type: debug)"'
+    - cmake --preset "windows-vs2017-config"
+    - cmake --build --preset 
+      "publish-dsresources-debug-using-windows_vs2017_config"
+    - 'echo "Publishing Conan Package: dsresources for platform WindowsVS2017_x64
+      (Build Type: release)"'
+    - cmake --preset "windows-vs2017-config"
+    - cmake --build --preset 
+      "publish-dsresources-release-using-windows_vs2017_config"
+  image: "192.168.21.161:80/library/buildtool:vs2017withcache"
+publish_dsresources_windowsvs2022_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/dsresources/**"
+    - when: manual
+  tags:
+    - "vs2022"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: dsresources for platform WindowsVS2022_x64
+      (Build Type: debug)"'
+    - cmake --preset "windows-vs2022-config"
+    - cmake --build --preset 
+      "publish-dsresources-debug-using-windows_vs2022_config"
+    - 'echo "Publishing Conan Package: dsresources for platform WindowsVS2022_x64
+      (Build Type: release)"'
+    - cmake --preset "windows-vs2022-config"
+    - cmake --build --preset 
+      "publish-dsresources-release-using-windows_vs2022_config"
+  image: "192.168.21.161:80/library/buildtool:vs2022withcache"
+publish_dsresources_linuxgcc_arm64_cross_on_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/dsresources/**"
+    - when: manual
+  tags:
+    - "linux"
+    - "gcc9"
+    - "x64"
+    - "docker"
+    - "cross-arm64"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: dsresources for platform LinuxGCC_Arm64_Cross_on_x64
+      (Build Type: debug)"'
+    - cmake --preset "make-debug-arm64-cross"
+    - cmake --build --preset 
+      "publish-dsresources-debug-using-make_debug_arm64_cross"
+    - 'echo "Publishing Conan Package: dsresources for platform LinuxGCC_Arm64_Cross_on_x64
+      (Build Type: release)"'
+    - cmake --preset "make-release-arm64-cross"
+    - cmake --build --preset 
+      "publish-dsresources-release-using-make_release_arm64_cross"
+  image: "192.168.21.161:80/library/buildtool:gcc9_cross_arm64_withcache"
+publish_dsresources_android_cross_on_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/dsresources/**"
+    - when: manual
+  tags:
+    - "linux"
+    - "gcc9"
+    - "x64"
+    - "docker"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: dsresources for platform Android_Cross_on_x64
+      (Build Type: debug)"'
+    - cmake --preset "android-debug"
+    - cmake --build --preset "publish-dsresources-debug-using-android_debug"
+    - 'echo "Publishing Conan Package: dsresources for platform Android_Cross_on_x64
+      (Build Type: release)"'
+    - cmake --preset "android-release"
+    - cmake --build --preset "publish-dsresources-release-using-android_release"
+  image: "192.168.21.161:80/library/buildtool:gcc9_cross_android24_withcache"
+publish_dsresources_macos_arm64_cross_on_x64:
+  extends: ".job_template_conan_publish"
+  variables:
+    PRODUCT_VERSION_FROM_CI: "${CI_COMMIT_TAG}"
+    PRODUCT_VERSION_REVISION_FROM_CI: "${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - changes:
+        - "src/dsresources/**"
+    - when: manual
+  tags:
+    - "macos"
+    - "clang17"
+    - "arm64"
+  script:
+    - conan remote disable conancenter
+    - cd ${CI_PROJECT_DIR}
+    - 'echo "Publishing Conan Package: dsresources for platform macOS_arm64_Cross_on_x64
+      (Build Type: debug)"'
+    - cmake --preset "macos-arm64-debug-cross"
+    - cmake --build --preset 
+      "publish-dsresources-debug-using-macos_arm64_debug_cross"
+    - 'echo "Publishing Conan Package: dsresources for platform macOS_arm64_Cross_on_x64
+      (Build Type: release)"'
+    - cmake --preset "macos-arm64-release-cross"
+    - cmake --build --preset 
+      "publish-dsresources-release-using-macos_arm64_release_cross"
+  image: "192.168.21.161:80/library/buildtool:gcc13_cross_macos"

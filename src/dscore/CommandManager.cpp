@@ -220,3 +220,44 @@ auto sss::dscore::CommandManager::FindCommand(const QString& identifier) -> sss:
 
   return nullptr;
 }
+
+auto sss::dscore::CommandManager::RetranslateUi() -> void {
+  // Update Commands
+  for (auto it = command_map_.begin(); it != command_map_.end(); ++it) {
+    const QString& id = it.key();
+    ICommand* command = it.value();
+    if ((command != nullptr) && (command->Action() != nullptr)) {
+      // Only update standard commands or commands where we know the ID maps to a translated string.
+      // CommandText() handles lookup in CoreStrings or fallback.
+      // We assume non-core commands might just return the ID or original text if not mapped,
+      // but since CommandText falls back to kMap lookups which use QT_TR_NOOP, it *might* re-translate if context
+      // matches. However, the primary goal is to fix Core commands (File, Open, etc).
+      QString text = sss::dscore::constants::CommandText(id);
+      // If CommandText returns the ID itself (fallback), we probably shouldn't overwrite
+      // unless we are sure it's not a user string.
+      // But CommandText implementation returns:
+      // 1. CoreStrings value (Translated)
+      // 2. QObject::tr(kMap value) (Translated if context matches)
+      // 3. string (ID)
+
+      if (text != id) {
+        command->Action()->setText(text);
+      }
+    }
+  }
+
+  // Update Menus / Containers
+  for (auto it = action_container_map_.begin(); it != action_container_map_.end(); ++it) {
+    const QString& id = it.key();
+    IActionContainer* container = it.value();
+    QString text = sss::dscore::constants::MenuText(id);
+
+    if (text != id && (container->GetWidget() != nullptr)) {
+      if (auto* menu = qobject_cast<QMenu*>(container->GetWidget())) {
+        menu->setTitle(text);
+      } else if (auto* toolbar = qobject_cast<QToolBar*>(container->GetWidget())) {
+        toolbar->setWindowTitle(text);
+      }
+    }
+  }
+}

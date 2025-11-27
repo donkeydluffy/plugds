@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
@@ -33,15 +34,13 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
   auto* right_pane = new QWidget(splitter_);
   auto* right_layout = new QVBoxLayout(right_pane);
 
-  auto* label = new QLabel(
-      tr("Click buttons to change the sub-context.\nWatch the 'Ws1 Sample Command' in the File menu and toolbar."),
-      right_pane);
-  label->setWordWrap(true);
+  info_label_ = new QLabel(right_pane);
+  info_label_->setWordWrap(true);
 
-  enable_button_ = new QPushButton(tr("Enable Sub-Context (Activate Command)"), right_pane);
-  disable_button_ = new QPushButton(tr("Disable Sub-Context (Deactivate Command)"), right_pane);
+  enable_button_ = new QPushButton(right_pane);
+  disable_button_ = new QPushButton(right_pane);
 
-  right_layout->addWidget(label);
+  right_layout->addWidget(info_label_);
   right_layout->addWidget(enable_button_);
   right_layout->addWidget(disable_button_);
   right_layout->addStretch();
@@ -59,9 +58,8 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
   connect(enable_button_, &QPushButton::clicked, this, &Ws1Page::onEnableSubContext);
   connect(disable_button_, &QPushButton::clicked, this, &Ws1Page::onDisableSubContext);
 
-  // Test button click connection
-  connect(enable_button_, &QPushButton::clicked, []() { SPDLOG_INFO("Test: Enable button clicked!"); });
-  connect(disable_button_, &QPushButton::clicked, []() { SPDLOG_INFO("Test: Disable button clicked!"); });
+  // Initial translation
+  retranslateUi();
 }
 
 Ws1Page::~Ws1Page() = default;
@@ -69,6 +67,28 @@ Ws1Page::~Ws1Page() = default;
 void Ws1Page::SetSubContextId(int id) {
   sub_context_id_ = id;
   SPDLOG_INFO("Ws1Page::SetSubContextId called with id: {}", sub_context_id_);
+}
+
+void Ws1Page::changeEvent(QEvent* event) {
+  if (event->type() == QEvent::LanguageChange) {
+    retranslateUi();
+  }
+  QWidget::changeEvent(event);
+}
+
+void Ws1Page::retranslateUi() {
+  info_label_->setText(
+      tr("Click buttons to change the sub-context.\nWatch the 'Ws1 Sample Command' in the File menu and toolbar."));
+
+  enable_button_->setText(tr("Enable Sub-Context (Activate Command)"));
+  disable_button_->setText(tr("Disable Sub-Context (Deactivate Command)"));
+
+  // Rebuild the model to apply new translations
+  if (model_ != nullptr) {
+    delete model_;
+    model_ = nullptr;
+  }
+  setupModel();
 }
 
 void Ws1Page::onEnableSubContext() {  // NOLINT
@@ -82,7 +102,6 @@ void Ws1Page::onEnableSubContext() {  // NOLINT
     SPDLOG_ERROR("Ws1Page::onEnableSubContext: sub_context_id_ is 0");
     return;
   }
-  SPDLOG_INFO("Ws1Page::onEnableSubContext: calling AddActiveContext({})", sub_context_id_);
   context_manager->AddActiveContext(sub_context_id_);
 }
 
@@ -97,7 +116,6 @@ void Ws1Page::onDisableSubContext() {  // NOLINT
     SPDLOG_ERROR("Ws1Page::onDisableSubContext: sub_context_id_ is 0");
     return;
   }
-  SPDLOG_INFO("Ws1Page::onDisableSubContext: calling RemoveActiveContext({})", sub_context_id_);
   context_manager->RemoveActiveContext(sub_context_id_);
 }
 
@@ -107,16 +125,20 @@ void Ws1Page::setupModel() {
 
   QStandardItem* root_node = model_->invisibleRootItem();
 
-  const QStringList top_level_items = {"参考", "数据", "扫描", "特征", "坐标系", "对齐组", "报告"};
+  // Note: These strings are hardcoded here. In a real app, you'd want to reload them in retranslateUi.
+  // For demonstration, we'll just leave them or use tr() once.
+  const QStringList top_level_items = {
+      tr("Reference"),       tr("Data"),  tr("Scan"), tr("Features"), tr("Coordinate System"),
+      tr("Alignment Group"), tr("Report")};
 
   for (const QString& item_text : top_level_items) {
     auto* top_item = new QStandardItem(item_text);
     top_item->setEditable(false);
 
     // Add placeholder children
-    auto* child1 = new QStandardItem("对象1");
+    auto* child1 = new QStandardItem(tr("Object 1"));
     child1->setEditable(false);
-    auto* child2 = new QStandardItem("对象2");
+    auto* child2 = new QStandardItem(tr("Object 2"));
     child2->setEditable(false);
 
     top_item->appendRow(child1);

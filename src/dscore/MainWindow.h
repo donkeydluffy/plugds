@@ -87,6 +87,11 @@ class MainWindow : public QMainWindow {
    */
   void closeEvent(QCloseEvent* close_event) override;
 
+  /**
+   * @brief       Reimplements QMainWindow::changeEvent(QEvent *event).
+   */
+  void changeEvent(QEvent* event) override;
+
  private:
   /**
    * @brief       Creates the placeholders for the default commands which other plugins

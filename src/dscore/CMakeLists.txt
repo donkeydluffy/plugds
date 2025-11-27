@@ -318,6 +318,26 @@ endforeach()
 # 包含用户自定义的配置文件
 include(${CMAKE_CURRENT_SOURCE_DIR}/user_config.cmake)
 
+# --- Translation Support ---
+if(COMMAND qt5_add_translation)
+  set(TS_FILES resources/i18n/dscore_zh_CN.ts)
+  qt5_add_translation(QM_FILES ${TS_FILES})
+
+  # Dynamically generate QRC to include the binary-generated QM files
+  set(QRC_CONTENT "<RCC>\n    <qresource prefix=\"/dscore\">\n")
+  foreach(QM_FILE ${QM_FILES})
+    get_filename_component(QM_NAME ${QM_FILE} NAME)
+    string(APPEND QRC_CONTENT "        <file alias=\"i18n/${QM_NAME}\">${QM_FILE}</file>\n")
+  endforeach()
+  string(APPEND QRC_CONTENT "    </qresource>\n</RCC>")
+
+  set(GENERATED_QRC ${CMAKE_CURRENT_BINARY_DIR}/dscore_translations.qrc)
+  file(WRITE ${GENERATED_QRC} "${QRC_CONTENT}")
+
+  qt5_add_resources(TRANSLATION_RCC ${GENERATED_QRC})
+  target_sources(${PROJECT_NAME} PRIVATE ${QM_FILES} ${TRANSLATION_RCC})
+endif()
+
 # --- 编译选项 ---
 if(DEFINED PROJECT_COMPILE_OPTIONS AND PROJECT_COMPILE_OPTIONS)
   if(IS_INTERFACE_LIBRARY)

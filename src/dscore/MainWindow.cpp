@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QBitmap>
 #include <QCloseEvent>
+#include <QEvent>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -248,18 +249,26 @@ auto sss::dscore::MainWindow::addMenuCommand(const QString& command_id, const QS
 
 void sss::dscore::MainWindow::closeEvent(QCloseEvent* close_event) { QMainWindow::closeEvent(close_event); }
 
+void sss::dscore::MainWindow::changeEvent(QEvent* event) {
+  if (event->type() == QEvent::LanguageChange) {
+    auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+    if (command_manager != nullptr) {
+      command_manager->RetranslateUi();
+    }
+    // Also retranslate MainWindow generic UI if any (setWindowTitle etc)
+    setWindowTitle(QString(tr("Ds")));
+  }
+  QMainWindow::changeEvent(event);
+}
+
 auto sss::dscore::MainWindow::ApplicationContextMenu() -> sss::dscore::IActionContainer* {  // NOLINT
 
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
-
-
   auto* context_menu = command_manager->CreateActionContainer(QString(), sss::dscore::ContainerType::kMenu, nullptr, 0);
 
-
-
-  context_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupAppPrefs, sss::dscore::constants::menugroups::kWeightSettings);
-
+  context_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupAppPrefs,
+                            sss::dscore::constants::menugroups::kWeightSettings);
 
   context_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupAppExit,
                             sss::dscore::constants::menugroups::kWeightExit);

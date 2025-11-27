@@ -3,6 +3,9 @@
 #include <QMap>
 #include <QObject>
 #include <QtGlobal>
+#include <functional>
+
+#include "dscore/CoreStrings.h"
 
 namespace sss::dscore::constants {
 namespace menubars {
@@ -88,12 +91,29 @@ const QMap<QString, QString> kMap = {{kPreferences, QT_TR_NOOP("Preferences")},
 };  // namespace commands
 
 inline QString MenuText(const QString& string) {
+  static const QMap<QString, std::function<QString()>> kCoreMenuMap = {
+      {menus::kFile, &CoreStrings::File}, {menus::kEdit, &CoreStrings::Edit}, {menus::kHelp, &CoreStrings::Help}};
+
+  if (kCoreMenuMap.contains(string)) {
+    return kCoreMenuMap[string]();
+  }
+
   if (menus::kMap.contains(string)) return QObject::tr(menus::kMap[string].toUtf8());
 
   return string;
 }
 
 inline QString CommandText(const QString& string) {
+  static const QMap<QString, std::function<QString()>> kCoreCommandMap = {
+      {commands::kAbout, &CoreStrings::About},
+      {commands::kPreferences, &CoreStrings::Settings},
+      {commands::kOpen, &CoreStrings::Open},
+      {commands::kQuit, &CoreStrings::Close}};
+
+  if (kCoreCommandMap.contains(string)) {
+    return kCoreCommandMap[string]();
+  }
+
   if (commands::kMap.contains(string)) return QObject::tr(commands::kMap[string].toUtf8());
 
   return string;
