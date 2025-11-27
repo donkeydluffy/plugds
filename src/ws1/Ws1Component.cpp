@@ -48,13 +48,23 @@ void Ws1Component::InitialiseEvent() {
     SPDLOG_INFO("Ws1Component registered 'ws1.sample_command'");
 
     // 3. Add the command's action to the main menu and toolbar
-    auto* main_menu_bar = command_manager->FindMenu(sss::dscore::constants::menubars::kApplication);
+    auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
     if (main_menu_bar != nullptr) {
+      // Create a new top-level menu "Ws1" with order 150 (Between File=100 and Edit=200)
+      auto* ws1_menu =
+          command_manager->CreateActionContainer("Ws1", sss::dscore::ContainerType::kMenu, main_menu_bar, 150);
+      ws1_menu->InsertGroup("Ws1.MainGroup", 0);
+      ws1_menu->AppendCommand(command, "Ws1.MainGroup");
+      SPDLOG_INFO("Created 'Ws1' menu between File and Edit.");
+
       // For simplicity, adding to the 'File' menu. A dedicated 'Ws1' menu could be created.
-      auto* file_menu = command_manager->FindMenu(sss::dscore::constants::menus::kFile);
+      auto* file_menu = command_manager->FindContainer(sss::dscore::constants::menus::kFile);
       if (file_menu != nullptr) {
-        file_menu->AppendCommand(command, sss::dscore::constants::menugroups::kTop);
-        SPDLOG_INFO("Added 'ws1.sample_command' to File menu.");
+        // Create a new group with Order 500 (Between Open/Save and Prefs/Exit)
+        file_menu->InsertGroup("ws1.priority_group", 500);
+
+        file_menu->AppendCommand(command, "ws1.priority_group");
+        SPDLOG_INFO("Added 'ws1.sample_command' to File menu (Order 500 group).");
       } else {
         SPDLOG_ERROR("Could not find File menu to add command.");
       }
@@ -62,9 +72,18 @@ void Ws1Component::InitialiseEvent() {
       SPDLOG_ERROR("Could not find main menu bar to add command.");
     }
 
-    auto* main_toolbar = command_manager->FindMenu(sss::dscore::constants::toolbars::kMainToolbar);
+    // Create a new Toolbar "Ws1Toolbar" with order 50 (Before MainToolbar=100)
+    auto* ws1_toolbar =
+        command_manager->CreateActionContainer("Ws1Toolbar", sss::dscore::ContainerType::kToolBar, nullptr, 50);
+    ws1_toolbar->InsertGroup("Ws1.ToolbarGroup", 0);
+    ws1_toolbar->AppendCommand(command, "Ws1.ToolbarGroup");
+    SPDLOG_INFO("Created 'Ws1Toolbar' before MainToolbar.");
+
+    auto* main_toolbar = command_manager->FindContainer(sss::dscore::constants::toolbars::kMainToolbar);
     if (main_toolbar != nullptr) {
-      main_toolbar->AppendCommand(command, sss::dscore::constants::menugroups::kTop);
+      // Toolbars usually just append or use one main group
+      main_toolbar->InsertGroup("Ws1.Extras", 500);
+      main_toolbar->AppendCommand(command, "Ws1.Extras");
       SPDLOG_INFO("Added 'ws1.sample_command' to Main toolbar.");
     } else {
       SPDLOG_ERROR("Could not find main toolbar to add command.");

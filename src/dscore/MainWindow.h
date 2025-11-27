@@ -85,7 +85,7 @@ class MainWindow : public QMainWindow {
   /**
    * @brief       Reimplements QMainWindow::closeEvent(QCloseEvent *event).
    */
-  virtual void CloseEvent(QCloseEvent* close_event);
+  void closeEvent(QCloseEvent* close_event) override;
 
  private:
   /**
@@ -122,12 +122,14 @@ class MainWindow : public QMainWindow {
 
   /**
    * @brief       Creates a menu with the given identifier.
-   * @param[in]   menuId the identifier of the menu.
-   * @param[in]   parentMenuId  if the menu is a submenu, then the identifier of the parent menu.
+   * @param[in]   menu_id the identifier of the menu.
+   * @param[in]   parent_menu_id  if the menu is a submenu, then the identifier of the parent menu.
+   * @param[in]   order the display order/priority.
    *
    * @returns     an IMenu pointer to the menu.
    */
-  auto createMenu(const QString& menu_id, const QString& parent_menu_id = QString()) -> sss::dscore::IActionContainer*;
+  auto createMenu(const QString& menu_id, const QString& parent_menu_id = QString(), int order = 0)
+      -> sss::dscore::IActionContainer*;
 
   /**
    * @brief       Returns the IMenu pointer for a named menu.

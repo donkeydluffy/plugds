@@ -1,9 +1,9 @@
 #include "PageManager.h"
 
+#include <spdlog/spdlog.h>
+
 #include <QTabWidget>
 #include <QWidget>
-
-#include <spdlog/spdlog.h>
 
 #include "dscore/IContextManager.h"
 #include "dscore/IPageProvider.h"
@@ -21,13 +21,12 @@ void PageManager::AddPage(IPageProvider* provider) {
   SPDLOG_INFO("PageManager::AddPage called with provider: {}", provider != nullptr ? "valid" : "null");
 
   if (context_manager_ == nullptr) {
-    // TODO: 这里暂时先延时加载，以防止初始化顺序问题，后续可以考虑改进
     context_manager_ = IContextManager::GetInstance();
   }
 
   if ((provider == nullptr) || provider_to_widget_map_.contains(provider) || (context_manager_ == nullptr)) {
     SPDLOG_WARN("PageManager::AddPage - early return: provider={}, contains={}, context_manager={}",
-                 provider != nullptr, provider_to_widget_map_.contains(provider), context_manager_ != nullptr);
+                provider != nullptr, provider_to_widget_map_.contains(provider), context_manager_ != nullptr);
     return;
   }
 
@@ -39,16 +38,32 @@ void PageManager::AddPage(IPageProvider* provider) {
   auto* new_page = provider->CreatePage(tab_widget_);
   const auto title = provider->PageTitle();
   const auto context_id = provider->PageContextId();
+  const int new_order = provider->PageOrder();
 
-  SPDLOG_INFO("PageManager::AddPage - creating page: title='{}', context_id={}", title.toStdString(), context_id);
+  SPDLOG_INFO("PageManager::AddPage - creating page: title='{}', context_id={}, order={}", title.toStdString(),
+              context_id, new_order);
 
   page_to_context_id_map_.insert(new_page, context_id);
   provider_to_widget_map_.insert(provider, new_page);
+  widget_to_provider_map_.insert(new_page, provider);
 
-  const auto index = tab_widget_->addTab(new_page, title);
+  // Find insertion index based on order
+  int insert_index = tab_widget_->count();  // Default: append
+  for (int i = 0; i < tab_widget_->count(); ++i) {
+    QWidget* existing_widget = tab_widget_->widget(i);
+    if (widget_to_provider_map_.contains(existing_widget)) {
+      IPageProvider* existing_provider = widget_to_provider_map_.value(existing_widget);
+      if (existing_provider->PageOrder() > new_order) {
+        insert_index = i;
+        break;
+      }
+    }
+  }
+
+  const auto index = tab_widget_->insertTab(insert_index, new_page, title);
   tab_widget_->setCurrentIndex(index);
 
-  SPDLOG_INFO("PageManager::AddPage - added tab at index {}, total tabs: {}", index, tab_widget_->count());
+  SPDLOG_INFO("PageManager::AddPage - inserted tab at index {}, total tabs: {}", index, tab_widget_->count());
 }
 
 void PageManager::RemovePage(IPageProvider* provider) {
@@ -65,6 +80,7 @@ void PageManager::RemovePage(IPageProvider* provider) {
 
   page_to_context_id_map_.remove(widget_to_remove);
   provider_to_widget_map_.remove(provider);
+  widget_to_provider_map_.remove(widget_to_remove);
   // The widget is deleted by Qt because its parent (the tab_widget_) has been removed.
 
   if ((tab_widget_ != nullptr) && tab_widget_->count() == 0) {

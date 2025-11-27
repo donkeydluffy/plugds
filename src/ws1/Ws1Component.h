@@ -25,6 +25,7 @@ class Ws1Component : public sss::dscore::IPageProvider, public sss::extsystem::I
   auto CreatePage(QWidget* parent) -> QWidget* override;
   [[nodiscard]] auto PageTitle() const -> QString override;
   [[nodiscard]] auto PageContextId() const -> int override;
+  [[nodiscard]] auto PageOrder() const -> int override { return 50; }  // Should be first
 
  private:
   int page_context_id_ = 0;

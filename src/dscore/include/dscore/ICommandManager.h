@@ -68,47 +68,34 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    *
    * @details     Updates all commands registered so that they connect to the correct QAction for the context.
    *
-   * @param[in]   contextId the context to set as active.
+   * @param[in]   context_id the context to set as active.
    */
   virtual auto SetContext(int context_id) -> void = 0;
 
   /**
-   * @brief       Create a menu.
+   * @brief       Creates a generic action container.
    *
-   * @details     Creates an IActionContainer object, the given identifier should be unique.
+   * @param[in]   identifier The unique identifier for the container.
+   * @param[in]   type The type of container.
+   * @param[in]   parent_container The parent container (optional).
+   * @param[in]   order The display priority (lower is earlier). Default 0.
    *
-   * @param[in]   identifier the unique identifier for this menu
-   * @param[in]   parentMenu  if the case of a submenu, parentMenu should be set to the parent IActionContainer
-   * instance.
-   *
-   * @returns     a new IActionContainer instance for the menu.
+   * @returns     A new IActionContainer instance.
    */
-  virtual auto CreateMenu(const QString& identifier, IActionContainer* parent_menu)
+  virtual auto CreateActionContainer(const QString& identifier, sss::dscore::ContainerType type,
+                                     IActionContainer* parent_container, int order)
       -> sss::dscore::IActionContainer* = 0;
 
   /**
-   * @brief       Find a menu.
+   * @brief       Find a container.
    *
-   * @details     Finds a menu by the given identifier, application defined constants are located in
-   *              the Pingnoo::Constants namespace in Pingnoo.h
+   * @details     Finds a container by the given identifier.
    *
-   * @param[in]   identifier the unique identifier for the menu.
+   * @param[in]   identifier the unique identifier for the container.
    *
-   * @returns     the IActionContainer instance if the menu exists; otherwise nullptr.
+   * @returns     the IActionContainer instance if exists; otherwise nullptr.
    */
-  virtual auto FindMenu(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
-
-  /**
-   * @brief       Create a popup menu.
-   *
-   * @details     Creates an IActionContainer object, if an identifier is not given then the menu is a transient
-   *              one; otherwise the identifier should be unique.
-   *
-   * @param[in]   identifier the unique identifier for this menu.
-   *
-   * @returns     a new IActionContainer instance for the menu.
-   */
-  virtual auto CreatePopupMenu(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
+  virtual auto FindContainer(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
 
   /**
    * @brief       Find a command.
@@ -120,17 +107,6 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
    * @returns     The ICommand instance if the command exists; otherwise nullptr;
    */
   virtual auto FindCommand(const QString& identifier) -> sss::dscore::ICommand* = 0;
-
-  /**
-   * @brief       Create a tool bar.
-   *
-   * @details     Creates an IActionContainer object representing a tool bar.
-   *
-   * @param[in]   identifier the unique identifier for this tool bar
-   *
-   * @returns     a new IActionContainer instance for the tool bar.
-   */
-  virtual auto CreateToolBar(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
 
   // Classes with virtual functions should not have a public non-virtual destructor:
   ~ICommandManager() override = default;

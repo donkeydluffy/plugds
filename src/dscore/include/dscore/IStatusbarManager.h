@@ -26,6 +26,37 @@ class DS_CORE_DLLSPEC IStatusbarManager : public QObject {
    * @returns     the IStatusbarManager instance.
    */
   static auto GetInstance() -> IStatusbarManager* { return sss::extsystem::GetTObject<IStatusbarManager>(); }
+
+  /**
+   * @brief       Shows a temporary message in the status bar.
+   *
+   * @param[in]   message The message to display.
+   * @param[in]   timeout Time in milliseconds to show the message (0 = indefinite).
+   */
+  virtual void SetStatusMessage(const QString& message, int timeout) = 0;
+
+  /**
+   * @brief       Clears the current status message.
+   */
+  virtual void ClearStatusMessage() = 0;
+
+  /**
+   * @brief       Adds a permanent widget to the status bar.
+   *
+   * @param[in]   widget The widget to add (ownership is transferred to the status bar).
+   * @param[in]   stretch The stretch factor.
+   */
+  virtual void AddPermanentWidget(QWidget* widget, int stretch) = 0;
+
+  /**
+   * @brief       Removes a permanent widget from the status bar.
+   *
+   * @param[in]   widget The widget to remove.
+   */
+  virtual void RemovePermanentWidget(QWidget* widget) = 0;
+
+  // Classes with virtual functions should not have a public non-virtual destructor:
+  ~IStatusbarManager() override = default;
 };
 }  // namespace sss::dscore
 

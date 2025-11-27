@@ -9,40 +9,52 @@
 
 #include "MainWindow.h"
 #include "PageManager.h"
+#include "StatusbarManager.h"
 #include "extsystem/IComponentManager.h"
 
-sss::dscore::Core::Core() : main_window_(new sss::dscore::MainWindow) {
+sss::dscore::Core::Core() {
   SPDLOG_INFO("[Core] Core constructor called");
-  SPDLOG_INFO("[Core] Created MainWindow: {}", (void*)main_window_);
 
-  sss::extsystem::AddObject(main_window_);
+  main_window_ = std::make_unique<sss::dscore::MainWindow>();
+  SPDLOG_INFO("[Core] Created MainWindow: {}", (void*)main_window_.get());
+
+  sss::extsystem::AddObject(main_window_.get());
   SPDLOG_INFO("[Core] Added MainWindow to object manager");
 
   auto* tab_widget = main_window_->TabWidget();
-  page_manager_ = new PageManager(tab_widget);
-  sss::extsystem::AddObject(page_manager_);
+  page_manager_ = std::make_unique<PageManager>(tab_widget);
+  sss::extsystem::AddObject(page_manager_.get());
   SPDLOG_INFO("[Core] Created and registered PageManager");
 
-  random_generator_ = new std::mt19937(random_device_());
+  statusbar_manager_ = std::make_unique<StatusbarManager>(main_window_->statusBar());
+  sss::extsystem::AddObject(statusbar_manager_.get());
+  SPDLOG_INFO("[Core] Created and registered StatusbarManager");
+
+  random_generator_ = std::make_unique<std::mt19937>(random_device_());
   SPDLOG_INFO("[Core] Random generator initialized");
 }
 
 sss::dscore::Core::~Core() {
   SPDLOG_INFO("[Core] Core destructor called");
 
-  sss::extsystem::RemoveObject(page_manager_);
-  SPDLOG_INFO("[Core] Removed PageManager from object manager");
-  delete page_manager_;
-  SPDLOG_INFO("[Core] PageManager deleted");
+  if (statusbar_manager_) {
+    sss::extsystem::RemoveObject(statusbar_manager_.get());
+    SPDLOG_INFO("[Core] Removed StatusbarManager from object manager");
+  }
 
-  sss::extsystem::RemoveObject(main_window_);
-  SPDLOG_INFO("[Core] Removed MainWindow from object manager");
+  if (page_manager_) {
+    sss::extsystem::RemoveObject(page_manager_.get());
+    SPDLOG_INFO("[Core] Removed PageManager from object manager");
+  }
+  // unique_ptr auto deletes page_manager_
 
-  delete random_generator_;
-  SPDLOG_INFO("[Core] Random generator deleted");
+  if (main_window_) {
+    sss::extsystem::RemoveObject(main_window_.get());
+    SPDLOG_INFO("[Core] Removed MainWindow from object manager");
+  }
+  // unique_ptr auto deletes main_window_
 
-  delete main_window_;
-  SPDLOG_INFO("[Core] MainWindow deleted");
+  // unique_ptr auto deletes random_generator_
 }
 
 auto sss::dscore::Core::Open() -> void {
@@ -50,7 +62,7 @@ auto sss::dscore::Core::Open() -> void {
   Q_EMIT CoreOpened();
 }
 
-auto sss::dscore::Core::GetMainWindow() -> QMainWindow* { return main_window_; }
+auto sss::dscore::Core::GetMainWindow() -> QMainWindow* { return main_window_.get(); }
 
 auto sss::dscore::Core::Random(int minimum_value, int maximum_value) -> int {
   std::uniform_int_distribution<uint16_t> dist(minimum_value, maximum_value);

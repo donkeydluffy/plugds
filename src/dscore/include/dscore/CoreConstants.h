@@ -26,15 +26,32 @@ const QMap<QString, QString> kMap = {{kFile, QT_TR_NOOP("File")},
 }  // namespace menus
 
 namespace menugroups {
-constexpr auto kTop = "Ds.Top";
-constexpr auto kMiddle = "Ds.Middle";
-constexpr auto kBottom = "Ds.Bottom";
+// Standard Group Weights
+constexpr int kWeightTop = 0;
+constexpr int kWeightNew = 100;
+constexpr int kWeightOpen = 200;
+constexpr int kWeightSave = 300;
+constexpr int kWeightEdit = 400;
+constexpr int kWeightView = 500;
+constexpr int kWeightTools = 600;
+constexpr int kWeightSettings = 900;
+constexpr int kWeightExit = 1000;
 
-constexpr auto kFileNew = "File.New";
-constexpr auto kFileOpen = "File.Open";
-constexpr auto kFileSave = "File.Save";
-constexpr auto kFileMisc = "File.Misc";
-constexpr auto kFileExit = "File.Exit";
+// File Menu Groups
+constexpr auto kGroupFileNew = "Ds.Group.File.New";      // Weight 100
+constexpr auto kGroupFileOpen = "Ds.Group.File.Open";    // Weight 200
+constexpr auto kGroupFileSave = "Ds.Group.File.Save";    // Weight 300
+constexpr auto kGroupFilePrint = "Ds.Group.File.Print";  // Weight 500
+constexpr auto kGroupFileExit = "Ds.Group.File.Exit";    // Weight 1000
+
+// Edit Menu Groups
+constexpr auto kGroupEditUndo = "Ds.Group.Edit.Undo";  // Weight 100
+constexpr auto kGroupEditClip = "Ds.Group.Edit.Clip";  // Weight 200 (Cut/Copy/Paste)
+
+// App/Help Menu Groups
+constexpr auto kGroupAppPrefs = "Ds.Group.App.Prefs";  // Weight 900
+constexpr auto kGroupAppHelp = "Ds.Group.App.Help";    // Weight 100
+constexpr auto kGroupAppExit = "Ds.Group.App.Exit";    // Weight 1000
 }  // namespace menugroups
 
 namespace commands {

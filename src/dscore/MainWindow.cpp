@@ -66,28 +66,44 @@ auto sss::dscore::MainWindow::createDefaultCommands() -> void {
 
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
   if (command_manager != nullptr) {
-    command_manager->CreateToolBar(sss::dscore::constants::toolbars::kMainToolbar);
+    auto* main_toolbar = command_manager->CreateActionContainer(sss::dscore::constants::toolbars::kMainToolbar,
+                                                                sss::dscore::ContainerType::kToolBar, nullptr, 100);
+    main_toolbar->InsertGroup(sss::dscore::constants::menugroups::kGroupFileOpen,
+                              sss::dscore::constants::menugroups::kWeightOpen);
+    main_toolbar->AppendCommand(sss::dscore::constants::commands::kOpen,
+                                sss::dscore::constants::menugroups::kGroupFileOpen);
   }
 
-  auto* file_menu = createMenu(sss::dscore::constants::menus::kFile, sss::dscore::constants::menubars::kApplication);
+  // Define Standard Menu Order
+  auto* file_menu =
+      createMenu(sss::dscore::constants::menus::kFile, sss::dscore::constants::menubars::kApplication, 100);
 
-  file_menu->AddGroupBefore(sss::dscore::constants::menugroups::kTop, sss::dscore::constants::menugroups::kFileNew);
+  // Setup File Menu Groups with Standard Weights
+  file_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupFileNew,
+                         sss::dscore::constants::menugroups::kWeightNew);
+  file_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupFileOpen,
+                         sss::dscore::constants::menugroups::kWeightOpen);
+  file_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupFileSave,
+                         sss::dscore::constants::menugroups::kWeightSave);
+  file_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupFilePrint,
+                         sss::dscore::constants::menugroups::kWeightView);
+  file_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupAppPrefs,
+                         sss::dscore::constants::menugroups::kWeightSettings);  // Added missing group
+  file_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupFileExit,
+                         sss::dscore::constants::menugroups::kWeightExit);
 
-  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kFileNew, sss::dscore::constants::menugroups::kFileOpen);
+  createMenu(sss::dscore::constants::menus::kEdit, sss::dscore::constants::menubars::kApplication, 200);
+  createMenu(sss::dscore::constants::menus::kHelp, sss::dscore::constants::menubars::kApplication, 900);
 
-  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kFileOpen,
-                           sss::dscore::constants::menugroups::kFileSave);
+  // Place commands in their correct groups
+  addMenuCommand(sss::dscore::constants::commands::kOpen, sss::dscore::constants::menus::kFile,
+                 sss::dscore::constants::menugroups::kGroupFileOpen);
 
-  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kBottom, sss::dscore::constants::menugroups::kBottom);
+  addMenuCommand(sss::dscore::constants::commands::kPreferences, sss::dscore::constants::menus::kFile,
+                 sss::dscore::constants::menugroups::kGroupAppPrefs);
 
-  file_menu->AddGroupAfter(sss::dscore::constants::menugroups::kBottom, sss::dscore::constants::menugroups::kFileExit);
-
-  createMenu(sss::dscore::constants::menus::kEdit, sss::dscore::constants::menubars::kApplication);
-  createMenu(sss::dscore::constants::menus::kHelp, sss::dscore::constants::menubars::kApplication);
-
-  addMenuCommand(sss::dscore::constants::commands::kOpen, sss::dscore::constants::menus::kFile);
-  addMenuCommand(sss::dscore::constants::commands::kPreferences, sss::dscore::constants::menus::kFile);
-  addMenuCommand(sss::dscore::constants::commands::kQuit, sss::dscore::constants::menus::kFile);
+  addMenuCommand(sss::dscore::constants::commands::kQuit, sss::dscore::constants::menus::kFile,
+                 sss::dscore::constants::menugroups::kGroupFileExit);
 
   addMenuCommand(sss::dscore::constants::commands::kAbout, sss::dscore::constants::menus::kHelp);
   addMenuCommand(sss::dscore::constants::commands::kAboutComponents, sss::dscore::constants::menus::kHelp);
@@ -180,7 +196,7 @@ auto sss::dscore::MainWindow::createCommand(QString command_id, QAbstractButton*
   return command;
 }
 
-auto sss::dscore::MainWindow::createMenu(const QString& menu_id, const QString& parent_menu_id)  // NOLINT
+auto sss::dscore::MainWindow::createMenu(const QString& menu_id, const QString& parent_menu_id, int order)  // NOLINT
     -> sss::dscore::IActionContainer* {
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
@@ -191,10 +207,10 @@ auto sss::dscore::MainWindow::createMenu(const QString& menu_id, const QString& 
   sss::dscore::IActionContainer* parent_menu = nullptr;
 
   if (!parent_menu_id.isNull()) {
-    parent_menu = command_manager->FindMenu(parent_menu_id);
+    parent_menu = command_manager->FindContainer(parent_menu_id);
   }
 
-  return command_manager->CreateMenu(menu_id, parent_menu);
+  return command_manager->CreateActionContainer(menu_id, sss::dscore::ContainerType::kMenu, parent_menu, order);
 }
 
 auto sss::dscore::MainWindow::findMenu(const QString& menu_id) -> sss::dscore::IActionContainer* {  // NOLINT
@@ -204,7 +220,7 @@ auto sss::dscore::MainWindow::findMenu(const QString& menu_id) -> sss::dscore::I
     return nullptr;
   }
 
-  return command_manager->FindMenu(menu_id);
+  return command_manager->FindContainer(menu_id);
 }
 
 auto sss::dscore::MainWindow::addMenuCommand(const QString& command_id, const QString& menu_id,  // NOLINT
@@ -215,7 +231,7 @@ auto sss::dscore::MainWindow::addMenuCommand(const QString& command_id, const QS
     return;
   }
 
-  auto* menu = command_manager->FindMenu(menu_id);
+  auto* menu = command_manager->FindContainer(menu_id);
 
   if (menu == nullptr) {
     return;
@@ -224,25 +240,38 @@ auto sss::dscore::MainWindow::addMenuCommand(const QString& command_id, const QS
   auto* command = command_manager->FindCommand(command_id);
 
   if (group_id.isNull()) {
-    group_id = sss::dscore::constants::menugroups::kTop;
+    group_id = sss::dscore::constants::menugroups::kGroupFileNew;  // Default fallback
   }
 
   menu->AppendCommand(command, group_id);
 }
 
-void sss::dscore::MainWindow::CloseEvent(QCloseEvent* close_event) { QMainWindow::closeEvent(close_event); }
+void sss::dscore::MainWindow::closeEvent(QCloseEvent* close_event) { QMainWindow::closeEvent(close_event); }
 
 auto sss::dscore::MainWindow::ApplicationContextMenu() -> sss::dscore::IActionContainer* {  // NOLINT
+
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
 
-  auto* context_menu = command_manager->CreatePopupMenu(QString());
 
-  context_menu->AppendCommand(sss::dscore::constants::commands::kAbout, sss::dscore::constants::menugroups::kBottom);
+
+  auto* context_menu = command_manager->CreateActionContainer(QString(), sss::dscore::ContainerType::kMenu, nullptr, 0);
+
+
+
+  context_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupAppPrefs, sss::dscore::constants::menugroups::kWeightSettings);
+
+
+  context_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupAppExit,
+                            sss::dscore::constants::menugroups::kWeightExit);
+
+  context_menu->AppendCommand(sss::dscore::constants::commands::kAbout,
+                              sss::dscore::constants::menugroups::kGroupAppPrefs);
 
   context_menu->AppendCommand(sss::dscore::constants::commands::kPreferences,
-                              sss::dscore::constants::menugroups::kBottom);
+                              sss::dscore::constants::menugroups::kGroupAppPrefs);
 
-  context_menu->AppendCommand(sss::dscore::constants::commands::kQuit, sss::dscore::constants::menugroups::kBottom);
+  context_menu->AppendCommand(sss::dscore::constants::commands::kQuit,
+                              sss::dscore::constants::menugroups::kGroupAppExit);
 
   return context_menu;
 }

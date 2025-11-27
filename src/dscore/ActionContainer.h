@@ -34,10 +34,12 @@ class ActionContainer : public sss::dscore::IActionContainer {
      * @details     Constructs a group item with the identifier.
      *
      * @param[in]   id is the identifier of the group.
+     * @param[in]   order is the display order.
      */
-    explicit GroupItem(QString id) { id_ = std::move(id); }
+    explicit GroupItem(QString id, int order = 0) : id_(std::move(id)), order_(order) {}
 
     QString id_;  // NOLINT
+    int order_;   // NOLINT
 
     QList<QObject*> items_;  // NOLINT
   };
@@ -74,27 +76,21 @@ class ActionContainer : public sss::dscore::IActionContainer {
    */
   ~ActionContainer() override;
 
-  auto Type() -> sss::dscore::ActionContainerTypes override;
+  auto GetWidget() -> QWidget* override;
+  auto GetType() -> sss::dscore::ContainerType override;
 
-  auto GetMenu() -> QMenu* override;
-  auto MenuBar() -> QMenuBar* override;
-  auto ToolBar() -> QToolBar* override;
-
-  auto InsertGroup(QString group_identifier) -> void override;
-  auto AppendGroup(QString group_identifier) -> void override;
-  auto AddGroupBefore(QString before_identifier, QString group_identifier) -> bool override;
-  auto AddGroupAfter(QString after_identifier, QString group_identifier) -> bool override;
+  auto InsertGroup(QString group_identifier, int order) -> void override;
 
   auto AppendCommand(sss::dscore::ICommand* command, QString group_identifier) -> void override;
   auto AppendCommand(QString command_identifier, QString group_identifier) -> void override;
 
-  auto InsertCommand(sss::dscore::ICommand* command, QString group_identifier) -> void override;
-  auto InsertCommand(QString command_identifier, QString group_identifier) -> void override;
+  void SetOrder(int order) { order_ = order; }
+  [[nodiscard]] int GetOrder() const { return order_; }
 
  private:
-  auto findGroup(const QString& group_identifier) -> QList<GroupItem>::const_iterator;
-  auto getInsertAction(QList<ActionContainer::GroupItem>::const_iterator group_iterator) -> QAction*;
-  auto getAppendAction(QList<ActionContainer::GroupItem>::const_iterator group_iterator) -> QAction*;
+  auto findGroup(const QString& group_identifier) -> QList<GroupItem>::iterator;
+  auto getInsertAction(QList<ActionContainer::GroupItem>::iterator group_iterator) -> QAction*;
+  auto getAppendAction(QList<ActionContainer::GroupItem>::iterator group_iterator) -> QAction*;
 
   friend class CommandManager;
 
@@ -104,6 +100,7 @@ class ActionContainer : public sss::dscore::IActionContainer {
   QMenu* menu_ = nullptr;
   QToolBar* tool_bar_ = nullptr;
   QList<GroupItem> group_list_;
+  int order_ = 0;
 
   //! @endcond
 };

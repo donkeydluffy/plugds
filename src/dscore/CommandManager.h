@@ -42,17 +42,20 @@ class CommandManager : public sss::dscore::ICommandManager {
 
   auto SetContext(int context_id) -> void override;
 
-  auto CreateMenu(const QString& identifier, IActionContainer* parent_container)
-      -> sss::dscore::IActionContainer* override;
-  auto CreatePopupMenu(const QString& identifier) -> sss::dscore::IActionContainer* override;
-  auto CreateToolBar(const QString& identifier) -> sss::dscore::IActionContainer* override;
+  auto CreateActionContainer(const QString& identifier, sss::dscore::ContainerType type,
+                             IActionContainer* parent_container, int order) -> sss::dscore::IActionContainer* override;
 
-  auto FindMenu(const QString& identifier) -> sss::dscore::IActionContainer* override;
+  auto FindContainer(const QString& identifier) -> sss::dscore::IActionContainer* override;
 
   auto FindCommand(const QString& identifier) -> sss::dscore::ICommand* override;
 
  private Q_SLOTS:
   void onContextChanged(int new_context, int previous_context);
+
+ private:  // NOLINT
+  auto createMenu(const QString& identifier, IActionContainer* parent_container, int order)
+      -> sss::dscore::IActionContainer*;
+  auto createToolBar(const QString& identifier, int order) -> sss::dscore::IActionContainer*;
 
  private:  // NOLINT
   //! @cond

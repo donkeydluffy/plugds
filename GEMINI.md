@@ -58,7 +58,7 @@
 
 * **基本指令**:
   * 配置: `cmake --preset make-release`
-  * 构建: `cmake --build build/make-release`
+  * 构建: `cmake --build build/make-release -j8`
 * **CMake 编写规范**:
   * **模块化**: 每个插件是一个独立的 CMake Target。
   * **目录结构**: 遵循 `src` (私有实现) 和 `include/<module name>` (公开接口) 分离。

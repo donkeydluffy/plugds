@@ -38,6 +38,12 @@ class DS_CORE_DLLSPEC IPageProvider : public QObject {
    * @return The context ID associated with this page.
    */
   [[nodiscard]] virtual auto PageContextId() const -> int = 0;
+
+  /**
+   * @brief Returns the display order of the page. Lower values appear first.
+   * @return The sort order (default 100).
+   */
+  [[nodiscard]] virtual auto PageOrder() const -> int { return 100; }
 };
 
 }  // namespace sss::dscore

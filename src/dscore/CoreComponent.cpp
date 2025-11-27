@@ -7,24 +7,26 @@
 #include "Core.h"
 #include "MainWindow.h"
 
-CoreComponent::CoreComponent() : core_(nullptr), context_manager_(nullptr), command_manager_(nullptr) {}
+CoreComponent::CoreComponent() = default;
 
 CoreComponent::~CoreComponent() = default;
 
 auto CoreComponent::InitialiseEvent() -> void {
   SPDLOG_INFO("[CoreComponent] InitialiseEvent started");
 
-  core_ = new sss::dscore::Core();
-  SPDLOG_INFO("[CoreComponent] Created Core instance: {}", (void*)core_);
-  sss::extsystem::AddObject(core_);
+  // 1. Initialize Infrastructure Services FIRST
+  context_manager_ = std::make_unique<sss::dscore::ContextManager>();
+  SPDLOG_INFO("[CoreComponent] Created ContextManager instance: {}", (void*)context_manager_.get());
+  sss::extsystem::AddObject(context_manager_.get());
 
-  context_manager_ = new sss::dscore::ContextManager();
-  SPDLOG_INFO("[CoreComponent] Created ContextManager instance: {}", (void*)context_manager_);
-  sss::extsystem::AddObject(context_manager_);
+  command_manager_ = std::make_unique<sss::dscore::CommandManager>();
+  SPDLOG_INFO("[CoreComponent] Created CommandManager instance: {}", (void*)command_manager_.get());
+  sss::extsystem::AddObject(command_manager_.get());
 
-  command_manager_ = new sss::dscore::CommandManager();
-  SPDLOG_INFO("[CoreComponent] Created CommandManager instance: {}", (void*)command_manager_);
-  sss::extsystem::AddObject(command_manager_);
+  // 2. Initialize Core (which creates MainWindow and PageManager, dependent on services)
+  core_ = std::make_unique<sss::dscore::Core>();
+  SPDLOG_INFO("[CoreComponent] Created Core instance: {}", (void*)core_.get());
+  sss::extsystem::AddObject(core_.get());
 
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
   SPDLOG_INFO("[CoreComponent] MainWindow obtained: {}", (void*)main_window);
@@ -64,14 +66,22 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
 auto CoreComponent::FinaliseEvent() -> void {
   SPDLOG_INFO("[CoreComponent] FinaliseEvent started");
 
-  delete core_;
-  SPDLOG_INFO("[CoreComponent] Core deleted");
+  if (core_) {
+    sss::extsystem::RemoveObject(core_.get());
+    SPDLOG_INFO("[CoreComponent] Core removed");
+  }
 
-  delete context_manager_;
-  SPDLOG_INFO("[CoreComponent] ContextManager deleted");
+  if (context_manager_) {
+    sss::extsystem::RemoveObject(context_manager_.get());
+    SPDLOG_INFO("[CoreComponent] ContextManager removed");
+  }
 
-  delete command_manager_;
-  SPDLOG_INFO("[CoreComponent] CommandManager deleted");
+  if (command_manager_) {
+    sss::extsystem::RemoveObject(command_manager_.get());
+    SPDLOG_INFO("[CoreComponent] CommandManager removed");
+  }
+
+  // unique_ptr will auto-delete here
 
   SPDLOG_INFO("[CoreComponent] FinaliseEvent completed");
 }

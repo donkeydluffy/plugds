@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "dscore/CoreSpec.h"
 #include "extsystem/IComponent.h"
 
@@ -68,9 +70,9 @@ class DS_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::ICo
  private:
   //! @cond
 
-  sss::dscore::Core* core_;
-  sss::dscore::ContextManager* context_manager_;
-  sss::dscore::CommandManager* command_manager_;
+  std::unique_ptr<sss::dscore::Core> core_;
+  std::unique_ptr<sss::dscore::ContextManager> context_manager_;
+  std::unique_ptr<sss::dscore::CommandManager> command_manager_;
 
   //! @endcond
 };

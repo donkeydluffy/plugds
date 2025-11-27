@@ -60,12 +60,8 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
   connect(disable_button_, &QPushButton::clicked, this, &Ws1Page::onDisableSubContext);
 
   // Test button click connection
-  connect(enable_button_, &QPushButton::clicked, []() {
-    SPDLOG_INFO("Test: Enable button clicked!");
-  });
-  connect(disable_button_, &QPushButton::clicked, []() {
-    SPDLOG_INFO("Test: Disable button clicked!");
-  });
+  connect(enable_button_, &QPushButton::clicked, []() { SPDLOG_INFO("Test: Enable button clicked!"); });
+  connect(disable_button_, &QPushButton::clicked, []() { SPDLOG_INFO("Test: Disable button clicked!"); });
 }
 
 Ws1Page::~Ws1Page() = default;

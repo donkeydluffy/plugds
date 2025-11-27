@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "dscore/CoreSpec.h"
+#include "extsystem/IComponentManager.h"
 
 namespace sss::dscore {
 
@@ -15,6 +16,11 @@ class IPageProvider;
 class DS_CORE_DLLSPEC IPageManager : public QObject {
   Q_OBJECT
  public:
+  /**
+   * @brief       Returns the IPageManager instance.
+   */
+  static auto GetInstance() -> IPageManager* { return sss::extsystem::GetTObject<IPageManager>(); }
+
   /**
    * @brief Virtual destructor.
    */

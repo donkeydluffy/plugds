@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QString>
+#include <memory>
 #include <random>
 
 #include "MainWindow.h"
@@ -12,6 +13,7 @@ namespace sss::dscore {
 
 class PageManager;
 class IPageManager;
+class IStatusbarManager;
 
 /**
  * @brief       The Core class is the root component for the application.
@@ -92,12 +94,13 @@ class Core : public sss::dscore::ICore {
  private:
   //! @cond
 
-  QPointer<MainWindow> main_window_;
-  PageManager* page_manager_ = nullptr;
+  std::unique_ptr<MainWindow> main_window_;
+  std::unique_ptr<PageManager> page_manager_;
+  std::unique_ptr<IStatusbarManager> statusbar_manager_;
 
   std::random_device random_device_;
 
-  std::mt19937* random_generator_;
+  std::unique_ptr<std::mt19937> random_generator_;
 
   //! @endcond
 };

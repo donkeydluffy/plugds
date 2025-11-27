@@ -31,6 +31,7 @@ class PageManager : public IPageManager {
   QTabWidget* tab_widget_ = nullptr;
   IContextManager* context_manager_ = nullptr;
   QHash<IPageProvider*, QWidget*> provider_to_widget_map_;
+  QHash<QWidget*, IPageProvider*> widget_to_provider_map_;
   QHash<QWidget*, int> page_to_context_id_map_;
 };
 
