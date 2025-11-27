@@ -26,6 +26,16 @@ class ActionProxy : public QAction {
    */
   auto SetActive(QAction* action) -> void;
 
+  /**
+   * @brief       Overrides setEnabled to ensure state synchronization.
+   */
+  auto setEnabled(bool enabled) -> void;
+
+  /**
+   * @brief       Overrides setVisible to ensure state synchronization.
+   */
+  auto setVisible(bool visible) -> void;
+
  protected:
   /**
    * @brief       Connects the current action to the proxy.

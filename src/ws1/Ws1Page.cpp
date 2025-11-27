@@ -58,24 +58,51 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
 
   connect(enable_button_, &QPushButton::clicked, this, &Ws1Page::onEnableSubContext);
   connect(disable_button_, &QPushButton::clicked, this, &Ws1Page::onDisableSubContext);
+
+  // Test button click connection
+  connect(enable_button_, &QPushButton::clicked, []() {
+    SPDLOG_INFO("Test: Enable button clicked!");
+  });
+  connect(disable_button_, &QPushButton::clicked, []() {
+    SPDLOG_INFO("Test: Disable button clicked!");
+  });
 }
 
 Ws1Page::~Ws1Page() = default;
 
-void Ws1Page::SetSubContextId(int id) { sub_context_id_ = id; }
+void Ws1Page::SetSubContextId(int id) {
+  sub_context_id_ = id;
+  SPDLOG_INFO("Ws1Page::SetSubContextId called with id: {}", sub_context_id_);
+}
 
 void Ws1Page::onEnableSubContext() {  // NOLINT
+  SPDLOG_INFO("Ws1Page::onEnableSubContext called, sub_context_id_: {}", sub_context_id_);
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
-  if ((context_manager != nullptr) && sub_context_id_ != 0) {
-    context_manager->AddActiveContext(sub_context_id_);
+  if (context_manager == nullptr) {
+    SPDLOG_ERROR("Ws1Page::onEnableSubContext: failed to get ContextManager");
+    return;
   }
+  if (sub_context_id_ == 0) {
+    SPDLOG_ERROR("Ws1Page::onEnableSubContext: sub_context_id_ is 0");
+    return;
+  }
+  SPDLOG_INFO("Ws1Page::onEnableSubContext: calling AddActiveContext({})", sub_context_id_);
+  context_manager->AddActiveContext(sub_context_id_);
 }
 
 void Ws1Page::onDisableSubContext() {  // NOLINT
+  SPDLOG_INFO("Ws1Page::onDisableSubContext called, sub_context_id_: {}", sub_context_id_);
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
-  if ((context_manager != nullptr) && sub_context_id_ != 0) {
-    context_manager->RemoveActiveContext(sub_context_id_);
+  if (context_manager == nullptr) {
+    SPDLOG_ERROR("Ws1Page::onDisableSubContext: failed to get ContextManager");
+    return;
   }
+  if (sub_context_id_ == 0) {
+    SPDLOG_ERROR("Ws1Page::onDisableSubContext: sub_context_id_ is 0");
+    return;
+  }
+  SPDLOG_INFO("Ws1Page::onDisableSubContext: calling RemoveActiveContext({})", sub_context_id_);
+  context_manager->RemoveActiveContext(sub_context_id_);
 }
 
 void Ws1Page::setupModel() {

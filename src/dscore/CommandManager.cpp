@@ -4,6 +4,8 @@
 #include <QMenuBar>
 #include <QToolBar>
 
+#include <spdlog/spdlog.h>
+
 #include "ActionContainer.h"
 #include "Command.h"
 #include "MainWindow.h"
@@ -65,9 +67,6 @@ auto sss::dscore::CommandManager::RegisterAction(QAction* action, sss::dscore::I
 auto sss::dscore::CommandManager::SetContext(int context_id) -> void { onContextChanged(context_id, -1); }
 
 void sss::dscore::CommandManager::onContextChanged(int new_context, int previous_context) {
-  Q_UNUSED(new_context);
-  Q_UNUSED(previous_context);
-
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if (context_manager == nullptr) {
     return;

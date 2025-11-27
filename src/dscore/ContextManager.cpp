@@ -1,5 +1,7 @@
 #include "ContextManager.h"
 
+#include <spdlog/spdlog.h>
+
 sss::dscore::ContextManager::ContextManager() : next_context_id_(1) { active_contexts_.append(kGlobalContext); }
 
 auto sss::dscore::ContextManager::RegisterContext(QString context_identifier) -> int {
@@ -22,20 +24,36 @@ auto sss::dscore::ContextManager::SetContext(int context_identifier) -> int {
 }
 
 auto sss::dscore::ContextManager::AddActiveContext(int context_id) -> void {
-  if (context_id == kGlobalContext || active_contexts_.contains(context_id)) {
+  SPDLOG_INFO("ContextManager::AddActiveContext called with context_id: {}", context_id);
+  if (context_id == kGlobalContext) {
+    SPDLOG_INFO("AddActiveContext: ignoring kGlobalContext");
+    return;
+  }
+  if (active_contexts_.contains(context_id)) {
+    SPDLOG_INFO("AddActiveContext: context {} already active", context_id);
     return;
   }
   int old_primary_context = Context();
   active_contexts_.append(context_id);
+  SPDLOG_INFO("AddActiveContext: added context {}, new primary: {}, active_contexts size: {}",
+              context_id, Context(), active_contexts_.size());
   Q_EMIT ContextChanged(Context(), old_primary_context);
 }
 
 auto sss::dscore::ContextManager::RemoveActiveContext(int context_id) -> void {
-  if (context_id == kGlobalContext || !active_contexts_.contains(context_id)) {
+  SPDLOG_INFO("ContextManager::RemoveActiveContext called with context_id: {}", context_id);
+  if (context_id == kGlobalContext) {
+    SPDLOG_INFO("RemoveActiveContext: ignoring kGlobalContext");
+    return;
+  }
+  if (!active_contexts_.contains(context_id)) {
+    SPDLOG_INFO("RemoveActiveContext: context {} not active", context_id);
     return;
   }
   int old_primary_context = Context();
   active_contexts_.removeAll(context_id);
+  SPDLOG_INFO("RemoveActiveContext: removed context {}, new primary: {}, active_contexts size: {}",
+              context_id, Context(), active_contexts_.size());
   Q_EMIT ContextChanged(Context(), old_primary_context);
 }
 
