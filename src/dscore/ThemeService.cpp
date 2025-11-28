@@ -4,13 +4,13 @@
 #include <QDebug>
 #include <QFile>
 
-namespace sss::dsresources {
+namespace sss::dscore {
 
 ThemeService::ThemeService() = default;
 
 auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   // Simple implementation: load qss from resource
-  QString path = QString(":/dsresources/resources/themes/%1.qss").arg(theme_id);
+  QString path = QString(":/dscore/resources/themes/%1.qss").arg(theme_id);
   QFile file(path);
   if (file.open(QFile::ReadOnly | QFile::Text)) {
     QString style = QLatin1String(file.readAll());
@@ -40,4 +40,4 @@ auto ThemeService::GetFont(const QString& role) const -> QFont {
   return QApplication::font();
 }
 
-}  // namespace sss::dsresources
+}  // namespace sss::dscore

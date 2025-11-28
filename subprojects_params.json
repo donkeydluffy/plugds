@@ -26,12 +26,5 @@
     "conan_pkg_name": "ws1",
     "shared": true,
     "publish": true
-  },
-  "dsresources": {
-    "type": "lib",
-    "version": "0.1.0",
-    "conan_pkg_name": "dsresources",
-    "shared": true,
-    "publish": true
   }
 }

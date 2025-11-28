@@ -1,5 +1,6 @@
-<RCC>
-    <qresource prefix="/dsresources">
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/dscore">
         <file>resources/themes/dark.qss</file>
         <file>resources/themes/light.qss</file>
     </qresource>

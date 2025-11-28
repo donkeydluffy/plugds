@@ -76,9 +76,8 @@ endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-# Disable AUTOUIC and use explicit wrapping
-set(CMAKE_AUTOUIC OFF)
 # --- 自动查找所有源文件和头文件 ---
 file(
   GLOB_RECURSE
@@ -96,14 +95,35 @@ file(
   "${CMAKE_CURRENT_SOURCE_DIR}/*.hxx"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.inl")
 # Explicitly set UI files (avoiding glob issues)
-set(PROJECT_UIS ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow.ui)
+file(
+  GLOB_RECURSE
+  PROJECT_UIFILES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
+file(
+  GLOB_RECURSE
+  PROJECT_QRCFILES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.qrc")
+file(
+  GLOB_RECURSE
+  PROJECT_TSFILES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.ts")
+qt5_add_translation(PROJECT_QM_FILES ${PROJECT_TSFILES_GLOBBED})
 
-# Explicitly wrap UI files
-qt5_wrap_ui(PROJECT_UI_HEADERS ${PROJECT_UIS})
+# Generate a qrc file for the translations
+set(TRANSLATIONS_QRC_CONTENT "<RCC>\n    <qresource prefix=\"/dscore/i18n\">\n")
+foreach(QM_FILE ${PROJECT_QM_FILES})
+  get_filename_component(QM_FILENAME ${QM_FILE} NAME)
+  string(APPEND TRANSLATIONS_QRC_CONTENT "        <file alias=\"${QM_FILENAME}\">${QM_FILE}</file>\n")
+endforeach()
+string(APPEND TRANSLATIONS_QRC_CONTENT "    </qresource>\n</RCC>\n")
 
-# Debug: check what UI files are being processed
-message(STATUS "Processing UI files: ${PROJECT_UIS}")
-message(STATUS "Generated UI headers: ${PROJECT_UI_HEADERS}")
+set(TRANSLATIONS_QRC_FILE "${CMAKE_CURRENT_BINARY_DIR}/dscore_translations.qrc")
+file(WRITE ${TRANSLATIONS_QRC_FILE} "${TRANSLATIONS_QRC_CONTENT}")
+
+qt5_add_resources(QMFILES_RES ${TRANSLATIONS_QRC_FILE})
 
 file(
   GLOB_RECURSE
@@ -247,7 +267,13 @@ elseif(PROJECT_TYPE_CMAKE_VAR STREQUAL "exe")
 else() # PROJECT_TYPE_CMAKE_VAR STREQUAL "lib"（且存在源文件）
   if(DSCORE_BUILD_SHARED_LIBS)
     message(STATUS "${PROJECT_NAME}: Building as shared library.")
-    add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED} ${PROJECT_UI_HEADERS})
+    add_library(
+      ${PROJECT_NAME} SHARED
+      ${PROJECT_SOURCES_GLOBBED}
+      ${PROJECT_HEADERS_GLOBBED}
+      ${PROJECT_UIFILES_GLOBBED}
+      ${PROJECT_QRCFILES_GLOBBED}
+      ${QMFILES_RES})
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     if(WIN32 AND GENERATE_API_MACROS)
       list(APPEND PROJECT_COMPILE_DEFINITIONS ${PROJECT_NAME}_EXPORTS)
@@ -258,7 +284,7 @@ else() # PROJECT_TYPE_CMAKE_VAR STREQUAL "lib"（且存在源文件）
     endif()
   else()
     message(STATUS "${PROJECT_NAME}: Building as static library.")
-    add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED} ${PROJECT_UI_HEADERS})
+    add_library(${PROJECT_NAME} STATIC ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED})
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
   endif()
 endif()
@@ -317,26 +343,6 @@ endforeach()
 
 # 包含用户自定义的配置文件
 include(${CMAKE_CURRENT_SOURCE_DIR}/user_config.cmake)
-
-# --- Translation Support ---
-if(COMMAND qt5_add_translation)
-  set(TS_FILES resources/i18n/dscore_zh_CN.ts)
-  qt5_add_translation(QM_FILES ${TS_FILES})
-
-  # Dynamically generate QRC to include the binary-generated QM files
-  set(QRC_CONTENT "<RCC>\n    <qresource prefix=\"/dscore\">\n")
-  foreach(QM_FILE ${QM_FILES})
-    get_filename_component(QM_NAME ${QM_FILE} NAME)
-    string(APPEND QRC_CONTENT "        <file alias=\"i18n/${QM_NAME}\">${QM_FILE}</file>\n")
-  endforeach()
-  string(APPEND QRC_CONTENT "    </qresource>\n</RCC>")
-
-  set(GENERATED_QRC ${CMAKE_CURRENT_BINARY_DIR}/dscore_translations.qrc)
-  file(WRITE ${GENERATED_QRC} "${QRC_CONTENT}")
-
-  qt5_add_resources(TRANSLATION_RCC ${GENERATED_QRC})
-  target_sources(${PROJECT_NAME} PRIVATE ${QM_FILES} ${TRANSLATION_RCC})
-endif()
 
 # --- 编译选项 ---
 if(DEFINED PROJECT_COMPILE_OPTIONS AND PROJECT_COMPILE_OPTIONS)

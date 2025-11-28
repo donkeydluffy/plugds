@@ -12,10 +12,6 @@
     {
       "Name": "dscore",
       "Version": "1.0.0"
-    },
-    {
-      "Name": "dsresources",
-      "Version": "0.1.0"
     }
   ],
   "Description": [

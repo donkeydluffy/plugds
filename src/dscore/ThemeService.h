@@ -3,7 +3,7 @@
 
 #include "dscore/IThemeService.h"
 
-namespace sss::dsresources {
+namespace sss::dscore {
 
 class ThemeService : public sss::dscore::IThemeService {
   Q_OBJECT
@@ -22,4 +22,4 @@ class ThemeService : public sss::dscore::IThemeService {
   QMap<QString, QFont> current_fonts_;
 };
 
-}  // namespace sss::dsresources
+}  // namespace sss::dscore

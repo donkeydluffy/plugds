@@ -102,6 +102,35 @@ file(
   "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hxx"
   "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl")
+file(
+  GLOB_RECURSE
+  PROJECT_UIFILES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
+file(
+  GLOB_RECURSE
+  PROJECT_RCFILES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.qrc")
+file(
+  GLOB_RECURSE
+  PROJECT_TSFILES_GLOBBED
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.ts")
+qt5_add_translation(PROJECT_QM_FILES ${PROJECT_TSFILES_GLOBBED})
+
+# Generate a qrc file for the translations
+set(TRANSLATIONS_QRC_CONTENT "<RCC>\n    <qresource prefix=\"/ws1/i18n\">\n")
+foreach(QM_FILE ${PROJECT_QM_FILES})
+  get_filename_component(QM_FILENAME ${QM_FILE} NAME)
+  string(APPEND TRANSLATIONS_QRC_CONTENT "        <file alias=\"${QM_FILENAME}\">${QM_FILE}</file>\n")
+endforeach()
+string(APPEND TRANSLATIONS_QRC_CONTENT "    </qresource>\n</RCC>\n")
+
+set(TRANSLATIONS_QRC_FILE "${CMAKE_CURRENT_BINARY_DIR}/ws1_translations.qrc")
+file(WRITE ${TRANSLATIONS_QRC_FILE} "${TRANSLATIONS_QRC_CONTENT}")
+
+qt5_add_resources(QMFILES_RES ${TRANSLATIONS_QRC_FILE})
 
 # 定义 API 导出/导入宏，主要用于共享库。使用 Jinja2 的 if 根据 Jinja2 变量做逻辑判断，再转换为 CMake 变量
 # 只有当项目为库时才考虑 WS1_BUILD_SHARED_LIBS
@@ -236,7 +265,14 @@ elseif(PROJECT_TYPE_CMAKE_VAR STREQUAL "exe")
 else() # PROJECT_TYPE_CMAKE_VAR STREQUAL "lib"（且存在源文件）
   if(WS1_BUILD_SHARED_LIBS)
     message(STATUS "${PROJECT_NAME}: Building as shared library.")
-    add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES_GLOBBED} ${PROJECT_HEADERS_GLOBBED})
+    add_library(
+      ${PROJECT_NAME} SHARED
+      ${PROJECT_SOURCES_GLOBBED}
+      ${PROJECT_HEADERS_GLOBBED}
+      ${PROJECT_UIFILES_GLOBBED}
+      ${PROJECT_RCFILES_GLOBBED}
+      ${PROJECT_QM_FILES}
+      ${QMFILES_RES})
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     if(WIN32 AND GENERATE_API_MACROS)
       list(APPEND PROJECT_COMPILE_DEFINITIONS ${PROJECT_NAME}_EXPORTS)
@@ -306,26 +342,6 @@ endforeach()
 
 # 包含用户自定义的配置文件
 include(${CMAKE_CURRENT_SOURCE_DIR}/user_config.cmake)
-
-# --- Translation Support ---
-if(COMMAND qt5_add_translation)
-  set(TS_FILES resources/i18n/ws1_zh_CN.ts)
-  qt5_add_translation(QM_FILES ${TS_FILES})
-
-  # Dynamically generate QRC to include the binary-generated QM files
-  set(QRC_CONTENT "<RCC>\n    <qresource prefix=\"/ws1\">\n")
-  foreach(QM_FILE ${QM_FILES})
-    get_filename_component(QM_NAME ${QM_FILE} NAME)
-    string(APPEND QRC_CONTENT "        <file alias=\"i18n/${QM_NAME}\">${QM_FILE}</file>\n")
-  endforeach()
-  string(APPEND QRC_CONTENT "    </qresource>\n</RCC>")
-
-  set(GENERATED_QRC ${CMAKE_CURRENT_BINARY_DIR}/ws1_translations.qrc)
-  file(WRITE ${GENERATED_QRC} "${QRC_CONTENT}")
-
-  qt5_add_resources(TRANSLATION_RCC ${GENERATED_QRC})
-  target_sources(${PROJECT_NAME} PRIVATE ${QM_FILES} ${TRANSLATION_RCC})
-endif()
 
 # --- 编译选项 ---
 if(DEFINED PROJECT_COMPILE_OPTIONS AND PROJECT_COMPILE_OPTIONS)
@@ -418,4 +434,3 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION lib/cmake/${PROJECT_NAME})
 
 message(STATUS "CMakeLists.txt configured for ${PROJECT_NAME} (type: ${PROJECT_TYPE_CMAKE_VAR}).")
-

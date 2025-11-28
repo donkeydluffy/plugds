@@ -5,7 +5,9 @@
 #include "CommandManager.h"
 #include "ContextManager.h"
 #include "Core.h"
+#include "LanguageService.h"
 #include "MainWindow.h"
+#include "ThemeService.h"
 
 CoreComponent::CoreComponent() = default;
 
@@ -22,6 +24,21 @@ auto CoreComponent::InitialiseEvent() -> void {
   command_manager_ = std::make_unique<sss::dscore::CommandManager>();
   SPDLOG_INFO("[CoreComponent] Created CommandManager instance: {}", (void*)command_manager_.get());
   sss::extsystem::AddObject(command_manager_.get());
+
+  // Language and Theme services
+  language_service_ = std::make_unique<sss::dscore::LanguageService>();
+  SPDLOG_INFO("[CoreComponent] Created LanguageService instance: {}", (void*)language_service_.get());
+  sss::extsystem::AddObject(language_service_.get());
+
+  // Register dscore translations
+  language_service_->RegisterTranslator("dscore", ":/dscore/i18n");
+
+  theme_service_ = std::make_unique<sss::dscore::ThemeService>();
+  SPDLOG_INFO("[CoreComponent] Created ThemeService instance: {}", (void*)theme_service_.get());
+  sss::extsystem::AddObject(theme_service_.get());
+
+  // Load default theme
+  theme_service_->LoadTheme("dark");
 
   // 2. Initialize Core (which creates MainWindow and PageManager, dependent on services)
   core_ = std::make_unique<sss::dscore::Core>();
@@ -40,14 +57,7 @@ auto CoreComponent::InitialiseEvent() -> void {
 auto CoreComponent::InitialisationFinishedEvent() -> void {
   SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent started");
 
-  // 直接使用AllObjects避免GetObject宏问题
-  sss::dscore::Core* core = nullptr;
-  for (auto* object : sss::extsystem::AllObjects()) {
-    core = qobject_cast<sss::dscore::Core*>(object);
-    if (core != nullptr) {
-      break;
-    }
-  }
+  auto* core = sss::extsystem::GetTObject<sss::dscore::Core>();
   SPDLOG_INFO("[CoreComponent] Got Core instance for open: {}", (void*)core);
 
   connect(sss::dscore::IContextManager::GetInstance(), &sss::dscore::IContextManager::ContextChanged,
@@ -79,6 +89,16 @@ auto CoreComponent::FinaliseEvent() -> void {
   if (command_manager_) {
     sss::extsystem::RemoveObject(command_manager_.get());
     SPDLOG_INFO("[CoreComponent] CommandManager removed");
+  }
+
+  if (language_service_) {
+    sss::extsystem::RemoveObject(language_service_.get());
+    SPDLOG_INFO("[CoreComponent] LanguageService removed");
+  }
+
+  if (theme_service_) {
+    sss::extsystem::RemoveObject(theme_service_.get());
+    SPDLOG_INFO("[CoreComponent] ThemeService removed");
   }
 
   // unique_ptr will auto-delete here

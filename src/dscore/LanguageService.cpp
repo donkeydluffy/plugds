@@ -4,7 +4,7 @@
 #include <QDebug>
 // #include <spdlog/spdlog.h> // Removed as spdlog is for application logging, not library utility
 
-namespace sss::dsresources {
+namespace sss::dscore {
 
 LanguageService::LanguageService() { current_locale_ = QLocale::system(); }
 
@@ -55,4 +55,4 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
 
 auto LanguageService::GetCurrentLocale() const -> QLocale { return current_locale_; }
 
-}  // namespace sss::dsresources
+}  // namespace sss::dscore

@@ -6,9 +6,9 @@
 
 #include "dscore/ILanguageService.h"
 
-namespace sss::dsresources {
+namespace sss::dscore {
 
-class LanguageService : public sss::dscore::ILanguageService {
+class LanguageService : public ILanguageService {
   Q_OBJECT
   Q_INTERFACES(sss::dscore::ILanguageService)
 
@@ -25,9 +25,9 @@ class LanguageService : public sss::dscore::ILanguageService {
     QString name;
     QString path;
   };
-  std::vector<ComponentInfo> components_;  // Changed to QVector for Qt consistency
+  std::vector<ComponentInfo> components_;
   QLocale current_locale_;
-  std::vector<std::unique_ptr<QTranslator>> active_translators_;  // Changed to QVector for Qt consistency
+  std::vector<std::unique_ptr<QTranslator>> active_translators_;
 };
 
-}  // namespace sss::dsresources
+}  // namespace sss::dscore
