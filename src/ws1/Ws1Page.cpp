@@ -13,6 +13,8 @@
 #include <QVBoxLayout>
 
 #include "dscore/IContextManager.h"
+#include "dscore/IThemeService.h"
+#include "extsystem/IComponentManager.h"
 
 namespace sss::ws1 {
 
@@ -60,9 +62,29 @@ Ws1Page::Ws1Page(QWidget* parent) : QWidget(parent) {
 
   // Initial translation
   retranslateUi();
+
+  // Connect to ThemeService
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+  if (theme_service != nullptr) {
+    connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws1Page::UpdateIcons);
+    if (theme_service->Theme() != nullptr) {
+      UpdateIcons(theme_service->Theme()->Id());
+    } else {
+      UpdateIcons("light");
+    }
+  }
 }
 
 Ws1Page::~Ws1Page() = default;
+
+void Ws1Page::UpdateIcons(const QString& /*theme_id*/) {
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+  if (theme_service == nullptr) return;
+
+  const QString base_path = ":/ws1/resources/icons";
+  enable_button_->setIcon(theme_service->GetIcon(base_path, "action_enable.svg"));
+  disable_button_->setIcon(theme_service->GetIcon(base_path, "action_disable.svg"));
+}
 
 void Ws1Page::SetSubContextId(int id) {
   sub_context_id_ = id;

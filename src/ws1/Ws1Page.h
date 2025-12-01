@@ -21,6 +21,9 @@ class Ws1Page : public QWidget {
 
   void SetSubContextId(int id);
 
+ public slots:  // NOLINT
+  void UpdateIcons(const QString& theme_id);
+
  protected:
   void changeEvent(QEvent* event) override;
 

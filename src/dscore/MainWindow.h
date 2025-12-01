@@ -149,6 +149,17 @@ class MainWindow : public QMainWindow {
    */
   auto updateTitlebar() -> void;
 
+  /**
+   * @brief       Updates command icons based on the current theme.
+   * @param[in]   theme_id The current theme identifier.
+   */
+  auto updateIcons(const QString& theme_id) -> void;
+
+  /**
+   * @brief       Sets up the toolbar size menu.
+   */
+  auto setupToolbarSizeMenu() -> void;
+
   //! @cond
 
   Ui::MainWindow* ui_;

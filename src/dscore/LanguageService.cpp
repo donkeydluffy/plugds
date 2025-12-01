@@ -1,7 +1,9 @@
 #include "LanguageService.h"
 
+#include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QWidget>
 // #include <spdlog/spdlog.h> // Removed as spdlog is for application logging, not library utility
 
 namespace sss::dscore {
@@ -17,6 +19,13 @@ auto LanguageService::RegisterTranslator(const QString& component_name, const QS
 
 auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
   if (current_locale_ == locale && !active_translators_.empty()) return;
+
+  // OPTIMIZATION: Lock UI updates to prevent flickering during global event dispatch
+  // when QCoreApplication::installTranslator triggers QEvent::LanguageChange on all widgets.
+  QWidgetList top_levels = QApplication::topLevelWidgets();
+  for (QWidget* widget : top_levels) {
+    if (widget != nullptr) widget->setUpdatesEnabled(false);
+  }
 
   // Unload old translators
   for (auto& translator : active_translators_) {
@@ -50,6 +59,12 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
       }
     }
   }
+
+  // Re-enable updates
+  for (QWidget* widget : top_levels) {
+    if (widget != nullptr) widget->setUpdatesEnabled(true);
+  }
+
   // QCoreApplication automatically sends QEvent::LanguageChange
 }
 

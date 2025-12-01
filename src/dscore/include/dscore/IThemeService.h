@@ -43,6 +43,22 @@ class DS_CORE_DLLSPEC IThemeService : public QObject {
    * @returns QColor The corresponding color object.
    */
   [[nodiscard]] virtual auto GetColor(Theme::ColorRole role) const -> QColor = 0;
+
+  /**
+   * @brief Get a themed icon.
+   *
+   * @param base_path The resource base path (e.g., ":/dscore/resources/icons").
+   * @param icon_name The icon filename (e.g., "file_open.svg").
+   * @return QIcon The icon from the correct theme subdirectory (light/dark).
+   */
+  [[nodiscard]] virtual auto GetIcon(const QString& base_path, const QString& icon_name) const -> QIcon = 0;
+
+ signals:
+  /**
+   * @brief Emitted when the theme changes.
+   * @param theme_id The ID of the new theme.
+   */
+  void ThemeChanged(const QString& theme_id);
 };
 
 }  // namespace sss::dscore

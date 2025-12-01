@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QIcon>
+#include <QMap>
 #include <memory>  // For std::unique_ptr
 
 #include "dscore/IThemeService.h"
@@ -19,6 +21,7 @@ class DS_CORE_DLLSPEC ThemeService : public sss::dscore::IThemeService {
   auto LoadTheme(const QString& theme_id) -> void override;
   [[nodiscard]] auto Theme() const -> const sss::dscore::Theme* override;
   [[nodiscard]] auto GetColor(Theme::ColorRole role) const -> QColor override;
+  [[nodiscard]] auto GetIcon(const QString& base_path, const QString& icon_name) const -> QIcon override;
 
  private:
   std::unique_ptr<sss::dscore::Theme> current_theme_;  // Stores the active theme data
@@ -33,6 +36,9 @@ class DS_CORE_DLLSPEC ThemeService : public sss::dscore::IThemeService {
   static auto stringToThemeColorRole(const QString& str) -> Theme::ColorRole;
   static auto themeColorRoleToString(Theme::ColorRole role) -> QString;
   static auto paletteColorRoleToString(QPalette::ColorRole role) -> QString;
+
+  // Icon Cache: Key = "theme_type|base_path|icon_name"
+  mutable QMap<QString, QIcon> icon_cache_;
 };
 
 }  // namespace sss::dscore

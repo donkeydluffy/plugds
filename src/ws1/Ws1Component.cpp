@@ -36,7 +36,6 @@ void Ws1Component::InitialiseEvent() {
   auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
   if (lang_service != nullptr) {
     // Register translation path
-    // Assumes ":/ws1/i18n" or similar is set up in qrc
     lang_service->RegisterTranslator("ws1", ":/ws1/i18n");
   } else {
     SPDLOG_WARN("ILanguageService not available.");
@@ -54,10 +53,44 @@ void Ws1Component::InitialiseEvent() {
   if (page_manager != nullptr) {
     page_manager->AddPage(this);
   }
+
+  // 5. Theme connection
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+  if (theme_service != nullptr) {
+    connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws1Component::UpdateIcons);
+    if (theme_service->Theme() != nullptr) {
+      UpdateIcons(theme_service->Theme()->Id());
+    } else {
+      UpdateIcons("light");
+    }
+  }
+}
+
+void Ws1Component::UpdateIcons(const QString& /*theme_id*/) {  // NOLINT
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+
+  if ((command_manager == nullptr) || (theme_service == nullptr)) return;
+
+  const QString base_path = ":/ws1/resources/icons";
+
+  auto set_icon = [&](const QString& cmd_id, const QString& filename) {
+    auto* cmd = command_manager->FindCommand(cmd_id);
+    if (cmd && cmd->Action()) {
+      cmd->Action()->setIcon(theme_service->GetIcon(base_path, filename));
+    }
+  };
+
+  set_icon("ws1.sample_command", "sample.svg");
+  set_icon("ws1.lang.en", "lang_en.svg");
+  set_icon("ws1.lang.zh", "lang_zh.svg");
+  set_icon("ws1.theme.dark", "theme_dark.svg");
+  set_icon("ws1.theme.light", "theme_light.svg");
 }
 
 void Ws1Component::createSampleCommand(sss::dscore::ICommandManager* command_manager) {
   auto* sample_action = new QAction(tr("Ws1 Sample Command"));
+  // Icon will be set by updateIcons logic
   connect(sample_action, &QAction::triggered, this, []() {
     QMessageBox::information(nullptr, sss::dscore::CoreStrings::Information(),
                              tr("This is a sample command from the Ws1 plugin."));

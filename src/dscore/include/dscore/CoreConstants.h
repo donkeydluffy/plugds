@@ -60,7 +60,10 @@ constexpr auto kGroupAppExit = "Ds.Group.App.Exit";    // Weight 1000
 namespace commands {
 constexpr auto kPreferences = "Ds.Preferences";
 
+constexpr auto kNew = "Ds.New";
 constexpr auto kOpen = "Ds.Open";
+constexpr auto kSave = "Ds.Save";
+constexpr auto kPrint = "Ds.Print";
 constexpr auto kQuit = "Ds.Quit";
 
 constexpr auto kCut = "Ds.Cut";
@@ -80,7 +83,10 @@ const QMap<QString, QString> kMap = {{kPreferences, QT_TR_NOOP("Preferences")},
                                      {kCopy, QT_TR_NOOP("Copy")},
                                      {kPaste, QT_TR_NOOP("Paste")},
 
+                                     {kNew, QT_TR_NOOP("New")},
                                      {kOpen, QT_TR_NOOP("Open...")},
+                                     {kSave, QT_TR_NOOP("Save")},
+                                     {kPrint, QT_TR_NOOP("Print")},
                                      {kQuit, QT_TR_NOOP("Exit")},
 
                                      {kAbout, QT_TR_NOOP("About DefinSight")},
@@ -108,6 +114,7 @@ inline QString CommandText(const QString& string) {
       {commands::kAbout, &CoreStrings::About},
       {commands::kPreferences, &CoreStrings::Settings},
       {commands::kOpen, &CoreStrings::Open},
+      {commands::kSave, &CoreStrings::Save},
       {commands::kQuit, &CoreStrings::Close}};
 
   if (kCoreCommandMap.contains(string)) {

@@ -1,0 +1,20 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/ws1">
+        <file>resources/icons/light/lang_en.svg</file>
+        <file>resources/icons/light/lang_zh.svg</file>
+        <file>resources/icons/light/theme_dark.svg</file>
+        <file>resources/icons/light/theme_light.svg</file>
+        <file>resources/icons/light/sample.svg</file>
+        <file>resources/icons/light/action_enable.svg</file>
+        <file>resources/icons/light/action_disable.svg</file>
+
+        <file>resources/icons/dark/lang_en.svg</file>
+        <file>resources/icons/dark/lang_zh.svg</file>
+        <file>resources/icons/dark/theme_dark.svg</file>
+        <file>resources/icons/dark/theme_light.svg</file>
+        <file>resources/icons/dark/sample.svg</file>
+        <file>resources/icons/dark/action_enable.svg</file>
+        <file>resources/icons/dark/action_disable.svg</file>
+    </qresource>
+</RCC>

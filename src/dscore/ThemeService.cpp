@@ -255,6 +255,8 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   applyStyleSheetToQapp();
 
   SPDLOG_INFO("=== ThemeService: Theme {} applied completely ===\n", theme_id.toStdString());
+
+  emit ThemeChanged(theme_id);
 }
 
 auto ThemeService::Theme() const -> const sss::dscore::Theme* { return current_theme_.get(); }
@@ -267,16 +269,62 @@ auto ThemeService::GetColor(Theme::ColorRole role) const -> QColor {
   return {Qt::magenta};  // Fallback
 }
 
+auto ThemeService::GetIcon(const QString& base_path, const QString& icon_name) const -> QIcon {
+  QString theme_type = "light";  // Default
+
+  if (current_theme_ && current_theme_->Id().contains("dark", Qt::CaseInsensitive)) {
+    theme_type = "dark";
+  }
+
+  // Generate a unique cache key
+
+  // Format: "dark|:/path/to/resources|filename.svg"
+
+  QString cache_key = theme_type + "|" + base_path + "|" + icon_name;
+
+  // Check cache first
+
+  if (icon_cache_.contains(cache_key)) {
+    return icon_cache_.value(cache_key);
+  }
+
+  // Construct path
+
+  QString path = base_path;
+
+  if (!path.endsWith('/')) {
+    path += '/';
+  }
+
+  path += theme_type + "/" + icon_name;
+
+  QIcon icon;
+
+  if (QFile::exists(path)) {
+    icon = QIcon(path);
+
+  } else {
+    // Fallback logic could go here if needed
+
+    qWarning() << "ThemeService: Icon not found at" << path;
+  }
+
+  // Store in cache (even if empty, to avoid repeated file system checks)
+
+  icon_cache_.insert(cache_key, icon);
+
+  return icon;
+}
+
 auto ThemeService::applyPaletteToQapp() -> void {
   if (current_theme_) {
     QPalette new_palette = current_theme_->Palette();
+
     qApp->setPalette(new_palette);
 
-    // 强制所有顶级窗口使用新调色板
-    for (QWidget* widget : QApplication::topLevelWidgets()) {
-      widget->setPalette(new_palette);
-      widget->update();
-    }
+    // Note: setPalette on qApp usually propagates, explicit widget loop removed for performance
+
+    // unless specific widgets block palette propagation.
   }
 }
 
@@ -284,40 +332,33 @@ auto ThemeService::applyStyleSheetToQapp() -> void {
   if (current_theme_) {
     const QString& stylesheet = current_theme_->StyleSheet();
 
-    // 清除现有的样式表并应用新的
-    qApp->setStyleSheet("");
+    // PERFORMANCE: Disable updates to prevent flickering and intermediate repaints
+
+    // while the heavy stylesheet parsing and application is happening.
+
+    for (QWidget* widget : QApplication::topLevelWidgets()) {
+      if (widget != nullptr) widget->setUpdatesEnabled(false);
+    }
+
+    // Apply the stylesheet
+
+    // This is the heavy operation.
+
     qApp->setStyleSheet(stylesheet);
 
-    // 强制刷新所有顶级窗口和其子控件
+    // Re-enable updates
+
     for (QWidget* widget : QApplication::topLevelWidgets()) {
-      if (widget == nullptr) continue;
-
-      // 强制样式重新应用
-      widget->style()->unpolish(widget);
-      widget->style()->polish(widget);
-
-      // 刷新窗口
-      widget->update();
-      widget->repaint();
-
-      // 递归刷新所有子控件
-      QObjectList children = widget->children();
-      for (QObject* child : children) {
-        if (auto* child_widget = qobject_cast<QWidget*>(child)) {
-          child_widget->style()->unpolish(child_widget);
-          child_widget->style()->polish(child_widget);
-          child_widget->update();
-        }
-      }
+      if (widget != nullptr) widget->setUpdatesEnabled(true);
     }
 
-    // 发送样式更改事件给所有窗口
-    QEvent style_event(QEvent::StyleChange);
-    for (QWidget* widget : QApplication::topLevelWidgets()) {
-      if (widget != nullptr) {
-        QApplication::sendEvent(widget, &style_event);
-      }
-    }
+    // Note: Removed the manual recursive unpolish/polish loop.
+
+    // qApp->setStyleSheet() automatically triggers a global update.
+
+    // The manual loop is O(N) where N is total widgets, which causes lag.
+
+    // If specific widgets fail to update, they should listen to QEvent::StyleChange.
   }
 }
 

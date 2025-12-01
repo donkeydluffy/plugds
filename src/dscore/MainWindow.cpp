@@ -7,10 +7,12 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QMenu>
 #include <QSystemTrayIcon>
 #include <QTabBar>
 #include <QTabWidget>
 #include <QTimer>
+#include <QToolBar>
 #include <QtGlobal>
 
 #include "dscore/CoreConstants.h"
@@ -54,9 +56,135 @@ auto sss::dscore::MainWindow::updateTitlebar() -> void {}
 
 auto sss::dscore::MainWindow::TabWidget() const -> QTabWidget* { return main_tab_widget_; }
 
+#include "dscore/IActionContainer.h"
+#include "dscore/IThemeService.h"
+#include "extsystem/IComponentManager.h"
+
+// ... existing includes ...
+
 auto sss::dscore::MainWindow::Initialise() -> void {
   createDefaultCommands();
   registerDefaultCommands();
+  setupToolbarSizeMenu();
+
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+  if (theme_service != nullptr) {
+    connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &MainWindow::updateIcons);
+    // Apply initial icons based on current theme (assuming default or already loaded)
+    // We can't easily get current theme ID from interface if not exposed,
+    // but ThemeService has Theme() object which has ID.
+    if (theme_service->Theme() != nullptr) {
+      updateIcons(theme_service->Theme()->Id());
+    } else {
+      updateIcons("light");  // Default fallback
+    }
+  }
+}
+
+auto sss::dscore::MainWindow::setupToolbarSizeMenu() -> void {
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+  if (command_manager == nullptr) return;
+
+  // Create "View" menu if not exists (usually it does or we create it)
+  // We check if we have a View menu in constants, if not we can put it in View or Settings
+  // For now, let's put it in a new "View" menu or append to "Application" menu (which is usually main menu bar)
+
+  // Ensure View menu exists
+  auto* view_menu = command_manager->CreateActionContainer(
+      "Ds.Menu.View", sss::dscore::ContainerType::kMenu,
+      command_manager->FindContainer(sss::dscore::constants::menubars::kApplication), 300);
+  // Add title "View"
+  // Note: IActionContainer doesn't easily support setting title unless it was created with title.
+  // But here we are creating a container. The ID "Ds.Menu.View" is internal.
+  // We need to check if we can set the title.
+  // The current implementation of CreateActionContainer for Menu creates QMenu.
+  // We need to access the QMenu to set title.
+  if (view_menu->GetWidget() != nullptr) {
+    qobject_cast<QMenu*>(view_menu->GetWidget())->setTitle(tr("View"));
+  }
+
+  view_menu->InsertGroup("Ds.Group.View.Toolbar", 100);
+
+  auto* size_menu_container = command_manager->CreateActionContainer("Ds.Menu.View.ToolbarSize",
+                                                                     sss::dscore::ContainerType::kMenu, view_menu, 100);
+  if (size_menu_container->GetWidget() != nullptr) {
+    qobject_cast<QMenu*>(size_menu_container->GetWidget())->setTitle(tr("Toolbar Icon Size"));
+  }
+  size_menu_container->InsertGroup("Ds.Group.ToolbarSize", 0);
+
+  auto add_size_action = [&](const QString& name, int size) {
+    auto* action = new QAction(name, this);
+    action->setCheckable(true);
+    connect(action, &QAction::triggered, [this, size, action, command_manager]() {
+      // Update toolbar size
+      auto* tb_container = command_manager->FindContainer(sss::dscore::constants::toolbars::kMainToolbar);
+      if (tb_container && tb_container->GetWidget()) {
+        if (auto* tb = qobject_cast<QToolBar*>(tb_container->GetWidget())) {
+          tb->setIconSize(QSize(size, size));
+        }
+      }
+      // Update check state
+      // Ideally we would have a QActionGroup, but for brevity:
+      // Uncheck others? Handled by user manually for now or we need a group.
+      // Let's just set size.
+    });
+    return action;
+  };
+
+  auto* group = new QActionGroup(this);
+
+  auto* small = add_size_action(tr("Small (16px)"), 16);
+  auto* medium = add_size_action(tr("Medium (24px)"), 24);
+  auto* large = add_size_action(tr("Large (32px)"), 32);
+
+  group->addAction(small);
+  group->addAction(medium);
+  group->addAction(large);
+  medium->setChecked(true);  // Default
+
+  // Register actions wrapping them in commands? Or just append QActions to menu container?
+  // ActionContainer::AppendCommand takes ICommand* or command ID.
+  // We can't easily append raw QActions via ActionContainer interface unless we register them as commands.
+  // Let's register them.
+
+  auto register_and_add = [&](QAction* action, const QString& id) {
+    command_manager->RegisterAction(action, id, sss::dscore::kGlobalContext);
+    size_menu_container->AppendCommand(id, "Ds.Group.ToolbarSize");
+  };
+
+  register_and_add(small, "Ds.Command.View.SizeSmall");
+  register_and_add(medium, "Ds.Command.View.SizeMedium");
+  register_and_add(large, "Ds.Command.View.SizeLarge");
+}
+
+auto sss::dscore::MainWindow::updateIcons(const QString& /*theme_id*/) -> void {  // NOLINT
+  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+
+  if ((command_manager == nullptr) || (theme_service == nullptr)) return;
+
+  const QString base_path = ":/dscore/resources/icons";
+
+  auto set_icon = [&](const QString& cmd_id, const QString& filename) {
+    auto* cmd = command_manager->FindCommand(cmd_id);
+    if (cmd && cmd->Action()) {
+      cmd->Action()->setIcon(theme_service->GetIcon(base_path, filename));
+    }
+  };
+
+  set_icon(sss::dscore::constants::commands::kNew, "file_new.svg");
+  set_icon(sss::dscore::constants::commands::kOpen, "file_open.svg");
+  set_icon(sss::dscore::constants::commands::kSave, "file_save.svg");
+  set_icon(sss::dscore::constants::commands::kPrint, "file_print.svg");
+
+  set_icon(sss::dscore::constants::commands::kPreferences, "app_preferences.svg");
+  set_icon(sss::dscore::constants::commands::kQuit, "app_quit.svg");
+  set_icon(sss::dscore::constants::commands::kAbout, "help_about.svg");
+  set_icon(sss::dscore::constants::commands::kAboutComponents, "help_about.svg");
+
+  set_icon(sss::dscore::constants::commands::kCut, "edit_cut.svg");
+  set_icon(sss::dscore::constants::commands::kCopy, "edit_copy.svg");
+  set_icon(sss::dscore::constants::commands::kPaste, "edit_paste.svg");
 }
 
 auto sss::dscore::MainWindow::createDefaultCommands() -> void {
@@ -64,10 +192,18 @@ auto sss::dscore::MainWindow::createDefaultCommands() -> void {
   // shortcut keys etc.
 
   createCommand(sss::dscore::constants::commands::kOpen, nullptr);
+  createCommand(sss::dscore::constants::commands::kNew, nullptr);
+  createCommand(sss::dscore::constants::commands::kSave, nullptr);
+  createCommand(sss::dscore::constants::commands::kPrint, nullptr);
+
   createCommand(sss::dscore::constants::commands::kAbout, nullptr, QAction::ApplicationSpecificRole);
   createCommand(sss::dscore::constants::commands::kAboutComponents, nullptr, QAction::ApplicationSpecificRole);
   createCommand(sss::dscore::constants::commands::kPreferences, nullptr, QAction::PreferencesRole);
   createCommand(sss::dscore::constants::commands::kQuit, nullptr, QAction::QuitRole);
+
+  createCommand(sss::dscore::constants::commands::kCut, nullptr);
+  createCommand(sss::dscore::constants::commands::kCopy, nullptr);
+  createCommand(sss::dscore::constants::commands::kPaste, nullptr);
 
   // create the menus, we create a main menu bar, then sub menus on that (File, Edit, Help etc).  In each
   // menu we then create groups, this allows us to reserve sections of the menu for specific items, components
@@ -79,10 +215,20 @@ auto sss::dscore::MainWindow::createDefaultCommands() -> void {
   if (command_manager != nullptr) {
     auto* main_toolbar = command_manager->CreateActionContainer(sss::dscore::constants::toolbars::kMainToolbar,
                                                                 sss::dscore::ContainerType::kToolBar, nullptr, 100);
+
+    main_toolbar->InsertGroup(sss::dscore::constants::menugroups::kGroupFileNew,
+                              sss::dscore::constants::menugroups::kWeightNew);
     main_toolbar->InsertGroup(sss::dscore::constants::menugroups::kGroupFileOpen,
                               sss::dscore::constants::menugroups::kWeightOpen);
+    main_toolbar->InsertGroup(sss::dscore::constants::menugroups::kGroupFileSave,
+                              sss::dscore::constants::menugroups::kWeightSave);
+
+    main_toolbar->AppendCommand(sss::dscore::constants::commands::kNew,
+                                sss::dscore::constants::menugroups::kGroupFileNew);
     main_toolbar->AppendCommand(sss::dscore::constants::commands::kOpen,
                                 sss::dscore::constants::menugroups::kGroupFileOpen);
+    main_toolbar->AppendCommand(sss::dscore::constants::commands::kSave,
+                                sss::dscore::constants::menugroups::kGroupFileSave);
   }
 
   // Define Standard Menu Order
@@ -107,8 +253,14 @@ auto sss::dscore::MainWindow::createDefaultCommands() -> void {
   createMenu(sss::dscore::constants::menus::kHelp, sss::dscore::constants::menubars::kApplication, 900);
 
   // Place commands in their correct groups
+  addMenuCommand(sss::dscore::constants::commands::kNew, sss::dscore::constants::menus::kFile,
+                 sss::dscore::constants::menugroups::kGroupFileNew);
   addMenuCommand(sss::dscore::constants::commands::kOpen, sss::dscore::constants::menus::kFile,
                  sss::dscore::constants::menugroups::kGroupFileOpen);
+  addMenuCommand(sss::dscore::constants::commands::kSave, sss::dscore::constants::menus::kFile,
+                 sss::dscore::constants::menugroups::kGroupFileSave);
+  addMenuCommand(sss::dscore::constants::commands::kPrint, sss::dscore::constants::menus::kFile,
+                 sss::dscore::constants::menugroups::kGroupFilePrint);
 
   addMenuCommand(sss::dscore::constants::commands::kPreferences, sss::dscore::constants::menus::kFile,
                  sss::dscore::constants::menugroups::kGroupAppPrefs);
