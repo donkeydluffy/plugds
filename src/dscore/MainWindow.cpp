@@ -28,6 +28,16 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
   main_tab_widget_ = new QTabWidget(this);
   main_tab_widget_->setObjectName("main_tab_widget");
   main_tab_widget_->setTabPosition(QTabWidget::East);
+
+  // Configure TabBar properties for better text display
+  QTabBar* tab_bar = main_tab_widget_->tabBar();
+  if (tab_bar != nullptr) {
+    // Allow tabs to size based on content
+    tab_bar->setExpanding(false);  // Don't automatically expand tabs
+    // Text elide mode: ellipsis at the end if too long
+    tab_bar->setElideMode(Qt::TextElideMode::ElideRight);
+  }
+
   main_tab_widget_->setVisible(false);
   ui_->splitter->addWidget(main_tab_widget_);
 

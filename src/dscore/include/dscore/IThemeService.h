@@ -1,50 +1,50 @@
 #pragma once
 
 #include <QColor>
-#include <QFont>
 #include <QObject>
-#include <QString>
 
 #include "dscore/CoreSpec.h"
+#include "dscore/Theme.h"
 
 namespace sss::dscore {
 
 /**
  * @brief Theme Service Interface
- * Responsible for managing global QSS stylesheets, palette definitions, and font configurations.
+ * Responsible for managing global UI themes, including QPalette, QSS stylesheets, and semantic colors.
  */
 class DS_CORE_DLLSPEC IThemeService : public QObject {
   Q_OBJECT
 
  public:
-  virtual ~IThemeService() = default;
+  ~IThemeService() override = default;
 
   /**
-   * @brief Load a theme by ID.
-   * Reads the corresponding QSS file and applies it to qApp.
+   * @brief Load and apply a theme by ID.
+   * Reads the corresponding theme configuration (INI) and QSS template,
+   * then applies the generated QPalette and QSS to qApp.
    *
    * @param theme_id Theme identifier (e.g., "dark", "light").
    */
   virtual auto LoadTheme(const QString& theme_id) -> void = 0;
 
   /**
-   * @brief Get a semantic color defined by the current theme.
-   * Allows components to fetch colors semantically rather than hardcoding HEX values.
+   * @brief Get the current active Theme object.
+   * Provides access to the full theme data for custom painting or advanced queries.
    *
-   * @param role Color role (e.g., "primary", "error", "background", "text_focus").
-   * @returns QColor The corresponding color object.
+   * @returns const Theme* A pointer to the current theme object.
    */
-  [[nodiscard]] virtual auto GetColor(const QString& role) const -> QColor = 0;
+  [[nodiscard]] virtual auto Theme() const -> const Theme* = 0;
 
   /**
-   * @brief Get a standard font defined by the current theme.
+   * @brief Get a semantic color defined by the current theme.
+   * Allows components to fetch colors semantically using strongly-typed roles.
    *
-   * @param role Font role (e.g., "h1", "body", "code", "small").
-   * @returns QFont The corresponding font object.
+   * @param role Color role (e.g., Theme::BrandColor, Theme::PanelBackground).
+   * @returns QColor The corresponding color object.
    */
-  [[nodiscard]] virtual auto GetFont(const QString& role) const -> QFont = 0;
+  [[nodiscard]] virtual auto GetColor(Theme::ColorRole role) const -> QColor = 0;
 };
 
 }  // namespace sss::dscore
 
-Q_DECLARE_INTERFACE(sss::dscore::IThemeService, "sss.dscore.IThemeService/1.0.0")
+Q_DECLARE_INTERFACE(sss::dscore::IThemeService, "sss.dscore.IThemeService/2.0.0")

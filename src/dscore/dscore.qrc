@@ -1,7 +1,9 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="/dscore">
-        <file>resources/themes/dark.qss</file>
-        <file>resources/themes/light.qss</file>
+        <file>resources/themes/dark.ini</file>
+        <file>resources/themes/light.ini</file>
+        <file>resources/themes/base.qss</file>
+        <file>resources/icons/arrow_down.svg</file>
     </qresource>
 </RCC>

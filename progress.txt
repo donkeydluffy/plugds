@@ -1,0 +1,34 @@
+# Theme System Implementation Roadmap
+
+## Phase 1: Core Data Structures (Data Layer)
+- [x] 1.1 Define `Theme` class in `Theme.h`
+    - Define comprehensive `ColorRole` enum (Brand, Status, UI Panels, Editors).
+    - Add storage for `QPalette` and `generated_stylesheet`.
+- [x] 1.2 Implement `Theme` class in `Theme.cpp`
+    - Initialize safe defaults (prevent crash on missing keys).
+- [x] 1.3 Update `IThemeService.h` interface
+    - Expose `theme()` getter.
+    - Define `LoadTheme(id)` API.
+
+## Phase 2: Configuration & Resources (Asset Layer)
+- [x] 2.1 Create `src/dscore/resources/themes/dark.ini`
+    - Design: Modern "VSCode Dark" style (Dark grey backgrounds, vivid blue accents).
+- [x] 2.2 Create `src/dscore/resources/themes/light.ini`
+    - Design: Modern "MacOS/Figma Light" style (Off-white backgrounds, soft borders, high contrast text).
+- [x] 2.3 Create `src/dscore/resources/themes/base.qss` template
+    - Implement "CSS Variable" placeholders (e.g., `@BrandColor`).
+    - Define styles for complex widgets (QScrollbar, QTabWidget, QComboBox) to look flat and modern.
+- [x] 2.4 Update `src/dscore/dscore.qrc` to include new assets.
+
+## Phase 3: Service Logic (Logic Layer)
+- [x] 3.1 Implement `ThemeService.h` definition matching the new Interface
+- [x] 3.2 Implement `ThemeService.cpp` core logic
+    - [x] INI Parser: Map string keys to `QPalette::ColorRole` and `Theme::ColorRole`.
+    - [x] Template Engine: Replace `@Key` in QSS with actual color values.
+    - [x] Application Hook: Apply `setPalette` and `setStyleSheet`.
+- [x] 3.3 Reserve `QProxyStyle` Extensibility
+    - Add architectural comments/placeholders in `LoadTheme` to allow future injection of a C++ Style class (e.g., for custom distinct painting logic).
+
+## Phase 4: Integration & Validation
+- [x] 4.1 Verify compilation.
+- [ ] 4.2 Manual Test: Call `LoadTheme("dark")` and `LoadTheme("light")` in main application to verify switching.

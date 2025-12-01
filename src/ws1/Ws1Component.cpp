@@ -118,7 +118,9 @@ void Ws1Component::createSwitchCommands(sss::dscore::ICommandManager* command_ma
   auto* action_dark = new QAction(tr("Dark Theme"), this);
   connect(action_dark, &QAction::triggered, []() {
     auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
-    if (theme_service) theme_service->LoadTheme("dark");
+    if (theme_service) {
+      theme_service->LoadTheme("dark");
+    }
   });
   auto* cmd_dark =
       command_manager->RegisterAction(action_dark, "ws1.theme.dark", {page_context_id_}, {page_context_id_});
@@ -127,7 +129,9 @@ void Ws1Component::createSwitchCommands(sss::dscore::ICommandManager* command_ma
   auto* action_light = new QAction(tr("Light Theme"), this);
   connect(action_light, &QAction::triggered, []() {
     auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
-    if (theme_service) theme_service->LoadTheme("light");
+    if (theme_service) {
+      theme_service->LoadTheme("light");
+    }
   });
   auto* cmd_light =
       command_manager->RegisterAction(action_light, "ws1.theme.light", {page_context_id_}, {page_context_id_});
