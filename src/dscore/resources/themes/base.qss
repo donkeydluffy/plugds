@@ -182,6 +182,57 @@ QTabBar::tab:left, QTabBar::tab:right {
     margin-bottom: 2px;
 }
 
+/* Bottom Tabs (South) - General Rule */
+QTabBar::tab:bottom {
+    border-top: none;
+    border-bottom: 1px solid @@THEME_COLOR_PanelBorder@@;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    margin-top: 2px;
+    min-width: 80px;
+}
+
+/* --- Workbench Sidebar Specifics (Left Panel, Bottom Tabs) --- */
+QTabWidget#workbench_sidebar::pane {
+    border: 1px solid @@THEME_COLOR_PanelBorder@@;
+    top: -1px;
+}
+
+/* Distinguish Sidebar Tabs (Darker/Contrast) */
+QTabWidget#workbench_sidebar > QTabBar::tab {
+    background: @@THEME_COLOR_ScrollBarBackground@@; /* Darker background */
+    color: @@THEME_COLOR_TextSecondary@@;
+    border-color: @@THEME_COLOR_PanelBorder@@;
+}
+
+QTabWidget#workbench_sidebar > QTabBar::tab:selected {
+    background: @@PALETTE_Window@@; /* Active matches panel */
+    color: @@THEME_COLOR_TextPrimary@@;
+    border-bottom-color: @@THEME_COLOR_BrandColor@@; /* Highlight active tab */
+    border-bottom-width: 2px; /* Make it look like an underline indicator */
+}
+
+/* --- Main Window Tabs (Right Side, East) --- */
+QTabWidget#main_tab_widget::pane {
+    border: 1px solid @@THEME_COLOR_PanelBorder@@;
+    background: @@THEME_COLOR_EditorBackground@@; /* Main content area usually lighter/editor color */
+}
+
+QTabWidget#main_tab_widget > QTabBar::tab {
+    background: @@THEME_COLOR_PanelBackground@@;
+    color: @@THEME_COLOR_TextPrimary@@;
+    border-left: 3px solid transparent; /* Indicator space */
+    padding: 8px 12px;
+}
+
+QTabWidget#main_tab_widget > QTabBar::tab:selected {
+    background: @@THEME_COLOR_EditorBackground@@; /* Blend with content */
+    font-weight: bold;
+    border-left: 3px solid @@THEME_COLOR_BrandColor@@; /* Left indicator for East tabs */
+}
+
 QTabBar::tab:selected {
     background: @@PALETTE_Window@@;
     color: @@THEME_COLOR_TextPrimary@@;
@@ -189,13 +240,6 @@ QTabBar::tab:selected {
     border-bottom-color: @@PALETTE_Window@@; /* 隐藏与 pane 交界处边框 */
     font-weight: bold;
 }
-
-QTabBar::tab:hover {
-    background: @@THEME_COLOR_MenuItemHover@@;
-    color: @@THEME_COLOR_TextPrimary@@;
-}
-
-/* QMenu */
 QMenu {
     background-color: @@THEME_COLOR_MenuBackground@@;
     border: 1px solid @@THEME_COLOR_MenuBorder@@;
@@ -271,4 +315,41 @@ QTableView, QTreeView, QListView {
 QAbstractScrollArea {
     border: 1px solid @@THEME_COLOR_PanelBorder@@;
     border-radius: 4px;
+}
+
+/* --- Custom Workspace Styles --- */
+
+/* Workbench Sidebar */
+/* Duplicate rules removed, handled above */
+
+/* Background Placeholder */
+QLabel#ws1_bg_label {
+    background-color: @@THEME_COLOR_PanelBackground@@;
+    color: @@THEME_COLOR_TextSecondary@@;
+    font-size: 24px;
+}
+
+/* Overlay Panel (Device Info) */
+QWidget#overlay_panel_content {
+    background-color: @@THEME_COLOR_OverlayBackground@@;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* Overlay Text */
+QLabel#overlay_info_label {
+    color: @@THEME_COLOR_OverlayText@@;
+}
+
+QLabel#overlay_extra_info {
+    color: @@THEME_COLOR_WarningColor@@;
+    font-size: 10px;
+}
+
+/* Coordinates Label */
+QLabel#overlay_coords_label {
+    color: @@THEME_COLOR_OverlayAccent@@;
+    font-weight: bold;
+    background-color: @@THEME_COLOR_OverlayBackground@@;
+    padding: 2px;
 }

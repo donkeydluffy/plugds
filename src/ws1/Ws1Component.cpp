@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QLocale>
 #include <QMessageBox>
+#include <QObject>
 
 #include "Ws1Page.h"
 #include "dscore/CoreConstants.h"
@@ -13,7 +14,7 @@
 #include "dscore/ICommandManager.h"
 #include "dscore/IContextManager.h"
 #include "dscore/ILanguageService.h"
-#include "dscore/IPageManager.h"
+#include "dscore/IModeManager.h"  // Include IModeManager
 #include "dscore/IThemeService.h"
 #include "extsystem/IComponentManager.h"
 
@@ -32,26 +33,30 @@ void Ws1Component::InitialiseEvent() {
   page_context_id_ = context_manager->RegisterContext("ws1.context");
   sub_context_id_ = context_manager->RegisterContext("ws1.sub_context.enabled");
 
-  // 2. Language & Theme Service Integration
+  // 2. Create and Register Mode
+  ws1_mode_ = new Ws1Page(page_context_id_, this);  // Parent is Ws1Component
+
+  auto* mode_manager = sss::extsystem::GetTObject<sss::dscore::IModeManager>();
+  if (mode_manager != nullptr) {
+    mode_manager->AddMode(ws1_mode_);
+    mode_manager->ActivateMode(ws1_mode_->Id());  // Auto-activate for testing
+  } else {
+    SPDLOG_ERROR("Failed to get IModeManager. Mode will not be activated.");
+  }
+
+  // 3. Language & Theme Service Integration
   auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
   if (lang_service != nullptr) {
-    // Register translation path
     lang_service->RegisterTranslator("ws1", ":/ws1/i18n");
   } else {
     SPDLOG_WARN("ILanguageService not available.");
   }
 
-  // 3. Create Commands (including Switch Language/Theme commands)
+  // 4. Create Commands (including Switch Language/Theme commands)
   auto* command_manager = sss::dscore::ICommandManager::GetInstance();
   if (command_manager != nullptr) {
     createSampleCommand(command_manager);
-    createSwitchCommands(command_manager, lang_service);  // Helper function
-  }
-
-  // 4. Add Page
-  auto* page_manager = sss::extsystem::GetTObject<sss::dscore::IPageManager>();
-  if (page_manager != nullptr) {
-    page_manager->AddPage(this);
+    createSwitchCommands(command_manager, lang_service);
   }
 
   // 5. Theme connection
@@ -175,20 +180,7 @@ void Ws1Component::InitialisationFinishedEvent() {}
 
 void Ws1Component::FinaliseEvent() {
   SPDLOG_INFO("Ws1Component::FinaliseEvent");
-  auto* page_manager = sss::extsystem::GetTObject<sss::dscore::IPageManager>();
-  if (page_manager != nullptr) {
-    page_manager->RemovePage(this);
-  }
+  sss::extsystem::RemoveObject(this);
 }
-
-auto Ws1Component::CreatePage(QWidget* parent) -> QWidget* {
-  auto* page = new Ws1Page(parent);
-  page->SetSubContextId(sub_context_id_);
-  return page;
-}
-
-auto Ws1Component::PageTitle() const -> QString { return tr("Workspace 1"); }
-
-auto Ws1Component::PageContextId() const -> int { return page_context_id_; }
 
 }  // namespace sss::ws1

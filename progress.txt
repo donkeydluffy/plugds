@@ -32,3 +32,13 @@
 ## Phase 4: Integration & Validation
 - [x] 4.1 Verify compilation.
 - [ ] 4.2 Manual Test: Call `LoadTheme("dark")` and `LoadTheme("light")` in main application to verify switching.
+
+## Phase 5: Migration of Legacy Styles (Refactoring)
+- [x] 5.1 Identify hardcoded `setStyleSheet` in `Ws1Page` and `WorkbenchLayout`.
+- [x] 5.2 Define new `Theme::ColorRole`s for Overlay/HUD (Background, Text, Accent).
+- [x] 5.3 Update `base.qss` with ID selectors (`#ws1_bg_label`, `#overlay_panel_content`, etc.).
+- [x] 5.4 Refactor C++ code to use `setObjectName` and remove manual styling.
+- [x] 5.5 Implement Sidebar Collapse Button:
+    - [x] Add toggle button and logic to `WorkbenchLayout`.
+    - [x] Implement button positioning in `OverlayCanvas`.
+- [x] 5.6 Enhance Tree View Data in `Ws1Page` to include hierarchical structure.

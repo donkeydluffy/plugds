@@ -58,7 +58,10 @@ auto ThemeService::stringToThemeColorRole(const QString& str) -> Theme::ColorRol
       {"THEME_COLOR_MenuItemText", Theme::kMenuItemText},
       {"THEME_COLOR_TextPrimary", Theme::kTextPrimary},
       {"THEME_COLOR_TextSecondary", Theme::kTextSecondary},
-      {"THEME_COLOR_TextDisabled", Theme::kTextDisabled}};
+      {"THEME_COLOR_TextDisabled", Theme::kTextDisabled},
+      {"THEME_COLOR_OverlayBackground", Theme::kOverlayBackground},
+      {"THEME_COLOR_OverlayText", Theme::kOverlayText},
+      {"THEME_COLOR_OverlayAccent", Theme::kOverlayAccent}};
   Theme::ColorRole role = kStringToRoleMap.value(str, Theme::kCount);  // Correct: Use .value() with QString key
   if (role == Theme::kCount) {
     qWarning() << "ThemeService: Unknown Theme::ColorRole string for lookup:" << str;
@@ -92,7 +95,10 @@ auto ThemeService::themeColorRoleToString(Theme::ColorRole role) -> QString {
       {Theme::kMenuItemText, "THEME_COLOR_MenuItemText"},
       {Theme::kTextPrimary, "THEME_COLOR_TextPrimary"},
       {Theme::kTextSecondary, "THEME_COLOR_TextSecondary"},
-      {Theme::kTextDisabled, "THEME_COLOR_TextDisabled"}};
+      {Theme::kTextDisabled, "THEME_COLOR_TextDisabled"},
+      {Theme::kOverlayBackground, "THEME_COLOR_OverlayBackground"},
+      {Theme::kOverlayText, "THEME_COLOR_OverlayText"},
+      {Theme::kOverlayAccent, "THEME_COLOR_OverlayAccent"}};
   return kRoleToStringMap.value(role, "UNKNOWN_COLOR_ROLE");
 }
 

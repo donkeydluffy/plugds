@@ -51,6 +51,11 @@ class DS_CORE_DLLSPEC Theme {
     kTextSecondary,  // 次要文字 (注释、提示)
     kTextDisabled,   // 禁用文字
 
+    // --- Overlay/HUD ---
+    kOverlayBackground,
+    kOverlayText,
+    kOverlayAccent,
+
     // 必须是最后一个
     kCount
   };

@@ -2,7 +2,6 @@
 
 #include <QObject>
 
-#include "dscore/IPageProvider.h"
 #include "extsystem/IComponent.h"
 
 namespace sss::dscore {
@@ -12,10 +11,12 @@ class ILanguageService;
 
 namespace sss::ws1 {
 
-class Ws1Component : public sss::dscore::IPageProvider, public sss::extsystem::IComponent {
+class Ws1Page;  // Forward declare the Mode class
+
+class Ws1Component : public QObject, public sss::extsystem::IComponent {
   Q_OBJECT
   Q_PLUGIN_METADATA(IID SSSComponentInterfaceIID FILE "metadata.json")
-  Q_INTERFACES(sss::extsystem::IComponent sss::dscore::IPageProvider)
+  Q_INTERFACES(sss::extsystem::IComponent)
 
  public:
   Ws1Component() = default;
@@ -26,11 +27,6 @@ class Ws1Component : public sss::dscore::IPageProvider, public sss::extsystem::I
   void InitialisationFinishedEvent() override;
   void FinaliseEvent() override;
 
-  // IPageProvider interface
-  auto CreatePage(QWidget* parent) -> QWidget* override;
-  [[nodiscard]] auto PageTitle() const -> QString override;
-  [[nodiscard]] auto PageContextId() const -> int override;
-
  public slots:  // NOLINT
   void UpdateIcons(const QString& theme_id);
 
@@ -40,6 +36,7 @@ class Ws1Component : public sss::dscore::IPageProvider, public sss::extsystem::I
 
   int page_context_id_ = 0;
   int sub_context_id_ = 0;
+  Ws1Page* ws1_mode_ = nullptr;  // Keep track of our mode instance
 };
 
 }  // namespace sss::ws1

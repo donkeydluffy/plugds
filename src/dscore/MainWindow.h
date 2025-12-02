@@ -26,10 +26,12 @@
 
 #include <QAbstractButton>
 #include <QAction>
+#include <QList>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-class QTabWidget;
+// class QTabWidget; // Removed
+class QToolButton;
 QT_END_NAMESPACE
 
 namespace sss::dscore {
@@ -41,6 +43,8 @@ QT_END_NAMESPACE
 
 class IActionContainer;
 class ICommand;
+class ModeManager;      // Forward declaration
+class WorkbenchLayout;  // Forward declaration
 
 /**
  * @brief       The MainWindow class provides the Main Application window.
@@ -74,13 +78,6 @@ class MainWindow : public QMainWindow {
    */
   auto ApplicationContextMenu() -> sss::dscore::IActionContainer*;
 
-  /**
-   * @brief       Returns the main tab widget.
-   *
-   * @returns     the main tab widget.
-   */
-  [[nodiscard]] auto TabWidget() const -> QTabWidget*;
-
  protected:
   /**
    * @brief       Reimplements QMainWindow::closeEvent(QCloseEvent *event).
@@ -107,40 +104,23 @@ class MainWindow : public QMainWindow {
 
   /**
    * @brief      Creates a Command and registers it with the system.
-   *
-   * @param[in]  commandId the identifier string for the command.
-   * @param[in]  button the button class if this is also bound to a button.
-   * @param[in]   menuRole the menu role is used by some platforms to put menu items in the correct location.
-   *
-   * @returns     an ICommand instance of the newly created command.
    */
   auto createCommand(QString command_id, QAbstractButton* button = nullptr,
                      QAction::MenuRole menu_role = QAction::NoRole) -> sss::dscore::ICommand*;
 
   /**
    * @brief       Adds a command to a menu.
-   * @param[in]   commandId the command identifier.
-   * @param[in]   menuId the menu identifier.
-   * @param[in]   groupId the group that the item is part of; otherwise nullptr if not a specific group.
    */
   auto addMenuCommand(const QString& command_id, const QString& menu_id, QString group_id = QString()) -> void;
 
   /**
    * @brief       Creates a menu with the given identifier.
-   * @param[in]   menu_id the identifier of the menu.
-   * @param[in]   parent_menu_id  if the menu is a submenu, then the identifier of the parent menu.
-   * @param[in]   order the display order/priority.
-   *
-   * @returns     an IMenu pointer to the menu.
    */
   auto createMenu(const QString& menu_id, const QString& parent_menu_id = QString(), int order = 0)
       -> sss::dscore::IActionContainer*;
 
   /**
    * @brief       Returns the IMenu pointer for a named menu.
-   * @param[in]   menuId the identifier of the menu to find.
-   *
-   * @returns     The IMenu pointer if found; otherwise nullptr.
    */
   auto findMenu(const QString& menu_id) -> sss::dscore::IActionContainer*;
 
@@ -151,7 +131,6 @@ class MainWindow : public QMainWindow {
 
   /**
    * @brief       Updates command icons based on the current theme.
-   * @param[in]   theme_id The current theme identifier.
    */
   auto updateIcons(const QString& theme_id) -> void;
 
@@ -163,7 +142,6 @@ class MainWindow : public QMainWindow {
   //! @cond
 
   Ui::MainWindow* ui_;
-  QTabWidget* main_tab_widget_ = nullptr;
 
   QAction* about_action_;
   QAction* quit_action_;
@@ -172,6 +150,9 @@ class MainWindow : public QMainWindow {
   QAction* hide_application_;
 
   bool application_hidden_;
+
+  ModeManager* mode_manager_ = nullptr;
+  WorkbenchLayout* workbench_layout_ = nullptr;
 
   //! @endcond
 };

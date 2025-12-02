@@ -57,18 +57,19 @@ auto CoreComponent::InitialiseEvent() -> void {
 auto CoreComponent::InitialisationFinishedEvent() -> void {
   SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent started");
 
-  auto* core = sss::extsystem::GetTObject<sss::dscore::Core>();
-  SPDLOG_INFO("[CoreComponent] Got Core instance for open: {}", (void*)core);
+  auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
+  if (main_window == nullptr) {
+    SPDLOG_ERROR("[CoreComponent] Failed to get MainWindow instance in InitialisationFinishedEvent.");
+    return;
+  }
 
-  connect(sss::dscore::IContextManager::GetInstance(), &sss::dscore::IContextManager::ContextChanged,
-          [&](int new_context, int old_context) {
-            Q_UNUSED(old_context)
-
-            sss::dscore::ICommandManager::GetInstance()->SetContext(new_context);
-          });
-
-  core->Open();
-  SPDLOG_INFO("[CoreComponent] Core opened, main window should be visible now");
+  // Use the owned core_ member directly
+  if (core_) {
+    core_->Open();
+    SPDLOG_INFO("[CoreComponent] Core opened, main window should be visible now");
+  } else {
+    SPDLOG_ERROR("[CoreComponent] Core instance is null, cannot open.");
+  }
 
   SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent completed");
 }

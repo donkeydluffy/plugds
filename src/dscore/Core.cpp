@@ -8,7 +8,6 @@
 #include <QStandardPaths>
 
 #include "MainWindow.h"
-#include "PageManager.h"
 #include "StatusbarManager.h"
 #include "extsystem/IComponentManager.h"
 
@@ -20,11 +19,6 @@ sss::dscore::Core::Core() {
 
   sss::extsystem::AddObject(main_window_.get());
   SPDLOG_INFO("[Core] Added MainWindow to object manager");
-
-  auto* tab_widget = main_window_->TabWidget();
-  page_manager_ = std::make_unique<PageManager>(tab_widget);
-  sss::extsystem::AddObject(page_manager_.get());
-  SPDLOG_INFO("[Core] Created and registered PageManager");
 
   statusbar_manager_ = std::make_unique<StatusbarManager>(main_window_->statusBar());
   sss::extsystem::AddObject(statusbar_manager_.get());
@@ -41,12 +35,6 @@ sss::dscore::Core::~Core() {
     sss::extsystem::RemoveObject(statusbar_manager_.get());
     SPDLOG_INFO("[Core] Removed StatusbarManager from object manager");
   }
-
-  if (page_manager_) {
-    sss::extsystem::RemoveObject(page_manager_.get());
-    SPDLOG_INFO("[Core] Removed PageManager from object manager");
-  }
-  // unique_ptr auto deletes page_manager_
 
   if (main_window_) {
     sss::extsystem::RemoveObject(main_window_.get());

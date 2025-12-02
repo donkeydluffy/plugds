@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 
+#include <spdlog/spdlog.h>  // Required for SPDLOG_INFO
+
 #include <QApplication>
 #include <QBitmap>
 #include <QCloseEvent>
@@ -15,50 +17,58 @@
 #include <QToolBar>
 #include <QtGlobal>
 
+#include "ModeManager.h"
+#include "WorkbenchLayout.h"
 #include "dscore/CoreConstants.h"
+#include "dscore/IActionContainer.h"
 #include "dscore/ICommandManager.h"
+#include "dscore/IThemeService.h"
+#include "extsystem/IComponentManager.h"
 #include "ui_MainWindow.h"
 
-// #include <spdlog/spdlog.h>
-
 sss::dscore::MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), ui_(new sss::dscore::Ui::MainWindow), application_hidden_(false) {
+    : QMainWindow(parent),
+      ui_(new sss::dscore::Ui::MainWindow),
+      application_hidden_(false),
+      mode_manager_(new sss::dscore::ModeManager(this)),
+      workbench_layout_(new sss::dscore::WorkbenchLayout(this)) {  // Create Global Workbench
   // spdlog::set_level(spdlog::level::trace);
 
   ui_->setupUi(this);
 
-  main_tab_widget_ = new QTabWidget(this);
-  main_tab_widget_->setObjectName("main_tab_widget");
-  main_tab_widget_->setTabPosition(QTabWidget::East);
-
-  // Configure TabBar properties for better text display
-  QTabBar* tab_bar = main_tab_widget_->tabBar();
-  if (tab_bar != nullptr) {
-    // Allow tabs to size based on content
-    tab_bar->setExpanding(false);  // Don't automatically expand tabs
-    // Text elide mode: ellipsis at the end if too long
-    tab_bar->setElideMode(Qt::TextElideMode::ElideRight);
-  }
-
-  main_tab_widget_->setVisible(false);
-  ui_->splitter->addWidget(main_tab_widget_);
+  // Set Global Workbench as Central Widget in Splitter
+  ui_->splitter->addWidget(workbench_layout_);
+  ui_->splitter->setStretchFactor(0, 1);  // Workbench takes full space
 
   qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
 
   showMaximized();
 
   setWindowTitle(QString(tr("Ds")));
+
+  // Initialize ModeManager and register services
+  if (mode_manager_ != nullptr) {
+    mode_manager_->SetGlobalWorkbench(workbench_layout_);
+    sss::extsystem::AddObject(mode_manager_);  // Register IModeManager service
+
+    // Register Global Workbench service
+    sss::extsystem::AddObject(workbench_layout_);
+  }
 }
 
-sss::dscore::MainWindow::~MainWindow() { delete ui_; }
+sss::dscore::MainWindow::~MainWindow() {
+  if (mode_manager_ != nullptr) {
+    sss::extsystem::RemoveObject(mode_manager_);
+  }
+  if (workbench_layout_ != nullptr) {
+    sss::extsystem::RemoveObject(workbench_layout_);
+  }
+  delete ui_;
+}
 
 auto sss::dscore::MainWindow::updateTitlebar() -> void {}
 
-auto sss::dscore::MainWindow::TabWidget() const -> QTabWidget* { return main_tab_widget_; }
-
-#include "dscore/IActionContainer.h"
-#include "dscore/IThemeService.h"
-#include "extsystem/IComponentManager.h"
+// auto sss::dscore::MainWindow::TabWidget() const -> QTabWidget* { return main_tab_widget_; }
 
 // ... existing includes ...
 
@@ -446,3 +456,5 @@ auto sss::dscore::MainWindow::ApplicationContextMenu() -> sss::dscore::IActionCo
 
   return context_menu;
 }
+
+// Removed AddPageProvider and TabWidget implementation

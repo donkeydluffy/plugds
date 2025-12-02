@@ -37,17 +37,17 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 #if defined(Q_OS_UNIX) || ((defined(Q_OS_WIN) && defined(__MINGW32__)))
 #if defined(QT_DEBUG)
   if (!application_debug_build) {
-    SPDLOG_WARN(QString("Application was built with QT_DEBUG but has loaded RELEASE qt libraries, component system "
-                        "will load DEBUG components instead.")
-                    .toStdString());
+    SPDLOG_WARN(
+        "Application was built with QT_DEBUG but has loaded RELEASE qt libraries, component system will load DEBUG "
+        "components instead.");
 
     application_debug_build = true;
   }
 #else
   if (application_debug_build) {
-    SPDLOG_WARN(tr("Application was built with QT_NO_DEBUG but has loaded DEBUG qt libraries, component system will "
-                   "load RELEASE components instead.")
-                    .toStdString());
+    SPDLOG_WARN(
+        "Application was built with QT_NO_DEBUG but has loaded DEBUG qt libraries, component system will load RELEASE "
+        "components instead.");
 
     application_debug_build = false;
   }
@@ -55,7 +55,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 #endif
   // SPDLOG_INFO(QString("Searching folder for components %1").arg(component_folder).toStdString());
 
-  SPDLOG_INFO(QString("Searching folder %1 for components").arg(component_folder).toStdString());
+  SPDLOG_INFO("Searching folder {} for components", component_folder.toStdString());
 
   QDirIterator dir(component_folder);
 
@@ -66,45 +66,41 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     auto component_filename = dir.fileInfo().absoluteFilePath();
 
-    SPDLOG_INFO(QString("Found file: %1 (isDir: %2)")
-                    .arg(component_filename)
-                    .arg(dir.fileInfo().isDir() ? "true" : "false")
-                    .toStdString());
+    SPDLOG_INFO("Found file: {} (isDir: {})", component_filename.toStdString(),
+                dir.fileInfo().isDir() ? "true" : "false");
 
     if (dir.fileInfo().isDir()) {
-      SPDLOG_INFO(QString("Skipping directory: %1").arg(component_filename).toStdString());
+      SPDLOG_INFO("Skipping directory: {}", component_filename.toStdString());
       continue;
     }
 
     bool is_lib = QLibrary::isLibrary(component_filename);
-    SPDLOG_INFO(QString("File %1 isLibrary: %2").arg(component_filename).arg(is_lib ? "true" : "false").toStdString());
+    SPDLOG_INFO("File {} isLibrary: {}", component_filename.toStdString(), is_lib ? "true" : "false");
 
     if (!is_lib) {
-      SPDLOG_INFO(QString("Skipping non-library file: %1").arg(component_filename).toStdString());
+      SPDLOG_INFO("Skipping non-library file: {}", component_filename.toStdString());
       continue;
     }
 
     auto* plugin_loader = new QPluginLoader(component_filename);
 
-    SPDLOG_INFO(QString("Processing library: %1").arg(component_filename).toStdString());
+    SPDLOG_INFO("Processing library: {}", component_filename.toStdString());
 
     auto meta_data_object = plugin_loader->metaData();
 
     if (meta_data_object.isEmpty()) {
-      SPDLOG_INFO(QString("Library %1 has empty metadata").arg(component_filename).toStdString());
+      SPDLOG_INFO("Library {} has empty metadata", component_filename.toStdString());
       delete plugin_loader;
       continue;
     }
 
-    SPDLOG_INFO(QString("Library %1 has metadata").arg(component_filename).toStdString());
+    SPDLOG_INFO("Library {} has metadata", component_filename.toStdString());
 
     auto debug_build = meta_data_object.value("debug");
     auto qt_version = meta_data_object.value("version");
 
-    SPDLOG_INFO(QString("Library %1 metadata keys: %2")
-                    .arg(component_filename)
-                    .arg(QStringList(meta_data_object.keys()).join(","))
-                    .toStdString());
+    SPDLOG_INFO("Library {} metadata keys: {}", component_filename.toStdString(),
+                QStringList(meta_data_object.keys()).join(",").toStdString());
 
     // Try to get component metadata from both "MetaData" and directly in the root
     auto component_metadata = meta_data_object.value("MetaData");
@@ -112,8 +108,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
     // If MetaData doesn't exist, use the root metadata object
     if (component_metadata.isNull() || component_metadata.isUndefined()) {
       component_metadata = QJsonValue(meta_data_object);
-      SPDLOG_INFO(
-          QString("Library %1 using root metadata as component metadata").arg(component_filename).toStdString());
+      SPDLOG_INFO("Library {} using root metadata as component metadata", component_filename.toStdString());
     }
 
     // Check the actual type of component_metadata
@@ -145,27 +140,20 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
         break;
     }
 
-    SPDLOG_INFO(QString("Library %1 MetaData type: %2").arg(component_filename).arg(metadata_type).toStdString());
-    SPDLOG_INFO(QString("Library %1 has debug flag: %2")
-                    .arg(component_filename)
-                    .arg(!debug_build.isNull() ? "true" : "false")
-                    .toStdString());
-    SPDLOG_INFO(QString("Library %1 has version flag: %2")
-                    .arg(component_filename)
-                    .arg(!qt_version.isNull() ? "true" : "false")
-                    .toStdString());
+    SPDLOG_INFO("Library {} MetaData type: {}", component_filename.toStdString(), metadata_type.toStdString());
+    SPDLOG_INFO("Library {} has debug flag: {}", component_filename.toStdString(),
+                !debug_build.isNull() ? "true" : "false");
+    SPDLOG_INFO("Library {} has version flag: {}", component_filename.toStdString(),
+                !qt_version.isNull() ? "true" : "false");
 
     if (debug_build.isNull() || qt_version.isNull() || (component_metadata.type() != QJsonValue::Object)) {
-      SPDLOG_INFO(QString("Library %1 missing required metadata fields").arg(component_filename).toStdString());
+      SPDLOG_INFO("Library {} missing required metadata fields", component_filename.toStdString());
       delete plugin_loader;
       continue;
     }
 
-    SPDLOG_INFO(QString("Library %1 debug flag: %2, application debug: %3")
-                    .arg(component_filename)
-                    .arg(debug_build.toBool() ? "true" : "false")
-                    .arg(application_debug_build ? "true" : "false")
-                    .toStdString());
+    SPDLOG_INFO("Library {} debug flag: {}, application debug: {}", component_filename.toStdString(),
+                debug_build.toBool() ? "true" : "false", application_debug_build ? "true" : "false");
 
     // Allow loading component even if there's a debug/release mismatch for debugging purposes
     // if (debug_build != application_debug_build) {
@@ -176,9 +164,8 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     // Still log a warning about the mismatch
     if (debug_build != application_debug_build) {
-      SPDLOG_WARN(QString("Component %1 has a debug/release mismatch with the application. This may cause instability.")
-                      .arg(component_filename)
-                      .toStdString());
+      SPDLOG_WARN("Component {} has a debug/release mismatch with the application. This may cause instability.",
+                  component_filename.toStdString());
     }
 
     // Check for both "Name" and "name" since case sensitivity might be an issue
@@ -193,23 +180,17 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
     // If still no name, use the className from the plugin metadata
     if (component_name.isNull() || component_name.toString().isEmpty()) {
       component_name = component_metadata_obj.value("className");
-      SPDLOG_INFO(QString("Library %1 using className as component name: %2")
-                      .arg(component_filename)
-                      .arg(component_name.isNull() ? "NULL" : component_name.toString())
-                      .toStdString());
+      SPDLOG_INFO("Library {} using className as component name: {}", component_filename.toStdString(),
+                  component_name.isNull() ? "NULL" : component_name.toString().toStdString());
     }
 
-    SPDLOG_INFO(QString("Library %1 component name: %2")
-                    .arg(component_filename)
-                    .arg(component_name.isNull() ? "NULL" : component_name.toString())
-                    .toStdString());
-    SPDLOG_INFO(QString("Library %1 all metadata: %2")
-                    .arg(component_filename)
-                    .arg(QString(QJsonDocument(component_metadata_obj).toJson()))
-                    .toStdString());
+    SPDLOG_INFO("Library {} component name: {}", component_filename.toStdString(),
+                component_name.isNull() ? "NULL" : component_name.toString().toStdString());
+    SPDLOG_INFO("Library {} all metadata: {}", component_filename.toStdString(),
+                QString(QJsonDocument(component_metadata_obj).toJson()).toStdString());
 
     if (component_name.isNull() || component_name.toString().isEmpty()) {
-      SPDLOG_INFO(QString("Library %1 missing name").arg(component_filename).toStdString());
+      SPDLOG_INFO("Library {} missing name", component_filename.toStdString());
       delete plugin_loader;
       continue;
     }
@@ -228,11 +209,8 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
                                         .arg(component_qt_version.majorVersion())
                                         .arg(component_qt_version.minorVersion())
                                         .arg(component_qt_version.microVersion());
-    SPDLOG_INFO(QString("Library %1 application Qt version: %2, component Qt version: %3")
-                    .arg(component_filename)
-                    .arg(application_qt_version_str)
-                    .arg(component_qt_version_str)
-                    .toStdString());
+    SPDLOG_INFO("Library {} application Qt version: {}, component Qt version: {}", component_filename.toStdString(),
+                application_qt_version_str.toStdString(), component_qt_version_str.toStdString());
 
     auto* component = new sss::extsystem::Component(component_name.toString(), component_filename, meta_data_object);
 
@@ -240,19 +218,17 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     if (component_qt_version.majorVersion() != application_qt_version.majorVersion()) {
       component->load_flags_.setFlag(LoadFlag::kIncompatibleQtVersion);
-      SPDLOG_INFO(QString("Library %1 incompatible Qt version").arg(component_filename).toStdString());
+      SPDLOG_INFO("Library {} incompatible Qt version", component_filename.toStdString());
     }
 
     if (component_search_list_.contains(component_name.toString())) {
       component->load_flags_.setFlag(LoadFlag::kNameClash);
-      SPDLOG_INFO(QString("Library %1 name clash").arg(component_filename).toStdString());
+      SPDLOG_INFO("Library {} name clash", component_filename.toStdString());
     }
 
     component_search_list_[component_name.toString()] = component;
-    SPDLOG_INFO(QString("Library %1 added to component_search_list as %2")
-                    .arg(component_filename)
-                    .arg(component_name.toString())
-                    .toStdString());
+    SPDLOG_INFO("Library {} added to component_search_list as {}", component_filename.toStdString(),
+                component_name.toString().toStdString());
 
     delete plugin_loader;
   }

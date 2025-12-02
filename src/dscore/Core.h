@@ -6,12 +6,10 @@
 #include <memory>
 #include <random>
 
-#include "MainWindow.h"
 #include "dscore/ICore.h"
 
 namespace sss::dscore {
-
-class PageManager;
+class MainWindow;
 class IPageManager;
 class IStatusbarManager;
 
@@ -94,8 +92,7 @@ class Core : public sss::dscore::ICore {
  private:
   //! @cond
 
-  std::unique_ptr<MainWindow> main_window_;
-  std::unique_ptr<PageManager> page_manager_;
+  std::unique_ptr<sss::dscore::MainWindow> main_window_;
   std::unique_ptr<IStatusbarManager> statusbar_manager_;
 
   std::random_device random_device_;
