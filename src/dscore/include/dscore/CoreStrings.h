@@ -25,7 +25,6 @@ class DS_CORE_DLLSPEC CoreStrings : public QObject {
   static auto Save() -> QString;
   static auto Open() -> QString;
   static auto Delete() -> QString;
-  static auto Edit() -> QString;
 
   // --- Status & Messages ---
   static auto Error() -> QString;
@@ -38,7 +37,6 @@ class DS_CORE_DLLSPEC CoreStrings : public QObject {
   static auto Settings() -> QString;
   static auto Help() -> QString;
   static auto About() -> QString;
-  static auto File() -> QString;
   static auto Language() -> QString;
   static auto Theme() -> QString;
 };

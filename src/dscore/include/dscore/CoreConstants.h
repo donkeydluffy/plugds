@@ -17,94 +17,64 @@ constexpr auto kMainToolbar = "Ds.MainToolbar";
 };
 
 namespace menus {
-constexpr auto kFile = "Ds.File";
-constexpr auto kEdit = "Ds.Edit";
+constexpr auto kSettings = "Ds.Settings";
 constexpr auto kHelp = "Ds.Help";
 constexpr auto kApplication = "Ds.Application";
-
-const QMap<QString, QString> kMap = {{kFile, QT_TR_NOOP("File")},
-                                     {kEdit, QT_TR_NOOP("Edit")},
-                                     {kHelp, QT_TR_NOOP("Help")},
-                                     {kApplication, QT_TR_NOOP("Application")}};
+// Submenus
+constexpr auto kLanguage = "Ds.Menu.Language";
+constexpr auto kTheme = "Ds.Menu.Theme";
 }  // namespace menus
 
 namespace menugroups {
 // Standard Group Weights
 constexpr int kWeightTop = 0;
-constexpr int kWeightNew = 100;
-constexpr int kWeightOpen = 200;
-constexpr int kWeightSave = 300;
-constexpr int kWeightEdit = 400;
-constexpr int kWeightView = 500;
-constexpr int kWeightTools = 600;
-constexpr int kWeightSettings = 900;
-constexpr int kWeightExit = 1000;
+constexpr int kWeightHigh = 100;
+constexpr int kWeightNormal = 500;
+constexpr int kWeightLow = 900;
 
-// File Menu Groups
-constexpr auto kGroupFileNew = "Ds.Group.File.New";      // Weight 100
-constexpr auto kGroupFileOpen = "Ds.Group.File.Open";    // Weight 200
-constexpr auto kGroupFileSave = "Ds.Group.File.Save";    // Weight 300
-constexpr auto kGroupFilePrint = "Ds.Group.File.Print";  // Weight 500
-constexpr auto kGroupFileExit = "Ds.Group.File.Exit";    // Weight 1000
+// Settings Menu Groups
+constexpr auto kGroupLanguage = "Ds.Group.Language";
+constexpr auto kGroupTheme = "Ds.Group.Theme";
 
-// Edit Menu Groups
-constexpr auto kGroupEditUndo = "Ds.Group.Edit.Undo";  // Weight 100
-constexpr auto kGroupEditClip = "Ds.Group.Edit.Clip";  // Weight 200 (Cut/Copy/Paste)
+// Help Menu Groups
+constexpr auto kGroupHelp = "Ds.Group.Help";
 
-// App/Help Menu Groups
-constexpr auto kGroupAppPrefs = "Ds.Group.App.Prefs";  // Weight 900
-constexpr auto kGroupAppHelp = "Ds.Group.App.Help";    // Weight 100
-constexpr auto kGroupAppExit = "Ds.Group.App.Exit";    // Weight 1000
+// Toolbar Groups
+constexpr auto kGroupToolbarMain = "Ds.Group.Toolbar.Main";
 }  // namespace menugroups
 
 namespace commands {
-constexpr auto kPreferences = "Ds.Preferences";
-
-constexpr auto kNew = "Ds.New";
 constexpr auto kOpen = "Ds.Open";
 constexpr auto kSave = "Ds.Save";
-constexpr auto kPrint = "Ds.Print";
-constexpr auto kQuit = "Ds.Quit";
-
-constexpr auto kCut = "Ds.Cut";
-constexpr auto kCopy = "Ds.Copy";
-constexpr auto kPaste = "Ds.Paste";
 
 constexpr auto kAbout = "Ds.About";
 
-constexpr auto kAboutComponents = "Ds.AboutComponents";
+// Language
+constexpr auto kLangEnglish = "Ds.Lang.English";
+constexpr auto kLangChinese = "Ds.Lang.Chinese";
 
-constexpr auto kShowApplication = "Ds.ShowApplication";
-constexpr auto kHideApplication = "Ds.HideApplication";
+// Theme
+constexpr auto kThemeDark = "Ds.Theme.Dark";
+constexpr auto kThemeLight = "Ds.Theme.Light";
 
-const QMap<QString, QString> kMap = {{kPreferences, QT_TR_NOOP("Preferences")},
-
-                                     {kCut, QT_TR_NOOP("Cut")},
-                                     {kCopy, QT_TR_NOOP("Copy")},
-                                     {kPaste, QT_TR_NOOP("Paste")},
-
-                                     {kNew, QT_TR_NOOP("New")},
-                                     {kOpen, QT_TR_NOOP("Open...")},
+const QMap<QString, QString> kMap = {{kOpen, QT_TR_NOOP("Open")},
                                      {kSave, QT_TR_NOOP("Save")},
-                                     {kPrint, QT_TR_NOOP("Print")},
-                                     {kQuit, QT_TR_NOOP("Exit")},
-
                                      {kAbout, QT_TR_NOOP("About DefinSight")},
-                                     {kAboutComponents, QT_TR_NOOP("About Components")},
-
-                                     {kShowApplication, QT_TR_NOOP("Show Application")},
-                                     {kHideApplication, QT_TR_NOOP("Hide Application")}};
+                                     {kLangEnglish, QT_TR_NOOP("English")},
+                                     {kLangChinese, QT_TR_NOOP("Chinese")},
+                                     {kThemeDark, QT_TR_NOOP("Dark")},
+                                     {kThemeLight, QT_TR_NOOP("Light")}};
 };  // namespace commands
 
 inline QString MenuText(const QString& string) {
-  static const QMap<QString, std::function<QString()>> kCoreMenuMap = {
-      {menus::kFile, &CoreStrings::File}, {menus::kEdit, &CoreStrings::Edit}, {menus::kHelp, &CoreStrings::Help}};
+  static const QMap<QString, std::function<QString()>> kCoreMenuMap = {{menus::kSettings, &CoreStrings::Settings},
+                                                                       {menus::kHelp, &CoreStrings::Help},
+                                                                       {menus::kLanguage, &CoreStrings::Language},
+                                                                       {menus::kTheme, &CoreStrings::Theme}};
 
   if (kCoreMenuMap.contains(string)) {
     return kCoreMenuMap[string]();
   }
-
-  if (menus::kMap.contains(string)) return QObject::tr(menus::kMap[string].toUtf8());
 
   return string;
 }
@@ -112,10 +82,9 @@ inline QString MenuText(const QString& string) {
 inline QString CommandText(const QString& string) {
   static const QMap<QString, std::function<QString()>> kCoreCommandMap = {
       {commands::kAbout, &CoreStrings::About},
-      {commands::kPreferences, &CoreStrings::Settings},
       {commands::kOpen, &CoreStrings::Open},
       {commands::kSave, &CoreStrings::Save},
-      {commands::kQuit, &CoreStrings::Close}};
+  };
 
   if (kCoreCommandMap.contains(string)) {
     return kCoreCommandMap[string]();

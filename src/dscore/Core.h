@@ -82,13 +82,6 @@ class Core : public sss::dscore::ICore {
    */
   auto StorageFolder() -> QString override;
 
-  /**
-   * @brief       Creates a new instance of the application context menu.
-   *
-   * @returns     the context menu.
-   */
-  auto ApplicationContextMenu() -> sss::dscore::IActionContainer* override;
-
  private:
   //! @cond
 

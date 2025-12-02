@@ -11,7 +11,6 @@ auto CoreStrings::Close() -> QString { return tr("Close"); }
 auto CoreStrings::Save() -> QString { return tr("Save"); }
 auto CoreStrings::Open() -> QString { return tr("Open"); }
 auto CoreStrings::Delete() -> QString { return tr("Delete"); }
-auto CoreStrings::Edit() -> QString { return tr("Edit"); }
 
 auto CoreStrings::Error() -> QString { return tr("Error"); }
 auto CoreStrings::Warning() -> QString { return tr("Warning"); }
@@ -22,7 +21,6 @@ auto CoreStrings::Loading() -> QString { return tr("Loading..."); }
 auto CoreStrings::Settings() -> QString { return tr("Settings"); }
 auto CoreStrings::Help() -> QString { return tr("Help"); }
 auto CoreStrings::About() -> QString { return tr("About"); }
-auto CoreStrings::File() -> QString { return tr("File"); }
 auto CoreStrings::Language() -> QString { return tr("Language"); }
 auto CoreStrings::Theme() -> QString { return tr("Theme"); }
 

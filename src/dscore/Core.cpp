@@ -68,5 +68,3 @@ auto sss::dscore::Core::StorageFolder() -> QString {
   return QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).at(0) + "/" + qApp->organizationName() +
          "/" + qApp->applicationName();
 }
-
-auto sss::dscore::Core::ApplicationContextMenu() -> IActionContainer* { return main_window_->ApplicationContextMenu(); }

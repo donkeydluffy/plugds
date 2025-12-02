@@ -21,6 +21,10 @@ void ModeManager::AddMode(IMode* mode) {
   SPDLOG_INFO("Registered Mode: {} ({})", mode->Title().toStdString(), mode->Id().toStdString());
   emit ModeAdded(mode);
 
+  if (workbench_ != nullptr) {
+    workbench_->AddModeButton(mode->Id(), mode->Title(), mode->Icon());
+  }
+
   // If this is the first mode, activate it? Or wait for explicit activation.
   // Let's wait for explicit activation via UI or config.
 }
@@ -61,6 +65,7 @@ void ModeManager::ActivateMode(const QString& id) {
     // Setup Workbench Content
     if (workbench_ != nullptr) {
       workbench_->Clear();
+      workbench_->SetActiveModeButton(active_mode_->Id());
       active_mode_->Activate();
     }
   }
@@ -72,6 +77,19 @@ IMode* ModeManager::ActiveMode() const { return active_mode_; }
 
 QList<IMode*> ModeManager::Modes() const { return modes_.values(); }
 
-void ModeManager::SetGlobalWorkbench(IWorkbench* workbench) { workbench_ = workbench; }
+void ModeManager::SetGlobalWorkbench(IWorkbench* workbench) {
+  workbench_ = workbench;
+  if (workbench_ != nullptr) {
+    workbench_->SetModeSwitchCallback([this](const QString& id) { ActivateMode(id); });
+
+    for (auto* mode : modes_) {
+      workbench_->AddModeButton(mode->Id(), mode->Title(), mode->Icon());
+    }
+
+    if (active_mode_ != nullptr) {
+      workbench_->SetActiveModeButton(active_mode_->Id());
+    }
+  }
+}
 
 }  // namespace sss::dscore

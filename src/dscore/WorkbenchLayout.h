@@ -5,6 +5,7 @@
 
 #include "dscore/CoreSpec.h"    // For DS_CORE_DLLSPEC
 #include "dscore/IWorkbench.h"  // For enums
+#include <functional>
 
 QT_BEGIN_NAMESPACE
 class QTabWidget;
@@ -14,6 +15,7 @@ QT_END_NAMESPACE
 namespace sss::dscore {
 
 class OverlayCanvas;
+class ModeSwitcher;
 
 /**
  * @brief A reusable widget implementing the standard workspace layout:
@@ -42,6 +44,10 @@ class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
    */
   void Clear() override;
 
+  void AddModeButton(const QString& id, const QString& title, const QIcon& icon) override;
+  void SetActiveModeButton(const QString& id) override;
+  void SetModeSwitchCallback(std::function<void(const QString&)> callback) override;
+
   [[nodiscard]] QSplitter* MainSplitter() const;
 
  private slots:
@@ -54,6 +60,8 @@ class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
   QTabWidget* left_tab_widget_ = nullptr;
   OverlayCanvas* overlay_canvas_ = nullptr;
   QToolButton* sidebar_toggle_btn_ = nullptr;
+  ModeSwitcher* mode_switcher_ = nullptr;
+  std::function<void(const QString&)> mode_switch_callback_;
   int last_sidebar_width_ = 250;  // Default width to restore
 };
 

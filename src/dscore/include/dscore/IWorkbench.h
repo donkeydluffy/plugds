@@ -82,6 +82,25 @@ class IWorkbench {
    * @brief Clears all content (Side panels, Squeeze, Overlays) from the workbench.
    */
   virtual void Clear() = 0;
+
+  /**
+   * @brief Adds a mode switch button to the right-side sidebar.
+   * @param id Unique identifier for the mode.
+   * @param title Tooltip title.
+   * @param icon Button icon.
+   */
+  virtual void AddModeButton(const QString& id, const QString& title, const QIcon& icon) = 0;
+
+  /**
+   * @brief Sets the active state of a mode button.
+   * @param id Unique identifier for the mode.
+   */
+  virtual void SetActiveModeButton(const QString& id) = 0;
+
+  /**
+   * @brief Sets the callback for when a mode button is clicked.
+   */
+  virtual void SetModeSwitchCallback(std::function<void(const QString&)> callback) = 0;
 };
 
 }  // namespace sss::dscore

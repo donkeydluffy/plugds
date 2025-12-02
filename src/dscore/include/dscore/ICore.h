@@ -5,7 +5,6 @@
 #include <QObject>
 
 #include "dscore/CoreSpec.h"
-#include "dscore/IActionContainer.h"
 #include "extsystem/IComponentManager.h"
 
 namespace sss::dscore {
@@ -69,13 +68,6 @@ class DS_CORE_DLLSPEC ICore : public QObject {
    * @returns     the folder where data should be saved.
    */
   virtual auto StorageFolder() -> QString = 0;
-
-  /**
-   * @brief       Creates a new instance of the application context menu.
-   *
-   * @returns     the context menu.
-   */
-  virtual auto ApplicationContextMenu() -> sss::dscore::IActionContainer* = 0;
 
   /**
    * Classes with virtual functions should not have a public non-virtual destructor:

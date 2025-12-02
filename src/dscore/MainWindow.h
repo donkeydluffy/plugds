@@ -71,13 +71,6 @@ class MainWindow : public QMainWindow {
    */
   auto Initialise() -> void;
 
-  /**
-   * @brief       Creates a new instance of the application context menu.
-   *
-   * @returns     the context menu.
-   */
-  auto ApplicationContextMenu() -> sss::dscore::IActionContainer*;
-
  protected:
   /**
    * @brief       Reimplements QMainWindow::closeEvent(QCloseEvent *event).
@@ -111,7 +104,7 @@ class MainWindow : public QMainWindow {
   /**
    * @brief       Adds a command to a menu.
    */
-  auto addMenuCommand(const QString& command_id, const QString& menu_id, QString group_id = QString()) -> void;
+  auto addMenuCommand(const QString& command_id, const QString& menu_id, const QString& group_id = QString()) -> void;
 
   /**
    * @brief       Creates a menu with the given identifier.
@@ -133,11 +126,6 @@ class MainWindow : public QMainWindow {
    * @brief       Updates command icons based on the current theme.
    */
   auto updateIcons(const QString& theme_id) -> void;
-
-  /**
-   * @brief       Sets up the toolbar size menu.
-   */
-  auto setupToolbarSizeMenu() -> void;
 
   //! @cond
 

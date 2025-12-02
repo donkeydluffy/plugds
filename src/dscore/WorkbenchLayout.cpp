@@ -1,11 +1,12 @@
 #include "WorkbenchLayout.h"
 
+#include <QHBoxLayout>
 #include <QSplitter>
-#include <QStyle>  // Required for QStyle::standardIcon
+#include <QStyle>
 #include <QTabWidget>
-#include <QToolButton>  // Required for QToolButton
-#include <QVBoxLayout>
+#include <QToolButton>
 
+#include "ModeSwitcher.h"
 #include "OverlayCanvas.h"
 
 namespace sss::dscore {
@@ -35,7 +36,7 @@ WorkbenchLayout::WorkbenchLayout(QWidget* parent) : QWidget(parent) {
 WorkbenchLayout::~WorkbenchLayout() = default;
 
 void WorkbenchLayout::setupUi() {
-  auto* layout = new QVBoxLayout(this);
+  auto* layout = new QHBoxLayout(this);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->setSpacing(0);
 
@@ -64,6 +65,16 @@ void WorkbenchLayout::setupUi() {
   main_splitter_->setSizes(initial_sizes);
 
   layout->addWidget(main_splitter_);
+
+  // 3. Right Mode Switcher
+  mode_switcher_ = new ModeSwitcher(this);
+  layout->addWidget(mode_switcher_);
+
+  connect(mode_switcher_, &ModeSwitcher::ModeSelected, this, [this](const QString& id) {
+    if (mode_switch_callback_) {
+      mode_switch_callback_(id);
+    }
+  });
 }
 
 void WorkbenchLayout::AddSidePanel(const QString& /*id*/, QWidget* panel, const QString& title, const QIcon& icon) {
@@ -102,6 +113,22 @@ void WorkbenchLayout::Clear() {
   if (overlay_canvas_ != nullptr) {
     overlay_canvas_->Clear();
   }
+}
+
+void WorkbenchLayout::AddModeButton(const QString& id, const QString& title, const QIcon& icon) {
+  if (mode_switcher_ != nullptr) {
+    mode_switcher_->AddModeButton(id, title, icon);
+  }
+}
+
+void WorkbenchLayout::SetActiveModeButton(const QString& id) {
+  if (mode_switcher_ != nullptr) {
+    mode_switcher_->SetActiveMode(id);
+  }
+}
+
+void WorkbenchLayout::SetModeSwitchCallback(std::function<void(const QString&)> callback) {
+  mode_switch_callback_ = callback;
 }
 
 QSplitter* WorkbenchLayout::MainSplitter() const { return main_splitter_; }

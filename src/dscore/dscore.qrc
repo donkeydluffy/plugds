@@ -4,27 +4,11 @@
         <file>resources/themes/dark.ini</file>
         <file>resources/themes/light.ini</file>
         <file>resources/themes/base.qss</file>
-        
-        <file>resources/icons/light/file_new.svg</file>
         <file>resources/icons/light/file_open.svg</file>
         <file>resources/icons/light/file_save.svg</file>
-        <file>resources/icons/light/file_print.svg</file>
-        <file>resources/icons/light/edit_cut.svg</file>
-        <file>resources/icons/light/edit_copy.svg</file>
-        <file>resources/icons/light/edit_paste.svg</file>
         <file>resources/icons/light/help_about.svg</file>
-        <file>resources/icons/light/app_preferences.svg</file>
-        <file>resources/icons/light/app_quit.svg</file>
-
-        <file>resources/icons/dark/file_new.svg</file>
         <file>resources/icons/dark/file_open.svg</file>
         <file>resources/icons/dark/file_save.svg</file>
-        <file>resources/icons/dark/file_print.svg</file>
-        <file>resources/icons/dark/edit_cut.svg</file>
-        <file>resources/icons/dark/edit_copy.svg</file>
-        <file>resources/icons/dark/edit_paste.svg</file>
         <file>resources/icons/dark/help_about.svg</file>
-        <file>resources/icons/dark/app_preferences.svg</file>
-        <file>resources/icons/dark/app_quit.svg</file>
     </qresource>
 </RCC>
