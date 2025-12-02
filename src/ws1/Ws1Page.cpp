@@ -54,7 +54,13 @@ Ws1Page::~Ws1Page() {
 
 QString Ws1Page::Id() const { return "ws1.mode"; }
 QString Ws1Page::Title() const { return tr("Workspace 1"); }
-QIcon Ws1Page::Icon() const { return QIcon(":/ws1/resources/icons/sample.svg"); }  // Placeholder
+QIcon Ws1Page::Icon() const {
+  auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
+  if (theme_service != nullptr) {
+    return theme_service->GetIcon(":/ws1/resources/icons", "workspace1.svg");
+  }
+  return {};  // Return an empty icon if theme service is not available
+}
 int Ws1Page::ContextId() const { return context_id_; }
 int Ws1Page::Priority() const { return 10; }
 
