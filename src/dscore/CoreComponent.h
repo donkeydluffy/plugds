@@ -72,13 +72,14 @@ class DS_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::ICo
  private:
   //! @cond
 
-  std::unique_ptr<sss::dscore::Core> core_;
   std::unique_ptr<sss::dscore::ContextManager> context_manager_;
   std::unique_ptr<sss::dscore::CommandManager> command_manager_;
 
   // Language and Theme services
   std::unique_ptr<sss::dscore::LanguageService> language_service_;
   std::unique_ptr<sss::dscore::ThemeService> theme_service_;
+
+  std::unique_ptr<sss::dscore::Core> core_;
 
   //! @endcond
 };

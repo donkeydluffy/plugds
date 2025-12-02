@@ -51,16 +51,16 @@ class Ws1Page : public sss::dscore::IMode {
   // Since we want to persist state (like tree expansion), we should keep ownership if possible
   // or re-create them.
   // For now, let's create them once and reuse.
-  QTreeView* tree_view_ = nullptr;
-  QStandardItemModel* model_ = nullptr;
-  QLabel* bg_label_ = nullptr;
-  QWidget* device_panel_ = nullptr;
-  QWidget* func_bar_ = nullptr;
-  QLabel* coords_label_ = nullptr;
-  QLabel* info_label_ = nullptr;
+  QPointer<QTreeView> tree_view_;
+  QPointer<QStandardItemModel> model_;
+  QPointer<QLabel> bg_label_;
+  QPointer<QWidget> device_panel_;
+  QPointer<QWidget> func_bar_;
+  QPointer<QLabel> coords_label_;
+  QPointer<QLabel> info_label_;
 
-  QPushButton* enable_button_ = nullptr;
-  QPushButton* disable_button_ = nullptr;
+  QPointer<QPushButton> enable_button_;
+  QPointer<QPushButton> disable_button_;
 
   int context_id_ = 0;
   int sub_context_id_ = 0;

@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QtGlobal>
 
-constexpr auto kSplashScreenFilename = ":/app/images/splashscreen.png";
+constexpr auto kSplashScreenFilename = ":/app/images/splashscreen.jpeg";
 constexpr auto kFontFamily = "Poppins";
 constexpr auto kFontSize = 20;
 

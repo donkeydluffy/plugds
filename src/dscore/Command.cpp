@@ -3,8 +3,6 @@
 #include <QSet>
 #include <utility>
 
-#include <spdlog/spdlog.h>
-
 #include "ActionProxy.h"
 
 namespace {
@@ -18,12 +16,14 @@ bool HasIntersection(const sss::dscore::ContextList& list1, const sss::dscore::C
 }
 
 // Helper function to check if all required contexts are active (for enabled state)
-bool HasAllRequired(const sss::dscore::ContextList& required_contexts, const sss::dscore::ContextList& active_contexts) {
+bool HasAllRequired(const sss::dscore::ContextList& required_contexts,
+                    const sss::dscore::ContextList& active_contexts) {
   if (required_contexts.isEmpty()) {
     return false;
   }
   QSet<int> active_set(active_contexts.begin(), active_contexts.end());
-  return std::all_of(required_contexts.begin(), required_contexts.end(), [&active_set](int context_id) { return active_set.contains(context_id); });
+  return std::all_of(required_contexts.begin(), required_contexts.end(),
+                     [&active_set](int context_id) { return active_set.contains(context_id); });
 }
 }  // namespace
 namespace sss::dscore {
@@ -56,32 +56,9 @@ auto Command::RegisterAction(QAction* action, const sss::dscore::ContextList& vi
 }
 
 auto sss::dscore::Command::SetContext(const sss::dscore::ContextList& active_contexts) -> void {
-  if (id_ == "ws1.sample_command") {
-    QString active_str;
-    for (int ctx : active_contexts) {
-      active_str += QString::number(ctx) + " ";
-    }
-    QString vis_str;
-    for (int ctx : visibility_contexts_) {
-      vis_str += QString::number(ctx) + " ";
-    }
-    QString en_str;
-    for (int ctx : enabled_contexts_) {
-      en_str += QString::number(ctx) + " ";
-    }
-    SPDLOG_INFO("Command::SetContext for ws1.sample_command");
-    SPDLOG_INFO("  active_contexts: [{}]", active_str.toStdString());
-    SPDLOG_INFO("  visibility_contexts: [{}]", vis_str.toStdString());
-    SPDLOG_INFO("  enabled_contexts: [{}]", en_str.toStdString());
-  }
-
   // Determine visibility and enabled state based on the current active contexts
   const bool is_visible = HasIntersection(visibility_contexts_, active_contexts);
   const bool is_enabled = HasAllRequired(enabled_contexts_, active_contexts);
-
-  if (id_ == "ws1.sample_command") {
-    SPDLOG_INFO("ws1.sample_command - is_visible: {}, is_enabled: {}", is_visible, is_enabled);
-  }
 
   action_->setVisible(is_visible);
   action_->setEnabled(is_enabled);
@@ -93,9 +70,6 @@ auto sss::dscore::Command::SetContext(const sss::dscore::ContextList& active_con
     int current_active_context = *it;
     if (actions_.contains(current_active_context)) {
       specific_action = actions_[current_active_context];
-      if (id_ == "ws1.sample_command") {
-        SPDLOG_INFO("ws1.sample_command - found specific action for context {}", current_active_context);
-      }
       break;  // Found a match, use it
     }
   }
@@ -103,16 +77,9 @@ auto sss::dscore::Command::SetContext(const sss::dscore::ContextList& active_con
   // Only fall back to global context if no specific action found
   if (specific_action == nullptr && actions_.contains(sss::dscore::kGlobalContext)) {
     specific_action = actions_[sss::dscore::kGlobalContext];
-    if (id_ == "ws1.sample_command") {
-      SPDLOG_INFO("ws1.sample_command - using global context action as fallback");
-    }
   }
 
   action_->SetActive(specific_action);
-
-  if (id_ == "ws1.sample_command") {
-    SPDLOG_INFO("ws1.sample_command - completed, action proxy enabled: {}", action_->isEnabled());
-  }
 }
 
 auto sss::dscore::Command::SetActive(bool state) -> void {
