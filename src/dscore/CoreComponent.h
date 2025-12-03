@@ -12,6 +12,7 @@ class CommandManager;
 class ContextManager;
 class Core;
 class CoreUIProvider;
+class MenuAndToolbarManager;
 class SystemTrayIconManager;
 }  // namespace sss::dscore
 
@@ -84,6 +85,7 @@ class DS_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::ICo
 
   // UI Provider (Composition)
   std::unique_ptr<sss::dscore::CoreUIProvider> core_ui_provider_;
+  std::unique_ptr<sss::dscore::MenuAndToolbarManager> menu_and_toolbar_manager_;
 
   //! @endcond
 };

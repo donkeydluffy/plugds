@@ -2,10 +2,10 @@
 
 #include <QToolButton>
 #include <QWidget>
+#include <functional>
 
 #include "dscore/CoreSpec.h"    // For DS_CORE_DLLSPEC
 #include "dscore/IWorkbench.h"  // For enums
-#include <functional>
 
 QT_BEGIN_NAMESPACE
 class QTabWidget;

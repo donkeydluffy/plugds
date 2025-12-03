@@ -83,11 +83,6 @@ class MainWindow : public QMainWindow {
 
  private:
   /**
-   * @brief       Loads UI extensions (Menus, Toolbars, Commands) from registered components.
-   */
-  auto loadUiExtensions() -> void;
-
-  /**
    * @brief       Updates the title bar when light/dark mode changes.
    */
   auto updateTitlebar() -> void;

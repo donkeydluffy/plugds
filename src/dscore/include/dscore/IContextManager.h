@@ -96,6 +96,18 @@ class DS_CORE_DLLSPEC IContextManager : public QObject {
   virtual auto Context(QString context_name) -> int = 0;
 
   /**
+   * @brief       Activates a mode-level context, managing the context hierarchy.
+   *
+   * @details     Switches the active mode context. This handles the "Three-Level" hierarchy:
+   *              1. Global Context (persists).
+   *              2. Mode Context (switched).
+   *              3. Sub-Contexts (restored for the specific mode).
+   *
+   * @param[in]   mode_context_id The context ID of the mode to activate.
+   */
+  virtual auto ActivateMode(int mode_context_id) -> void = 0;
+
+  /**
    * @brief       Signals that the context has changed.
    *
    * @details     Emitted when the context manager switches context.

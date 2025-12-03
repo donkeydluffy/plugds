@@ -31,15 +31,17 @@ auto sss::dscore::ActionProxy::SetActive(QAction* action) -> void {
 
   if (action != nullptr) {
     setMenuRole(action->menuRole());
-    // 注意：不要在这里同步状态！
-    // ActionProxy 的状态应该由 Command::SetContext 控制
-    // 被代理的 action 状态应该由 ActionProxy 控制，而不是反过来
-    // 移除以下几行：
-    // setEnabled(action->isEnabled());
-    // setVisible(action->isVisible());
-    // if (action->isCheckable()) { setChecked(action->isChecked()); }
 
-    // 但我们需要同步当前 ActionProxy 的状态到新的 action
+    // 1. Sync Visual Properties: Real Action -> Proxy
+    // The plugin owns the real action and sets its icon/text. The Proxy must reflect this.
+    setIcon(action->icon());
+    setText(action->text());
+    setToolTip(action->toolTip());
+    setStatusTip(action->statusTip());
+    setCheckable(action->isCheckable());
+
+    // 2. Sync State Properties: Proxy -> Real Action
+    // The ContextManager controls the Proxy's state. The Real Action must obey.
     action->setEnabled(isEnabled());
     action->setVisible(isVisible());
     if (action->isCheckable() && isCheckable()) {
@@ -68,12 +70,22 @@ auto sss::dscore::ActionProxy::ConnectAction() -> void {
   connect(this, &QAction::triggered, action_, &QAction::triggered);
   connect(this, &QAction::toggled, action_, &QAction::setChecked);
 
-  // 建立状态同步：当ActionProxy状态改变时，同步到原始action
+  // 1. Real Action -> Proxy (Visuals)
+  connect(action_, &QAction::changed, [this]() {
+    if (icon().cacheKey() != action_->icon().cacheKey()) setIcon(action_->icon());
+    if (text() != action_->text()) setText(action_->text());
+    if (toolTip() != action_->toolTip()) setToolTip(action_->toolTip());
+    if (statusTip() != action_->statusTip()) setStatusTip(action_->statusTip());
+    if (isCheckable() != action_->isCheckable()) setCheckable(action_->isCheckable());
+  });
+
+  // 2. Proxy -> Real Action (State)
+  // When Proxy state changes (via SetContext), sync to Real Action
   connect(this, &QAction::changed, [this]() {
     if (action_ != nullptr) {
-      action_->setEnabled(isEnabled());
-      action_->setVisible(isVisible());
-      if (action_->isCheckable() && isCheckable()) {
+      if (action_->isEnabled() != isEnabled()) action_->setEnabled(isEnabled());
+      if (action_->isVisible() != isVisible()) action_->setVisible(isVisible());
+      if (action_->isCheckable() && isCheckable() && action_->isChecked() != isChecked()) {
         action_->setChecked(isChecked());
       }
     }

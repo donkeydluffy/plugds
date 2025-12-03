@@ -12,14 +12,10 @@
 
 #include "ModeManager.h"
 #include "WorkbenchLayout.h"
-#include "dscore/CoreConstants.h"
-#include "dscore/IActionContainer.h"
 #include "dscore/ICommandManager.h"
 #include "dscore/ICommandProvider.h"
 #include "dscore/IContextManager.h"
 #include "dscore/IMenuProvider.h"
-#include "dscore/IStatusbarManager.h"
-#include "dscore/IStatusbarProvider.h"
 #include "dscore/IToolbarProvider.h"
 #include "extsystem/IComponentManager.h"
 #include "ui_MainWindow.h"
@@ -64,50 +60,9 @@ sss::dscore::MainWindow::~MainWindow() {
 
 auto sss::dscore::MainWindow::updateTitlebar() -> void {}
 
-auto sss::dscore::MainWindow::Initialise() -> void {
-  loadUiExtensions();
-
+auto sss::dscore::MainWindow::Initialise() -> void {  // NOLINT
   if (sss::dscore::IContextManager::GetInstance() != nullptr) {
     sss::dscore::IContextManager::GetInstance()->SetContext(sss::dscore::kGlobalContext);
-  }
-}
-
-auto sss::dscore::MainWindow::loadUiExtensions() -> void {  // NOLINT
-  auto* command_manager = sss::dscore::ICommandManager::GetInstance();
-  if (command_manager == nullptr) {
-    SPDLOG_ERROR("CommandManager is null in LoadUIExtensions");
-    return;
-  }
-
-  // Initialize Root Containers (MenuBar)
-  command_manager->CreateActionContainer(sss::dscore::constants::menubars::kApplication,
-                                         sss::dscore::ContainerType::kMenuBar, nullptr, 0);
-
-  // 1. Register Commands
-  auto command_providers = sss::extsystem::GetTObjects<sss::dscore::ICommandProvider>();
-  for (auto* provider : command_providers) {
-    provider->RegisterCommands(command_manager);
-  }
-
-  // 2. Contribute Menus
-  auto menu_providers = sss::extsystem::GetTObjects<sss::dscore::IMenuProvider>();
-  for (auto* provider : menu_providers) {
-    provider->ContributeToMenu(command_manager);
-  }
-
-  // 3. Contribute Toolbars
-  auto toolbar_providers = sss::extsystem::GetTObjects<sss::dscore::IToolbarProvider>();
-  for (auto* provider : toolbar_providers) {
-    provider->ContributeToToolbar(command_manager);
-  }
-
-  // 4. Contribute Statusbar
-  auto* statusbar_manager = sss::extsystem::GetTObject<sss::dscore::IStatusbarManager>();
-  if (statusbar_manager != nullptr) {
-    auto statusbar_providers = sss::extsystem::GetTObjects<sss::dscore::IStatusbarProvider>();
-    for (auto* provider : statusbar_providers) {
-      provider->ContributeToStatusbar(statusbar_manager);
-    }
   }
 }
 

@@ -2,6 +2,7 @@
 
 #include <QMap>
 #include <QObject>
+#include <QSet>
 #include <QString>
 
 #include "dscore/IContextManager.h"
@@ -50,6 +51,11 @@ class ContextManager : public sss::dscore::IContextManager {
   auto RemoveActiveContext(int context_id) -> void override;
 
   /**
+   * @copydoc IContextManager::ActivateMode
+   */
+  auto ActivateMode(int mode_context_id) -> void override;
+
+  /**
    * @copydoc IContextManager::Context
    */
   auto Context() -> int override;
@@ -70,6 +76,10 @@ class ContextManager : public sss::dscore::IContextManager {
   QList<int> active_contexts_;
   int next_context_id_;
   QMap<QString, int> context_ids_;
+
+  // Hierarchy Management
+  int current_mode_context_id_{0};
+  QMap<int, QSet<int>> mode_sub_contexts_storage_;
 
   //! @endcond
 };

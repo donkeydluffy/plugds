@@ -44,11 +44,6 @@ void ModeManager::ActivateMode(const QString& id) {
   // 1. Deactivate old mode
   if (old_mode != nullptr) {
     old_mode->Deactivate();
-    // Remove old mode's context
-    auto* cm = IContextManager::GetInstance();
-    if (cm != nullptr) {
-      cm->RemoveActiveContext(old_mode->ContextId());
-    }
   }
 
   // 2. Update Active Mode Pointer
@@ -56,10 +51,10 @@ void ModeManager::ActivateMode(const QString& id) {
 
   // 3. Activate new mode
   if (active_mode_ != nullptr) {
-    // Set Context
+    // Set Context (Switch Mode)
     auto* cm = IContextManager::GetInstance();
     if (cm != nullptr) {
-      cm->AddActiveContext(active_mode_->ContextId());
+      cm->ActivateMode(active_mode_->ContextId());
     }
 
     // Setup Workbench Content

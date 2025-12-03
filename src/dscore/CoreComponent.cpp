@@ -10,14 +10,24 @@
 #include "CoreUIProvider.h"
 #include "LanguageService.h"
 #include "MainWindow.h"
+#include "MenuAndToolbarManager.h"
 #include "ThemeService.h"
+#include "dscore/IMode.h"
+#include "dscore/IModeManager.h"
+#include "dscore/IStatusbarManager.h"
+#include "dscore/IStatusbarProvider.h"
 
 CoreComponent::CoreComponent() = default;
 
 CoreComponent::~CoreComponent() = default;
 
 auto CoreComponent::InitialiseEvent() -> void {
-  SPDLOG_INFO("[CoreComponent] InitialiseEvent started");
+  SPDLOG_INFO("[CoreComponent] InitialiseEvent started (Phase 1: Infrastructure Initialization)");
+
+  // PHASE 1: Infrastructure Initialization
+  // In this phase, we establish the core managers. Plugins will rely on these being present
+  // when their InitialiseEvent (Phase 2) is called.
+  // NO UI construction should happen here that depends on other plugins.
 
   // 1. Initialize Infrastructure Services FIRST
   context_manager_ = std::make_unique<sss::dscore::ContextManager>();
@@ -63,7 +73,16 @@ auto CoreComponent::InitialiseEvent() -> void {
 }
 
 auto CoreComponent::InitialisationFinishedEvent() -> void {
-  SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent started");
+  SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent started (Phase 3: UI Composition & Presentation)");
+
+  // PHASE 3: UI Composition & Presentation
+  // This event is called in REVERSE load order. Since Core is loaded first, this function runs LAST.
+  // At this point, all other plugins have finished their InitialiseEvent.
+  // It is now safe to:
+  // 1. Discover providers (Menu, Toolbar, Statusbar) from all plugins.
+  // 2. Build the final UI.
+  // 3. Activate the default mode/context.
+  // 4. Show the main window.
 
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
   if (main_window == nullptr) {
@@ -73,6 +92,37 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
 
   // Use the owned core_ member directly
   if (core_) {
+    // Trigger MenuAndToolbarManager to build the UI from registered providers
+    menu_and_toolbar_manager_ = std::make_unique<sss::dscore::MenuAndToolbarManager>();
+    menu_and_toolbar_manager_->Build();
+
+    // Process Statusbar Providers (Phase 3)
+    auto* statusbar_manager = sss::extsystem::GetTObject<sss::dscore::IStatusbarManager>();
+    if (statusbar_manager != nullptr) {
+      auto statusbar_providers = sss::extsystem::GetTObjects<sss::dscore::IStatusbarProvider>();
+      SPDLOG_INFO("[CoreComponent] Found {} Statusbar Providers.", statusbar_providers.size());
+      for (auto* provider : statusbar_providers) {
+        provider->ContributeToStatusbar(statusbar_manager);
+      }
+    }
+
+    // 3. Activate the default mode/context
+    auto* mode_manager = sss::extsystem::GetTObject<sss::dscore::IModeManager>();
+    if (mode_manager != nullptr) {
+      auto modes = mode_manager->Modes();
+      if (!modes.isEmpty()) {
+        // Note: In the future, read "LastMode" from ISettingsService.
+        // For now, pick the first one (likely WS1 if loaded).
+        auto* first_mode = modes.first();
+        SPDLOG_INFO("[CoreComponent] Activating initial mode: {}", first_mode->Title().toStdString());
+        mode_manager->ActivateMode(first_mode->Id());
+      } else {
+        SPDLOG_WARN("[CoreComponent] No modes registered. Application might be empty.");
+      }
+    } else {
+      SPDLOG_ERROR("[CoreComponent] IModeManager not found.");
+    }
+
     core_->Open();
     SPDLOG_INFO("[CoreComponent] Core opened, main window should be visible now");
   } else {

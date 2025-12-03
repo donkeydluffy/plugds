@@ -1,6 +1,9 @@
 #include "Command.h"
 
+#include <spdlog/spdlog.h>
+
 #include <QSet>
+#include <algorithm>  // Required for std::all_of
 #include <utility>
 
 #include "ActionProxy.h"
@@ -19,13 +22,14 @@ bool HasIntersection(const sss::dscore::ContextList& list1, const sss::dscore::C
 bool HasAllRequired(const sss::dscore::ContextList& required_contexts,
                     const sss::dscore::ContextList& active_contexts) {
   if (required_contexts.isEmpty()) {
-    return false;
+    return true;  // If no requirements, it is enabled (or decided by intersection)
   }
   QSet<int> active_set(active_contexts.begin(), active_contexts.end());
   return std::all_of(required_contexts.begin(), required_contexts.end(),
                      [&active_set](int context_id) { return active_set.contains(context_id); });
 }
 }  // namespace
+
 namespace sss::dscore {
 
 Command::Command(QString id) : action_(new ActionProxy()), id_(std::move(id)) {}
@@ -55,7 +59,7 @@ auto Command::RegisterAction(QAction* action, const sss::dscore::ContextList& vi
   }
 }
 
-auto sss::dscore::Command::SetContext(const sss::dscore::ContextList& active_contexts) -> void {
+auto Command::SetContext(const sss::dscore::ContextList& active_contexts) -> void {
   // Determine visibility and enabled state based on the current active contexts
   const bool is_visible = HasIntersection(visibility_contexts_, active_contexts);
   const bool is_enabled = HasAllRequired(enabled_contexts_, active_contexts);
@@ -82,14 +86,8 @@ auto sss::dscore::Command::SetContext(const sss::dscore::ContextList& active_con
   action_->SetActive(specific_action);
 }
 
-auto sss::dscore::Command::SetActive(bool state) -> void {
-  // This method might need to be re-evaluated. If the command's enabled state is
-  // purely context-driven, this method might become redundant or needs to
-  // modify the underlying QAction directly (which is dangerous if it's shared).
-  // For now, let ActionProxy handle it.
-  action_->setEnabled(state);
-}
+auto Command::SetActive(bool state) -> void { action_->setEnabled(state); }
 
-auto sss::dscore::Command::Active() -> bool { return action_->isEnabled(); }
+auto Command::Active() -> bool { return action_->isEnabled(); }
 
 }  // namespace sss::dscore

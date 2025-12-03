@@ -39,9 +39,11 @@ void Ws1Component::InitialiseEvent() {
   auto* mode_manager = sss::extsystem::GetTObject<sss::dscore::IModeManager>();
   if (mode_manager != nullptr) {
     mode_manager->AddMode(ws1_mode_);
-    mode_manager->ActivateMode(ws1_mode_->Id());  // Auto-activate for testing
+    // VIOLATION FIX: Do NOT activate mode here (Phase 2).
+    // Mode activation involves UI manipulation which should happen in Phase 3 (InitialisationFinishedEvent) or later.
+    // mode_manager->ActivateMode(ws1_mode_->Id());
   } else {
-    SPDLOG_ERROR("Failed to get IModeManager. Mode will not be activated.");
+    SPDLOG_ERROR("Failed to get IModeManager.");
   }
 
   // 3. Language & Theme Service Integration

@@ -132,6 +132,11 @@ int main(int argc, char** argv) {
 
   SPDLOG_INFO("Starting to load components...");
 
+  // LIFECYCLE MANAGEMENT:
+  // 1. Phase 1 (Core Init): CoreComponent (dependency root) initializes first, setting up Managers.
+  // 2. Phase 2 (Plugin Init): Other plugins initialize, registering Contexts/Providers.
+  // 3. Phase 3 (Finished): After all Init, InitialisationFinishedEvent runs in reverse order.
+  //    CoreComponent runs last, building the UI and showing the window.
   component_loader->LoadComponents([disabled_components](sss::extsystem::Component* component) -> bool {
     auto component_id = (component->Name() + "." + component->Vendor()).toLower();
     bool should_load = !disabled_components.contains(component_id);
