@@ -235,6 +235,9 @@ void OverlayCanvas::initOverlayContainers() {
       case OverlayZone::kTopLeft:
       case OverlayZone::kTopRight:
       case OverlayZone::kBottomLeft:
+      case OverlayZone::kBottomRight:
+      case OverlayZone::kLeftCenter:
+      case OverlayZone::kRightCenter:
       case OverlayZone::kBottomCenter:
       case OverlayZone::kTopCenter:
       case OverlayZone::kTop:
@@ -268,6 +271,9 @@ void OverlayCanvas::initOverlayContainers() {
   create_container(OverlayZone::kTopLeft);
   create_container(OverlayZone::kTopRight);
   create_container(OverlayZone::kBottomLeft);
+  create_container(OverlayZone::kBottomRight);
+  create_container(OverlayZone::kLeftCenter);
+  create_container(OverlayZone::kRightCenter);
   create_container(OverlayZone::kBottomCenter);
   create_container(OverlayZone::kTopCenter);
   create_container(OverlayZone::kTop);
@@ -395,6 +401,18 @@ void OverlayCanvas::layoutOverlayWidgets(const QRect& area) {
       case OverlayZone::kBottomLeft:
         x = area.left();
         y = area.bottom() - h;
+        break;
+      case OverlayZone::kBottomRight:
+        x = area.right() - w;
+        y = area.bottom() - h;
+        break;
+      case OverlayZone::kLeftCenter:
+        x = area.left();
+        y = area.center().y() - (h / 2);
+        break;
+      case OverlayZone::kRightCenter:
+        x = area.right() - w;
+        y = area.center().y() - (h / 2);
         break;
       case OverlayZone::kBottomCenter:
         x = area.center().x() - (w / 2);

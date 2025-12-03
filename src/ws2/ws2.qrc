@@ -1,0 +1,14 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/ws2">
+        <file>resources/icons/light/sample.svg</file>
+        <file>resources/icons/light/action_stop.svg</file>
+        <file>resources/icons/light/action_play.svg</file>
+        <file>resources/icons/light/workspace2.svg</file>
+
+        <file>resources/icons/dark/sample.svg</file>
+        <file>resources/icons/dark/action_stop.svg</file>
+        <file>resources/icons/dark/action_play.svg</file>
+        <file>resources/icons/dark/workspace2.svg</file>
+    </qresource>
+</RCC>

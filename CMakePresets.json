@@ -759,6 +759,150 @@
       "targets": [
         "publish_ws1_release"
       ]
+    },
+    {
+      "name": "publish-ws2-debug-using-windows_vs2017_config",
+      "displayName": "Publish ws2 (Debug) using windows-vs2017-config",
+      "configurePreset": "windows-vs2017-config",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-windows_vs2017_config",
+      "displayName": "Publish ws2 (Release) using windows-vs2017-config",
+      "configurePreset": "windows-vs2017-config",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-windows_vs2022_config",
+      "displayName": "Publish ws2 (Debug) using windows-vs2022-config",
+      "configurePreset": "windows-vs2022-config",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-windows_vs2022_config",
+      "displayName": "Publish ws2 (Release) using windows-vs2022-config",
+      "configurePreset": "windows-vs2022-config",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-ninja_debug",
+      "displayName": "Publish ws2 (Debug) using ninja-debug",
+      "configurePreset": "ninja-debug",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-ninja_release",
+      "displayName": "Publish ws2 (Release) using ninja-release",
+      "configurePreset": "ninja-release",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-make_debug",
+      "displayName": "Publish ws2 (Debug) using make-debug",
+      "configurePreset": "make-debug",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-make_release",
+      "displayName": "Publish ws2 (Release) using make-release",
+      "configurePreset": "make-release",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-make_debug_arm64_cross",
+      "displayName": "Publish ws2 (Debug) using make-debug-arm64-cross",
+      "configurePreset": "make-debug-arm64-cross",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-make_release_arm64_cross",
+      "displayName": "Publish ws2 (Release) using make-release-arm64-cross",
+      "configurePreset": "make-release-arm64-cross",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-android_debug",
+      "displayName": "Publish ws2 (Debug) using android-debug",
+      "configurePreset": "android-debug",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-android_release",
+      "displayName": "Publish ws2 (Release) using android-release",
+      "configurePreset": "android-release",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-android_debug_ninja",
+      "displayName": "Publish ws2 (Debug) using android-debug-ninja",
+      "configurePreset": "android-debug-ninja",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-android_release_ninja",
+      "displayName": "Publish ws2 (Release) using android-release-ninja",
+      "configurePreset": "android-release-ninja",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-macos_arm64_debug_cross",
+      "displayName": "Publish ws2 (Debug) using macos-arm64-debug-cross",
+      "configurePreset": "macos-arm64-debug-cross",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-macos_arm64_release_cross",
+      "displayName": "Publish ws2 (Release) using macos-arm64-release-cross",
+      "configurePreset": "macos-arm64-release-cross",
+      "targets": [
+        "publish_ws2_release"
+      ]
+    },
+    {
+      "name": "publish-ws2-debug-using-macos_arm64_debug",
+      "displayName": "Publish ws2 (Debug) using macos-arm64-debug",
+      "configurePreset": "macos-arm64-debug",
+      "targets": [
+        "publish_ws2_debug"
+      ]
+    },
+    {
+      "name": "publish-ws2-release-using-macos_arm64_release",
+      "displayName": "Publish ws2 (Release) using macos-arm64-release",
+      "configurePreset": "macos-arm64-release",
+      "targets": [
+        "publish_ws2_release"
+      ]
     }
   ]
 }

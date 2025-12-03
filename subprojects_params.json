@@ -26,5 +26,12 @@
     "conan_pkg_name": "ws1",
     "shared": true,
     "publish": true
+  },
+  "ws2": {
+    "type": "lib",
+    "version": "0.1.0",
+    "conan_pkg_name": "ws2",
+    "shared": true,
+    "publish": true
   }
 }
