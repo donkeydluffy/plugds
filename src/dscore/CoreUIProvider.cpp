@@ -92,9 +92,13 @@ void CoreUIProvider::RegisterCommands(sss::dscore::ICommandManager* command_mana
 }
 
 void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
+  // Find the Application MenuBar (created by MenuAndToolbarManager)
+  auto* app_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
+
   // Settings Menu
+  // Note: passing app_menu_bar as parent ensures it is attached to the menu bar, not creating a wrapper.
   auto* settings_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kSettings,
-                                                               sss::dscore::ContainerType::kMenu, nullptr, 100);
+                                                               sss::dscore::ContainerType::kMenu, app_menu_bar, 100);
 
   if (settings_menu != nullptr) {
     settings_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupLanguage, 100);
@@ -121,7 +125,7 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
 
   // Help Menu
   auto* help_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kHelp,
-                                                           sss::dscore::ContainerType::kMenu, nullptr, 900);
+                                                           sss::dscore::ContainerType::kMenu, app_menu_bar, 900);
   if (help_menu != nullptr) {
     help_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupHelp, 100);
     help_menu->AppendCommand(sss::dscore::constants::commands::kAbout, sss::dscore::constants::menugroups::kGroupHelp);
