@@ -10,3 +10,4 @@ src/cpp_project_manager*
 cpp-templates/
 conanfile.py
 *.log
+_codeql_detected_source_root

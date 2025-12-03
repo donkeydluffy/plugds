@@ -41,13 +41,13 @@ void ModeManager::ActivateMode(const QString& id) {
   IMode* old_mode = active_mode_;
   SPDLOG_INFO("Switching Mode: {} -> {}", old_mode ? old_mode->Id().toStdString() : "None", id.toStdString());
 
-  // 1. Deactivate old mode
+  // 1. Deactivate old mode using the new workspace-aware context management
   if (old_mode != nullptr) {
     old_mode->Deactivate();
-    // Remove old mode's context
+    // Use DeactivateWorkspace which also clears all sub-contexts
     auto* cm = IContextManager::GetInstance();
     if (cm != nullptr) {
-      cm->RemoveActiveContext(old_mode->ContextId());
+      cm->DeactivateWorkspace(old_mode->ContextId());
     }
   }
 
@@ -56,10 +56,10 @@ void ModeManager::ActivateMode(const QString& id) {
 
   // 3. Activate new mode
   if (active_mode_ != nullptr) {
-    // Set Context
+    // Use ActivateWorkspace for the new mode's context
     auto* cm = IContextManager::GetInstance();
     if (cm != nullptr) {
-      cm->AddActiveContext(active_mode_->ContextId());
+      cm->ActivateWorkspace(active_mode_->ContextId());
     }
 
     // Setup Workbench Content

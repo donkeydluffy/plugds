@@ -7,6 +7,7 @@
 namespace sss::dscore {
 class ICommandManager;
 class ILanguageService;
+class IMenuService;
 }  // namespace sss::dscore
 
 namespace sss::ws1 {
@@ -31,8 +32,18 @@ class Ws1Component : public QObject, public sss::extsystem::IComponent {
   void UpdateIcons(const QString& theme_id);
 
  private:
+  /**
+   * @brief       Registers menu items using the new IMenuService API.
+   *
+   * @details     This is the preferred approach for plugins to register menus
+   *              without needing to modify MainWindow.
+   */
+  void registerMenuItems(sss::dscore::IMenuService* menu_service);
+
+  /**
+   * @brief       Fallback method using direct ICommandManager API.
+   */
   void createSampleCommand(sss::dscore::ICommandManager* command_manager);
-  void createSwitchCommands(sss::dscore::ICommandManager* command_manager, sss::dscore::ILanguageService* lang_service);
 
   int page_context_id_ = 0;
   int sub_context_id_ = 0;

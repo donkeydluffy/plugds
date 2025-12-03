@@ -7,6 +7,7 @@
 #include "Core.h"
 #include "LanguageService.h"
 #include "MainWindow.h"
+#include "MenuService.h"
 #include "ThemeService.h"
 
 CoreComponent::CoreComponent() = default;
@@ -24,6 +25,11 @@ auto CoreComponent::InitialiseEvent() -> void {
   command_manager_ = std::make_unique<sss::dscore::CommandManager>();
   SPDLOG_INFO("[CoreComponent] Created CommandManager instance: {}", (void*)command_manager_.get());
   sss::extsystem::AddObject(command_manager_.get());
+
+  // Initialize MenuService after CommandManager (depends on it)
+  menu_service_ = std::make_unique<sss::dscore::MenuService>();
+  SPDLOG_INFO("[CoreComponent] Created MenuService instance: {}", (void*)menu_service_.get());
+  sss::extsystem::AddObject(menu_service_.get());
 
   // Language and Theme services
   language_service_ = std::make_unique<sss::dscore::LanguageService>();
@@ -90,6 +96,11 @@ auto CoreComponent::FinaliseEvent() -> void {
   if (command_manager_) {
     sss::extsystem::RemoveObject(command_manager_.get());
     SPDLOG_INFO("[CoreComponent] CommandManager removed");
+  }
+
+  if (menu_service_) {
+    sss::extsystem::RemoveObject(menu_service_.get());
+    SPDLOG_INFO("[CoreComponent] MenuService removed");
   }
 
   if (language_service_) {
