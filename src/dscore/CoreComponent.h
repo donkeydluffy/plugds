@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "LanguageService.h"
+#include "MenuService.h"
 #include "ThemeService.h"
 #include "dscore/CoreSpec.h"
 #include "extsystem/IComponent.h"
@@ -74,6 +75,7 @@ class DS_CORE_DLLSPEC CoreComponent : public QObject, public sss::extsystem::ICo
 
   std::unique_ptr<sss::dscore::ContextManager> context_manager_;
   std::unique_ptr<sss::dscore::CommandManager> command_manager_;
+  std::unique_ptr<sss::dscore::MenuService> menu_service_;
 
   // Language and Theme services
   std::unique_ptr<sss::dscore::LanguageService> language_service_;
