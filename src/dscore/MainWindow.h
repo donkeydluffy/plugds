@@ -30,7 +30,6 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-// class QTabWidget; // Removed
 class QToolButton;
 QT_END_NAMESPACE
 
@@ -84,58 +83,18 @@ class MainWindow : public QMainWindow {
 
  private:
   /**
-   * @brief       Creates the placeholders for the default commands which other plugins
-   *              can then use these in their own specific context.
+   * @brief       Loads UI extensions (Menus, Toolbars, Commands) from registered components.
    */
-  auto createDefaultCommands() -> void;
-
-  /**
-   * @brief       Registers the default actions for the global context to the
-   *              registered commands.
-   */
-  auto registerDefaultCommands() -> void;
-
-  /**
-   * @brief      Creates a Command and registers it with the system.
-   */
-  auto createCommand(QString command_id, QAbstractButton* button = nullptr,
-                     QAction::MenuRole menu_role = QAction::NoRole) -> sss::dscore::ICommand*;
-
-  /**
-   * @brief       Adds a command to a menu.
-   */
-  auto addMenuCommand(const QString& command_id, const QString& menu_id, const QString& group_id = QString()) -> void;
-
-  /**
-   * @brief       Creates a menu with the given identifier.
-   */
-  auto createMenu(const QString& menu_id, const QString& parent_menu_id = QString(), int order = 0)
-      -> sss::dscore::IActionContainer*;
-
-  /**
-   * @brief       Returns the IMenu pointer for a named menu.
-   */
-  auto findMenu(const QString& menu_id) -> sss::dscore::IActionContainer*;
+  auto loadUiExtensions() -> void;
 
   /**
    * @brief       Updates the title bar when light/dark mode changes.
    */
   auto updateTitlebar() -> void;
 
-  /**
-   * @brief       Updates command icons based on the current theme.
-   */
-  auto updateIcons(const QString& theme_id) -> void;
-
   //! @cond
 
   Ui::MainWindow* ui_;
-
-  QAction* about_action_;
-  QAction* quit_action_;
-  QAction* preferences_action_;
-  QAction* show_application_;
-  QAction* hide_application_;
 
   bool application_hidden_;
 

@@ -2,9 +2,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include <QAction>
+
 #include "CommandManager.h"
 #include "ContextManager.h"
 #include "Core.h"
+#include "CoreUIProvider.h"
 #include "LanguageService.h"
 #include "MainWindow.h"
 #include "ThemeService.h"
@@ -40,7 +43,12 @@ auto CoreComponent::InitialiseEvent() -> void {
   // Load default theme
   theme_service_->LoadTheme("dark");
 
-  // 2. Initialize Core (which creates MainWindow and PageManager, dependent on services)
+  // 2. Create and Register UI Provider
+  core_ui_provider_ = std::make_unique<sss::dscore::CoreUIProvider>();
+  sss::extsystem::AddObject(core_ui_provider_.get());
+  SPDLOG_INFO("[CoreComponent] Created and registered CoreUIProvider");
+
+  // 3. Initialize Core (which creates MainWindow and PageManager, dependent on services)
   core_ = std::make_unique<sss::dscore::Core>();
   SPDLOG_INFO("[CoreComponent] Created Core instance: {}", (void*)core_.get());
   sss::extsystem::AddObject(core_.get());
@@ -80,6 +88,11 @@ auto CoreComponent::FinaliseEvent() -> void {
   if (core_) {
     sss::extsystem::RemoveObject(core_.get());
     SPDLOG_INFO("[CoreComponent] Core removed");
+  }
+
+  if (core_ui_provider_) {
+    sss::extsystem::RemoveObject(core_ui_provider_.get());
+    SPDLOG_INFO("[CoreComponent] CoreUIProvider removed");
   }
 
   if (context_manager_) {

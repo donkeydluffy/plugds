@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "extsystem/IComponent.h"
 
@@ -11,7 +12,8 @@ class ILanguageService;
 
 namespace sss::ws1 {
 
-class Ws1Page;  // Forward declare the Mode class
+class Ws1Page;
+class Ws1UIProvider;
 
 class Ws1Component : public QObject, public sss::extsystem::IComponent {
   Q_OBJECT
@@ -31,12 +33,13 @@ class Ws1Component : public QObject, public sss::extsystem::IComponent {
   void UpdateIcons(const QString& theme_id);
 
  private:
-  void createSampleCommand(sss::dscore::ICommandManager* command_manager);
-  void createSwitchCommands(sss::dscore::ICommandManager* command_manager, sss::dscore::ILanguageService* lang_service);
+  // Removed createSampleCommand and createSwitchCommands methods
 
   int page_context_id_ = 0;
   int sub_context_id_ = 0;
   Ws1Page* ws1_mode_ = nullptr;  // Keep track of our mode instance
+
+  std::unique_ptr<Ws1UIProvider> ui_provider_;
 };
 
 }  // namespace sss::ws1

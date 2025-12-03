@@ -1,4 +1,4 @@
-# ws1 的 CMakeLists.txt
+# dscore 的 CMakeLists.txt
 cmake_minimum_required(VERSION 3.23)
 
 project(
@@ -94,14 +94,7 @@ file(
   "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.hxx"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.inl")
-file(
-  GLOB_RECURSE
-  PROJECT_PUBLIC_HEADERS
-  CONFIGURE_DEPENDS
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hxx"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl")
+# Explicitly set UI files (avoiding glob issues)
 file(
   GLOB_RECURSE
   PROJECT_UIFILES_GLOBBED
@@ -109,7 +102,7 @@ file(
   "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
 file(
   GLOB_RECURSE
-  PROJECT_RCFILES_GLOBBED
+  PROJECT_QRCFILES_GLOBBED
   CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/*.qrc")
 file(
@@ -120,7 +113,8 @@ file(
 qt5_add_translation(PROJECT_QM_FILES ${PROJECT_TSFILES_GLOBBED})
 
 # Generate a qrc file for the translations
-set(TRANSLATIONS_QRC_CONTENT "<RCC>\n    <qresource prefix=\"/ws1/i18n\">\n")
+set(TRANSLATIONS_QRC_CONTENT "<RCC>\n    <qresource prefix=\"/ws1/i18n\">
+")
 foreach(QM_FILE ${PROJECT_QM_FILES})
   get_filename_component(QM_FILENAME ${QM_FILE} NAME)
   string(APPEND TRANSLATIONS_QRC_CONTENT "        <file alias=\"${QM_FILENAME}\">${QM_FILE}</file>\n")
@@ -131,6 +125,15 @@ set(TRANSLATIONS_QRC_FILE "${CMAKE_CURRENT_BINARY_DIR}/ws1_translations.qrc")
 file(WRITE ${TRANSLATIONS_QRC_FILE} "${TRANSLATIONS_QRC_CONTENT}")
 
 qt5_add_resources(QMFILES_RES ${TRANSLATIONS_QRC_FILE})
+
+file(
+  GLOB_RECURSE
+  PROJECT_PUBLIC_HEADERS
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hxx"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl")
 
 # 定义 API 导出/导入宏，主要用于共享库。使用 Jinja2 的 if 根据 Jinja2 变量做逻辑判断，再转换为 CMake 变量
 # 只有当项目为库时才考虑 WS1_BUILD_SHARED_LIBS
@@ -146,8 +149,7 @@ if(NOT PROJECT_HEADERS_GLOBBED)
   if(GENERATE_API_MACROS)
     message(
       STATUS
-        "No headers found in ${CMAKE_CURRENT_SOURCE_DIR}. Generating default .h file for shared library '${PROJECT_NAME}'."
-    )
+        "No headers found in ${CMAKE_CURRENT_SOURCE_DIR}. Generating default .h file for shared library '${PROJECT_NAME}'.")
     set(EXPORT_MACROS_HEADER_FILE "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/export_macros.h")
     file(
       WRITE ${EXPORT_MACROS_HEADER_FILE}
@@ -270,8 +272,7 @@ else() # PROJECT_TYPE_CMAKE_VAR STREQUAL "lib"（且存在源文件）
       ${PROJECT_SOURCES_GLOBBED}
       ${PROJECT_HEADERS_GLOBBED}
       ${PROJECT_UIFILES_GLOBBED}
-      ${PROJECT_RCFILES_GLOBBED}
-      ${PROJECT_QM_FILES}
+      ${PROJECT_QRCFILES_GLOBBED}
       ${QMFILES_RES})
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
     if(WIN32 AND GENERATE_API_MACROS)
