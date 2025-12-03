@@ -7,7 +7,7 @@
   "Vendor": "3d-scantech.com",
   "Copyright": "",
   "License": [],
-  "Category": "TabPages",
+  "Category": "Workspace",
   "Dependencies": [
     {
       "Name": "dscore",

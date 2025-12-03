@@ -7,7 +7,7 @@
   "Vendor": "3d-scantech.com",
   "Copyright": "",
   "License": [],
-  "Category": "@pingnooComponentCategory@",
+  "Category": "Core",
   "Dependencies": [],
   "Description": [
     "Core plugin"
