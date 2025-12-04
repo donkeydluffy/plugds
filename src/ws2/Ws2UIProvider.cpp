@@ -33,7 +33,7 @@ void Ws2UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manag
 
   command_manager->RegisterAction(sample_action, "ws2.sample_command", visibility_contexts, enabled_contexts);
 
-  // Initial icon update if theme service available
+  // 如果主题服务可用，进行初始图标更新
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if ((theme_service != nullptr) && (theme_service->Theme() != nullptr)) {
     const QString base_path = ":/ws2/resources/icons";
@@ -44,7 +44,7 @@ void Ws2UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manag
 void Ws2UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
   auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
   if (main_menu_bar != nullptr) {
-    // Position between Ws1 (500) and Help (900). Set to 600.
+    // 定位在 Ws1（500）和帮助（900）之间。设置为 600。
     auto* ws2_menu =
         command_manager->CreateActionContainer("Ws2", sss::dscore::ContainerType::kMenu, main_menu_bar, 600);
     if (ws2_menu != nullptr) {
@@ -55,7 +55,7 @@ void Ws2UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manag
 }
 
 void Ws2UIProvider::ContributeToToolbar(sss::dscore::ICommandManager* command_manager) {
-  // Separate toolbar for WS2, or add to existing? Let's create a new one.
+  // 为 WS2 创建单独的工具栏，还是添加到现有的？让我们创建一个新的。
   auto* ws2_toolbar =
       command_manager->CreateActionContainer("Ws2Toolbar", sss::dscore::ContainerType::kToolBar, nullptr, 210);
   if (ws2_toolbar != nullptr) {

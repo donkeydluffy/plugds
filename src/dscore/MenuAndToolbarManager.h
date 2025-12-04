@@ -5,11 +5,11 @@
 namespace sss::dscore {
 
 /**
- * @brief       Manages the construction of menus and toolbars by orchestrating providers.
+ * @brief       通过协调提供者来管理菜单和工具栏的构建。
  *
- * @details     This class is internal to dscore and handles the "Phase 3" UI composition.
- *              It discovers all IMenuProvider and IToolbarProvider implementations and
- *              invokes them to build the application UI.
+ * @details     此类是 dscore 内部类，处理"阶段3"的UI组合。
+ *              它发现所有 IMenuProvider 和 IToolbarProvider 实现，
+ *              并调用它们来构建应用程序UI。
  */
 class MenuAndToolbarManager : public QObject {
   Q_OBJECT
@@ -19,8 +19,8 @@ class MenuAndToolbarManager : public QObject {
   ~MenuAndToolbarManager() override = default;
 
   /**
-   * @brief       Collects contributions and builds the UI.
-   *              Should be called once during CoreComponent::InitialisationFinishedEvent.
+   * @brief       收集贡献并构建UI。
+   *              应在 CoreComponent::InitialisationFinishedEvent 期间调用一次。
    */
   void Build();
 };

@@ -12,9 +12,9 @@
 
 namespace sss::dscore {
 /**
- * @brief       The ActionContainer class provides a QMenu/QToolBar based implementation of IActionContainer.
+ * @brief       ActionContainer 类提供了基于 QMenu/QToolBar 的 IActionContainer 实现。
  *
- * @details     Represents a menu, menubar, or toolbar. Allows commands to be registered and logically grouped.
+ * @details     表示菜单、菜单栏或工具栏。允许注册命令并进行逻辑分组。
  */
 class ActionContainer : public sss::dscore::IActionContainer {
  private:
@@ -24,17 +24,17 @@ class ActionContainer : public sss::dscore::IActionContainer {
 
  private:
   /**
-   * @brief       The GroupItem class defines an object that is used to store grouped menu items.
+   * @brief       GroupItem 类定义用于存储分组菜单项的对象。
    */
   class GroupItem {
    public:
     /**
-     * @brief       Constructs a group item.
+     * @brief       构造组项。
      *
-     * @details     Constructs a group item with the identifier.
+     * @details     使用标识符构造组项。
      *
-     * @param[in]   id is the identifier of the group.
-     * @param[in]   order is the display order.
+     * @param[in]   id 组的标识符。
+     * @param[in]   order 显示顺序。
      */
     explicit GroupItem(QString id, int order = 0) : id_(std::move(id)), order_(order) {}
 
@@ -45,34 +45,34 @@ class ActionContainer : public sss::dscore::IActionContainer {
   };
 
   /**
-   * @brief       Constructs an ActionContainer instance.
+   * @brief       构造 ActionContainer 实例。
    */
   ActionContainer();
 
   /**
-   * @brief       Constructs a container for a top level menu bar.
+   * @brief       为顶级菜单栏构造容器。
    *
-   * @param[in]   menuBar is the menu bar that is to be attached to this instance.
+   * @param[in]   menuBar 要附加到此实例的菜单栏。
    */
   explicit ActionContainer(QMenuBar* menu_bar);
 
   /**
-   * @brief       Constructs a container for a main or sub menu.
+   * @brief       为主菜单或子菜单构造容器。
    *
-   * @param[in]   menu is the menu that is controlled by this instance.
+   * @param[in]   menu 由此实例控制的菜单。
    */
   explicit ActionContainer(QMenu* menu);
 
   /**
-   * @brief       Constructs a container for a tool bar.
+   * @brief       为工具栏构造容器。
    *
-   * @param[in]   toolBar is the tool bar that is controlled by this instance.
+   * @param[in]   toolBar 由此实例控制的工具栏。
    */
   explicit ActionContainer(QToolBar* tool_bar);
 
  public:
   /**
-   * @brief       Destroys the ActionContainer.
+   * @brief       销毁 ActionContainer。
    */
   ~ActionContainer() override;
 

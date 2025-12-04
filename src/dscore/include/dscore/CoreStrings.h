@@ -8,9 +8,9 @@
 namespace sss::dscore {
 
 /**
- * @brief Core Shared Strings Dictionary
- * Contains standard terminology translations for the entire system.
- * Uses static methods to provide standard translations, preventing duplicate translation work.
+ * @brief 核心共享字符串字典
+ * 包含整个系统的标准术语翻译。
+ * 使用静态方法提供标准翻译，防止重复翻译工作。
  */
 class DS_CORE_DLLSPEC CoreStrings : public QObject {
   Q_OBJECT

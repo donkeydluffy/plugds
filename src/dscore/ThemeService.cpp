@@ -8,33 +8,33 @@
 #include <QFont>
 #include <QFontInfo>
 #include <QMetaEnum>
-#include <QProxyStyle>  // Include for QProxyStyle comments
+#include <QProxyStyle>  // 包含QProxyStyle相关头文件
 #include <QSettings>
-#include <QStyleFactory>  // Include for QStyleFactory
+#include <QStyleFactory>  // 包含QStyleFactory相关头文件
 #include <QWidget>
-#include <algorithm>  // For std::sort
-#include <utility>    // For std::pair
+#include <algorithm>  // 用于std::sort
+#include <utility>    // 用于std::pair
 
 namespace sss::dscore {
 
-// Helper to map string to QPalette::ColorRole
+// 辅助函数：将字符串映射到QPalette::ColorRole
 auto ThemeService::stringToPaletteColorRole(const QString& str) -> QPalette::ColorRole {
   static const QMetaObject& mo = QPalette::staticMetaObject;
   static int index = mo.indexOfEnumerator("ColorRole");
   static QMetaEnum meta_enum = mo.enumerator(index);
 
-  // Use `keyToValue` for direct conversion from string to enum value
+  // 使用keyToValue进行字符串到枚举值的直接转换
   int val = meta_enum.keyToValue(str.toLatin1().constData());
   if (val == -1) {
     qWarning() << "ThemeService: Unknown QPalette::ColorRole string:" << str;
-    return QPalette::NColorRoles;  // Return an invalid role
+    return QPalette::NColorRoles;  // 返回无效角色
   }
   return static_cast<QPalette::ColorRole>(val);
 }
 
-// Helper to map string to Theme::ColorRole
+// 辅助函数：将字符串映射到Theme::ColorRole
 auto ThemeService::stringToThemeColorRole(const QString& str) -> Theme::ColorRole {
-  // This map stores QString (like "THEME_COLOR_BrandColor") to Theme::ColorRole
+  // 此映射存储QString（如"THEME_COLOR_BrandColor"）到Theme::ColorRole的对应关系
   static const QMap<QString, Theme::ColorRole> kStringToRoleMap = {
       {"THEME_COLOR_BrandColor", Theme::kBrandColor},
       {"THEME_COLOR_BrandColorHover", Theme::kBrandColorHover},
@@ -62,16 +62,16 @@ auto ThemeService::stringToThemeColorRole(const QString& str) -> Theme::ColorRol
       {"THEME_COLOR_OverlayBackground", Theme::kOverlayBackground},
       {"THEME_COLOR_OverlayText", Theme::kOverlayText},
       {"THEME_COLOR_OverlayAccent", Theme::kOverlayAccent}};
-  Theme::ColorRole role = kStringToRoleMap.value(str, Theme::kCount);  // Correct: Use .value() with QString key
+  Theme::ColorRole role = kStringToRoleMap.value(str, Theme::kCount);  // 正确：使用.value()和QString键
   if (role == Theme::kCount) {
     qWarning() << "ThemeService: Unknown Theme::ColorRole string for lookup:" << str;
   }
   return role;
 }
 
-// Helper to map Theme::ColorRole to string for QSS replacement
+// 辅助函数：将Theme::ColorRole映射到字符串用于QSS替换
 auto ThemeService::themeColorRoleToString(Theme::ColorRole role) -> QString {
-  // This map stores Theme::ColorRole to QString (like "THEME_COLOR_BrandColor")
+  // 此映射存储Theme::ColorRole到QString（如"THEME_COLOR_BrandColor"）的对应关系
   static const QMap<Theme::ColorRole, QString> kRoleToStringMap = {
       {Theme::kBrandColor, "THEME_COLOR_BrandColor"},
       {Theme::kBrandColorHover, "THEME_COLOR_BrandColorHover"},
@@ -102,7 +102,7 @@ auto ThemeService::themeColorRoleToString(Theme::ColorRole role) -> QString {
   return kRoleToStringMap.value(role, "UNKNOWN_COLOR_ROLE");
 }
 
-// Helper to map QPalette::ColorRole to string for QSS replacement
+// 辅助函数：将QPalette::ColorRole映射到字符串用于QSS替换
 auto ThemeService::paletteColorRoleToString(QPalette::ColorRole role) -> QString {
   static const QMap<QPalette::ColorRole, QString> kMap = {
       {QPalette::Window, "PALETTE_Window"},
@@ -113,24 +113,24 @@ auto ThemeService::paletteColorRoleToString(QPalette::ColorRole role) -> QString
       {QPalette::ButtonText, "PALETTE_ButtonText"},
       {QPalette::Highlight, "PALETTE_Highlight"},
       {QPalette::HighlightedText, "PALETTE_HighlightedText"},
-      {QPalette::AlternateBase, "PALETTE_AlternateBase"}  // Added for tables
+      {QPalette::AlternateBase, "PALETTE_AlternateBase"}  // 为表格添加
   };
   return kMap.value(role, "UNKNOWN_PALETTE_ROLE");
 }
 
 ThemeService::ThemeService() {
-  // Force Fusion style for consistent cross-platform theming support
-  // Fusion respects QPalette much better than native styles (Windows/GTK)
+  // 强制使用Fusion风格以获得一致的跨平台主题支持
+  // Fusion比原生风格（Windows/GTK）更好地尊重QPalette
   QApplication::setStyle(QStyleFactory::create("Fusion"));
 
-  // Set a consistent application font with a universal fallback
-  QFont font("DejaVu Sans", 9);  // Use DejaVu Sans, common on Linux
+  // 设置一致的应用程序字体，具有通用回退
+  QFont font("DejaVu Sans", 9);  // 使用DejaVu Sans字体，Linux系统上常见
   if (!font.exactMatch()) {
-    font = QFont("sans-serif", 9);  // Generic sans-serif fallback
+    font = QFont("sans-serif", 9);  // 通用sans-serif回退字体
   }
   QApplication::setFont(font);
 
-  // Initialize with a default theme instance, will be replaced on first load
+  // 初始化默认主题实例，将在首次加载时替换
   current_theme_ = std::make_unique<sss::dscore::Theme>("default");
 }
 
@@ -268,33 +268,33 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
 auto ThemeService::Theme() const -> const sss::dscore::Theme* { return current_theme_.get(); }
 
 auto ThemeService::GetColor(Theme::ColorRole role) const -> QColor {
-  // Ensure current_theme_ is valid before dereferencing
+  // 解引用前确保current_theme_有效
   if (current_theme_) {
     return current_theme_->Color(role);
   }
-  return {Qt::magenta};  // Fallback
+  return {Qt::magenta};  // 回退颜色
 }
 
 auto ThemeService::GetIcon(const QString& base_path, const QString& icon_name) const -> QIcon {
-  QString theme_type = "light";  // Default
+  QString theme_type = "light";  // 默认
 
   if (current_theme_ && current_theme_->Id().contains("dark", Qt::CaseInsensitive)) {
     theme_type = "dark";
   }
 
-  // Generate a unique cache key
+  // 生成唯一的缓存键
 
-  // Format: "dark|:/path/to/resources|filename.svg"
+  // 格式："dark|:/path/to/resources|filename.svg"
 
   QString cache_key = theme_type + "|" + base_path + "|" + icon_name;
 
-  // Check cache first
+  // 首先检查缓存
 
   if (icon_cache_.contains(cache_key)) {
     return icon_cache_.value(cache_key);
   }
 
-  // Construct path
+  // 构建路径
 
   QString path = base_path;
 
@@ -310,12 +310,12 @@ auto ThemeService::GetIcon(const QString& base_path, const QString& icon_name) c
     icon = QIcon(path);
 
   } else {
-    // Fallback logic could go here if needed
+    // 如需要可在此添加回退逻辑
 
     qWarning() << "ThemeService: Icon not found at" << path;
   }
 
-  // Store in cache (even if empty, to avoid repeated file system checks)
+  // 存入缓存（即使为空，以避免重复的文件系统检查）
 
   icon_cache_.insert(cache_key, icon);
 
@@ -328,9 +328,9 @@ auto ThemeService::applyPaletteToQapp() -> void {
 
     qApp->setPalette(new_palette);
 
-    // Note: setPalette on qApp usually propagates, explicit widget loop removed for performance
+    // 注意：qApp上的setPalette通常会传播，出于性能考虑移除了显式的小部件循环
 
-    // unless specific widgets block palette propagation.
+    // 除非特定小部件阻止调色板传播。
   }
 }
 
@@ -338,33 +338,33 @@ auto ThemeService::applyStyleSheetToQapp() -> void {
   if (current_theme_) {
     const QString& stylesheet = current_theme_->StyleSheet();
 
-    // PERFORMANCE: Disable updates to prevent flickering and intermediate repaints
+    // 性能优化：禁用更新以防止闪烁和中间重绘
 
-    // while the heavy stylesheet parsing and application is happening.
+    // 在繁重的样式表解析和应用期间。
 
     for (QWidget* widget : QApplication::topLevelWidgets()) {
       if (widget != nullptr) widget->setUpdatesEnabled(false);
     }
 
-    // Apply the stylesheet
+    // 应用样式表
 
-    // This is the heavy operation.
+    // 这是繁重的操作。
 
     qApp->setStyleSheet(stylesheet);
 
-    // Re-enable updates
+    // 重新启用更新
 
     for (QWidget* widget : QApplication::topLevelWidgets()) {
       if (widget != nullptr) widget->setUpdatesEnabled(true);
     }
 
-    // Note: Removed the manual recursive unpolish/polish loop.
+    // 注意：移除了手动递归的unpolish/polish循环。
 
-    // qApp->setStyleSheet() automatically triggers a global update.
+    // qApp->setStyleSheet()自动触发全局更新。
 
-    // The manual loop is O(N) where N is total widgets, which causes lag.
+    // 手动循环的时间复杂度为O(N)，其中N是总小部件数，会导致延迟。
 
-    // If specific widgets fail to update, they should listen to QEvent::StyleChange.
+    // 如果特定小部件未能更新，它们应该监听QEvent::StyleChange。
   }
 }
 

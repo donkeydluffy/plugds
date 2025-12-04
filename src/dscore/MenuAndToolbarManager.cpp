@@ -25,7 +25,7 @@ void MenuAndToolbarManager::Build() {  // NOLINT
   }
 
   // 0. Register Commands FIRST
-  // This is critical: Commands must be registered before they can be added to menus/toolbars.
+  // 这是关键的：命令必须在添加到菜单/工具栏之前进行注册。
   SPDLOG_INFO("[MenuAndToolbarManager] Collecting Command Providers...");
   auto command_providers = sss::extsystem::GetTObjects<sss::dscore::ICommandProvider>();
   SPDLOG_INFO("[MenuAndToolbarManager] Found {} Command Providers.", command_providers.size());
@@ -39,7 +39,7 @@ void MenuAndToolbarManager::Build() {  // NOLINT
   }
 
   // 1. Create Base Menu Structure (File, View, Help, etc.)
-  // This ensures the main menu bar exists.
+  // 这确保主菜单栏存在。
   auto* app_menu = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
   if (app_menu == nullptr) {
     SPDLOG_INFO("[MenuAndToolbarManager] Creating Application Menu Bar root.");

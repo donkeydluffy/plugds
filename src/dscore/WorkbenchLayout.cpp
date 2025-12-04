@@ -14,20 +14,20 @@ namespace sss::dscore {
 WorkbenchLayout::WorkbenchLayout(QWidget* parent) : QWidget(parent) {
   setupUi();
 
-  // Create and configure the sidebar toggle button
-  sidebar_toggle_btn_ = new QToolButton(this);  // Parent to WorkbenchLayout initially
+  // 创建并配置侧边栏切换按钮
+  sidebar_toggle_btn_ = new QToolButton(this);  // 初始时父对象为WorkbenchLayout
   sidebar_toggle_btn_->setCheckable(false);
   sidebar_toggle_btn_->setAutoRaise(true);
-  sidebar_toggle_btn_->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));  // Initial icon: pointing left (collapse)
-  sidebar_toggle_btn_->setFixedSize(20, 40);                                  // Small button size
+  sidebar_toggle_btn_->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));  // 初始图标：指向左侧（折叠）
+  sidebar_toggle_btn_->setFixedSize(20, 40);                                  // 小按钮尺寸
   sidebar_toggle_btn_->setStyleSheet(
       "QToolButton { background-color: rgba(0,0,0,50); border-radius: 5px; } QToolButton:hover { background-color: "
       "rgba(0,0,0,100); }");
-  sidebar_toggle_btn_->setObjectName("sidebar_toggle_btn");  // For QSS styling
+  sidebar_toggle_btn_->setObjectName("sidebar_toggle_btn");  // 用于QSS样式设置
 
   connect(sidebar_toggle_btn_, &QToolButton::clicked, this, &WorkbenchLayout::onToggleSidebar);
 
-  // Pass the button to OverlayCanvas to manage its position
+  // 将按钮传递给OverlayCanvas来管理其位置
   if (overlay_canvas_ != nullptr) {
     overlay_canvas_->SetSidebarToggleButton(sidebar_toggle_btn_);
   }
@@ -56,10 +56,10 @@ void WorkbenchLayout::setupUi() {
 
   // Default Ratio and initial state
   main_splitter_->setCollapsible(0, true);
-  main_splitter_->setStretchFactor(0, 0);  // Initially give left_tab_widget_ 0 stretch
-  main_splitter_->setStretchFactor(1, 1);  // Give overlay_canvas_ 1 stretch (fills space)
+  main_splitter_->setStretchFactor(0, 0);  // 初始时给left_tab_widget_分配0拉伸因子
+  main_splitter_->setStretchFactor(1, 1);  // 给overlay_canvas_分配1拉伸因子（填充空间）
 
-  // Set initial sizes to ensure left_tab_widget_ has a visible size at start
+  // 设置初始尺寸以确保left_tab_widget_在启动时有可见的大小
   QList<int> initial_sizes;
   initial_sizes << last_sidebar_width_ << width() - last_sidebar_width_;
   main_splitter_->setSizes(initial_sizes);
@@ -135,15 +135,15 @@ QSplitter* WorkbenchLayout::MainSplitter() const { return main_splitter_; }
 
 void WorkbenchLayout::onToggleSidebar() {
   QList<int> sizes = main_splitter_->sizes();
-  if (sizes.size() != 2) return;  // Expecting exactly two widgets in splitter
+  if (sizes.size() != 2) return;  // 期望分割器中恰好有两个组件
 
-  if (sizes[0] > 0) {                                                            // Sidebar is currently open
-    last_sidebar_width_ = sizes[0];                                              // Save current width
-    sizes[0] = 0;                                                                // Collapse sidebar
-    sidebar_toggle_btn_->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));  // Change icon to expand
-  } else {                                                                       // Sidebar is currently closed
-    sizes[0] = last_sidebar_width_;                                              // Restore width
-    sidebar_toggle_btn_->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));   // Change icon to collapse
+  if (sizes[0] > 0) {                                                            // 侧边栏当前是打开状态
+    last_sidebar_width_ = sizes[0];                                              // 保存当前宽度
+    sizes[0] = 0;                                                                // 折叠侧边栏
+    sidebar_toggle_btn_->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));  // 更改图标为展开状态
+  } else {                                                                       // 侧边栏当前是关闭状态
+    sizes[0] = last_sidebar_width_;                                              // 恢复宽度
+    sidebar_toggle_btn_->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));   // 更改图标为折叠状态
   }
   main_splitter_->setSizes(sizes);
 }

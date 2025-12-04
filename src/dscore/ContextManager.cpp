@@ -15,7 +15,7 @@ auto sss::dscore::ContextManager::RegisterContext(QString context_identifier) ->
 auto sss::dscore::ContextManager::SetContext(int context_identifier) -> int {
   int old_primary_context = Context();
 
-  // SetContext implies a hard reset of the current mode
+  // SetContext 意味着对当前模式进行硬重置
   current_mode_context_id_ = context_identifier;
   mode_sub_contexts_storage_[current_mode_context_id_].clear();
 
@@ -41,7 +41,7 @@ auto sss::dscore::ContextManager::AddActiveContext(int context_id) -> void {
   int old_primary_context = Context();
   active_contexts_.append(context_id);
 
-  // Sync with storage: If we are in a mode, track this sub-context
+  // 与存储同步：如果我们在某个模式下，跟踪此子上下文
   if (current_mode_context_id_ != kGlobalContext && context_id != current_mode_context_id_) {
     mode_sub_contexts_storage_[current_mode_context_id_].insert(context_id);
   }
@@ -64,7 +64,7 @@ auto sss::dscore::ContextManager::RemoveActiveContext(int context_id) -> void {
   int old_primary_context = Context();
   active_contexts_.removeAll(context_id);
 
-  // Sync with storage
+  // 与存储同步
   if (current_mode_context_id_ != kGlobalContext) {
     mode_sub_contexts_storage_[current_mode_context_id_].remove(context_id);
   }
@@ -79,8 +79,8 @@ auto sss::dscore::ContextManager::ActivateMode(int mode_context_id) -> void {
     return;
   }
 
-  // 1. Save current sub-contexts for the old mode
-  // We filter out the global context and the old mode context itself
+  // 1. 为旧模式保存当前子上下文
+  // 我们过滤掉全局上下文和旧的模式上下文本身
   QSet<int> current_subs;
   for (int ctx : active_contexts_) {
     if (ctx != kGlobalContext && ctx != current_mode_context_id_) {
@@ -91,17 +91,17 @@ auto sss::dscore::ContextManager::ActivateMode(int mode_context_id) -> void {
 
   int old_primary_context = Context();
 
-  // 2. Switch Mode
+  // 2. 切换模式
   current_mode_context_id_ = mode_context_id;
 
-  // 3. Restore new mode contexts
+  // 3. 恢复新模式上下文
   active_contexts_.clear();
   active_contexts_.append(kGlobalContext);
   if (mode_context_id != kGlobalContext) {
     active_contexts_.append(mode_context_id);
   }
 
-  // Restore sub-contexts if they exist
+  // 如果子上下文存在，则恢复它们
   if (mode_sub_contexts_storage_.contains(mode_context_id)) {
     for (int sub_ctx : mode_sub_contexts_storage_[mode_context_id]) {
       if (!active_contexts_.contains(sub_ctx)) {
@@ -115,7 +115,7 @@ auto sss::dscore::ContextManager::ActivateMode(int mode_context_id) -> void {
 }
 
 auto sss::dscore::ContextManager::Context() -> int {
-  // Returns the most recently added non-global context, or global if none exists.
+  // 返回最近添加的非全局上下文，如果不存在则返回全局上下文。
   if (active_contexts_.size() > 1) {
     return active_contexts_.last();
   }

@@ -30,7 +30,7 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
 
   // Set Global Workbench as Central Widget in Splitter
   ui_->splitter->addWidget(workbench_layout_);
-  ui_->splitter->setStretchFactor(0, 1);  // Workbench takes full space
+  ui_->splitter->setStretchFactor(0, 1);  // 工作台占用全部空间
 
   qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
 
@@ -74,7 +74,7 @@ void sss::dscore::MainWindow::changeEvent(QEvent* event) {
     if (command_manager != nullptr) {
       command_manager->RetranslateUi();
     }
-    // Also retranslate MainWindow generic UI if any (setWindowTitle etc)
+    // 同时重新翻译 MainWindow 通用UI（如果有的话，如 setWindowTitle 等）
     setWindowTitle(QString(tr("Ds")));
   }
   QMainWindow::changeEvent(event);

@@ -12,178 +12,178 @@
 
 namespace sss::extsystem {
 /**
- * @brief       The Component class holds the information about a discovered component.
+ * @brief       Component 类保存已发现组件的信息。
  *
  * @class       sss::extsystem::Component Component.h <Component>
  */
 class EXT_SYSTEM_DLLSPEC Component {
  public:
   /**
-   * @brief       Constructs a new Component.
+   * @brief       构造新的 Component。
    */
   Component();
 
   /**
-   * @brief       Constructs a new Component with the given information.
+   * @brief       使用给定信息构造新的 Component。
    *
-   * @param[in]   name the name of the component.
-   * @param[in]   filename the filename of the component.
-   * @param[in]   metadata the metadata retrieved from the component file.
+   * @param[in]   name 组件的名称。
+   * @param[in]   filename 组件的文件名。
+   * @param[in]   metadata 从组件文件检索的元数据。
    */
   Component(const QString& name, const QString& filename, const QJsonObject& metadata);
 
   /**
-   * @brief       Adds a component dependency to this component.
+   * @brief       向此组件添加组件依赖项。
    *
-   * @param[in]   dependency      The required dependency
-   * @param[in]   versionNumber   The required dependency version
+   * @param[in]   dependency      所需的依赖项
+   * @param[in]   version_number   所需的依赖项版本
    */
   auto AddDependency(Component* dependency, QVersionNumber version_number) -> void;
 
   /**
-   * @brief       Returns the name of the component.
+   * @brief       返回组件的名称。
    *
-   * @returns     the component name.
+   * @returns     组件名称。
    */
   auto Name() -> QString;
 
   /**
-   * @brief       Returns the file name of the component.
+   * @brief       返回组件的文件名。
    *
-   * @returns     the component filename.
+   * @returns     组件文件名。
    *
    */
   auto Filename() -> QString;
 
   /**
-   * @brief       Returns the decoded metadata for the component as a JSON object.
+   * @brief       返回组件的解码元数据作为 JSON 对象。
    *
-   * @returns     The component metadata.
+   * @returns     组件元数据。
    */
   auto Metadata() -> QJsonObject;
 
   /**
-   * @brief       Returns where the component could be loaded.
+   * @brief       返回组件是否可以加载。
    *
-   * @details     A component may fail loading if it's dependencies could not be resolved or if a shared
-   *              library is missing preventing the component from being loaded.
+   * @details     如果组件的依赖项无法解析，或者缺少共享库阻止组件加载，
+   *              组件可能加载失败。
    *
-   * @returns     true if the component is loaded; otherwise false.
+   * @returns     如果组件已加载返回 true；否则返回 false。
    *
    */
   [[nodiscard]] auto IsLoaded() const -> bool;
 
   /**
-   * @brief       Returns the load status of the component.
+   * @brief       返回组件的加载状态。
    *
-   * @details     Returns the bit flags of (ComponentLoader::LoadStatus values) the load status.
+   * @details     返回加载状态的位标志（ComponentLoader::LoadStatus 值）。
    *
-   * @returns     the bit field containing information about the load state of the component.
+   * @returns     包含组件加载状态信息的位字段。
    *
    */
   auto LoadStatus() -> int;
 
   /**
-   * @brief       Returns a list of missing dependencies.
+   * @brief       返回缺失依赖项的列表。
    *
-   * @details     The list of any missing dependencies, as these will not be available from the
-   *              ComponentLoader, this can be used to show the names of any missing dependencies.
+   * @details     任何缺失依赖项的列表，因为这些依赖项在 ComponentLoader 中不可用，
+   *              这可用于显示任何缺失依赖项的名称。
    *
-   * @returns     The list of missing dependencies.
+   * @returns     缺失依赖项的列表。
    */
   auto MissingDependencies() -> QStringList;
 
   /**
-   * @brief       Returns the version of the component.
+   * @brief       返回组件的版本。
    *
-   * @returns     the component version.
+   * @returns     组件版本。
    */
   auto Version() -> QVersionNumber;
 
   /**
-   * @brief       Returns the version of the component as a formatted string.
+   * @brief       返回组件的格式化版本字符串。
    *
-   * @returns     the formatted version string.
+   * @returns     格式化的版本字符串。
    */
   auto VersionString() -> QString;
 
   /**
-   * @brief       Returns the reverse dns identifier of the component.
+   * @brief       返回组件的反向 DNS 标识符。
    *
-   * @returns     the identifier.
+   * @returns     标识符。
    *
    */
   auto Identifier() -> QString;
 
   /**
-   * @brief       Returns the category that this component belongs to.
+   * @brief       返回此组件所属的类别。
    *
-   * @returns     the category of the component.
+   * @returns     组件的类别。
    */
   auto Category() -> QString;
 
   /**
-   * @brief       Returns the vendor of the component.
+   * @brief       返回组件的供应商。
    *
-   * @returns     the vendor.
+   * @returns     供应商。
    *
    */
   auto Vendor() -> QString;
 
   /**
-   * @brief       Returns the license text of the component.
+   * @brief       返回组件的许可证文本。
    *
-   * @returns     the license text.
+   * @returns     许可证文本。
    */
   auto License() -> QString;
 
   /**
-   * @brief       Returns the copyright information for the component.
+   * @brief       返回组件的版权信息。
    *
-   * @returns     the copyright text.
+   * @returns     版权文本。
    *
    */
   auto Copyright() -> QString;
 
   /**
-   * @brief       Returns the description of the component.
+   * @brief       返回组件的描述。
    *
-   * @returns     the description text.
+   * @returns     描述文本。
    *
    */
   auto Description() -> QString;
 
   /**
-   * @brief       Returns the url for the component.
+   * @brief       返回组件的 URL。
    *
-   * @returns     the URL.
+   * @returns     URL。
    *
    */
   auto Url() -> QString;
 
   /**
-   * @brief       Returns the list of dependencies as a string.
+   * @brief       返回依赖项的字符串列表。
    *
-   * @returns     the dependencies.
+   * @returns     依赖项。
    *
    */
   auto Dependencies() -> QString;
 
   /**
-   * @brief       Returns whether the component can be disabled or not.
+   * @brief       返回组件是否可以禁用。
    *
-   * @details     Components such as Core cannot be disabled as they are critical for the application.
+   * @details     诸如 Core 之类的组件无法禁用，因为它们对应用程序至关重要。
    *
-   * @returns     true if the component can be disabled; otherwise false.
+   * @returns     如果组件可以禁用返回 true；否则返回 false。
    *
    */
   auto CanBeDisabled() -> bool;
 
   /**
-   * @brief       Validates the dependencies.
+   * @brief       验证依赖项。
    *
-   * @details     Validates all dependencies to ensure they are loaded and ensures that the loaded version
-   *              meets our minimum requirement.
+   * @details     验证所有依赖项以确保它们已加载，并确保加载的版本
+   *              满足我们的最低要求。
    */
   auto ValidateDependencies() -> void;
 

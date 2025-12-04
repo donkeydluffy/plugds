@@ -25,7 +25,7 @@ class Ws2Page : public sss::dscore::IMode {
 
   void SetSubContextId(int id);
 
-  // IMode Implementation
+  // IMode 接口实现
   [[nodiscard]] QString Id() const override;
   [[nodiscard]] QString Title() const override;
   [[nodiscard]] QIcon Icon() const override;

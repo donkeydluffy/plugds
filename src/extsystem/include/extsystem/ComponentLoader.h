@@ -14,11 +14,10 @@ namespace sss::extsystem {
 class Component;
 
 /**
- * @brief       The ComponentLoader loads the discovered components.
+ * @brief       ComponentLoader 加载发现的组件。
  *
- * @details     Generic plugin loader, finds compatible components in a given folder and using the metadata
- *              ensures that any dependencies are available and that all dependencies are loaded in the correct
- *              order.
+ * @details     通用插件加载器，在给定文件夹中查找兼容组件，并使用元数据
+ *              确保任何依赖项都可用，并且所有依赖项都按正确的顺序加载。
  *
  * @class       sss::extsystem::ComponentLoader ComponentLoader.h <ComponentLoader>
  */
@@ -28,9 +27,9 @@ class EXT_SYSTEM_DLLSPEC ComponentLoader : public QObject {
 
  public:
   /**
-   * @brief       The load status flags.
+   * @brief       加载状态标志。
    *
-   * @details     Bit flags for load status.
+   * @details     用于加载状态的位标志。
    */
   enum LoadFlag {  // NOLINT
     kUnloaded = 0,
@@ -49,86 +48,84 @@ class EXT_SYSTEM_DLLSPEC ComponentLoader : public QObject {
   Q_FLAGS(LoadFlags)
 
   /**
-   * @brief       Constructs a ComponentLoader which is a child of the parent.
+   * @brief       构造一个 ComponentLoader，它是 parent 的子对象。
    *
-   * @param[in]   parent the parent object.
+   * @param[in]   parent 父对象。
    */
   explicit ComponentLoader(QObject* parent = nullptr);
 
   /**
-   * @brief       Destroys the ComponentLoader.
+   * @brief       销毁 ComponentLoader。
    */
   ~ComponentLoader() override;
 
   /**
-   * @brief       Add all components in the given folder to the load list.
+   * @brief       将给定文件夹中的所有组件添加到加载列表。
    *
-   * @details     Searches the given directory and adds any loadable components to the list of components
-   *              to be loaded.
+   * @details     搜索给定目录，并将任何可加载的组件添加到要加载的组件列表中。
    *
-   * @param[in]   componentFolder the search folder.
+   * @param[in]   componentFolder 搜索文件夹。
    */
   auto AddComponents(const QString& component_folder) -> void;
 
   /**
-   * @brief       Loads all discovered components.
+   * @brief       加载所有发现的组件。
    *
-   * @param[in]   loadFunction the load function is a callback that allows the application to selectively
-   *              load components, i.e the user can disable certain components.
+   * @param[in]   loadFunction 加载函数是一个回调，允许应用程序有选择地
+   *              加载组件，即用户可以禁用某些组件。
    */
   auto LoadComponents(std::function<bool(sss::extsystem::Component*)> load_function = nullptr) -> void;
 
   /**
-   * @brief       Returns the list of all discovered components.
+   * @brief       返回所有发现的组件列表。
    *
-   * @details     Returns the list of components that were found, the state of whether the component was
-   *              loaded is updated along with an error code for each component if a component could not
-   *              be loaded.
+   * @details     返回找到的组件列表，组件是否已加载的状态会更新，如果组件无法加载，
+   *              则为每个组件提供错误代码。
    *
-   * @returns     the list of components.
+   * @returns     组件列表。
    *
    */
   auto Components() -> QList<Component*>;
 
   /**
-   * @brief       Unloads all loaded components.
+   * @brief       卸载所有已加载的组件。
    */
   auto UnloadComponents() -> void;
 
  private:
   /**
-   * @brief       Resolves the dependencies of the loaded components.
+   * @brief       解析已加载组件的依赖项。
    *
-   * @details     For a given component, returns a list of components in the order that they must be loaded
-   *              in order to satisfy all component and sub component dependencies.
+   * @details     对于给定的组件，返回必须按顺序加载的组件列表，
+   *              以满足所有组件和子组件的依赖项。
    *
-   * @param[in]   component the component to resolve.
-   * @param[out]  resolvedList the ordered list of components.
+   * @param[in]   component 要解析的组件。
+   * @param[out]  resolvedList 已排序的组件列表。
    */
   auto resolve(sss::extsystem::Component* component, QList<sss::extsystem::Component*>& resolved_list) -> void;
 
   /**
-   * @brief           Resolves the dependencies of the loaded components.
+   * @brief           解析已加载组件的依赖项。
    *
-   * @details         For a given component, returns a list of components in the order that they must be
-   *                  loaded in order to satisfy all component and sub component dependencies.
+   * @details         对于给定的组件，返回必须按顺序加载的组件列表，
+   *                  以满足所有组件和子组件的依赖项。
    *
-   *                  This overload uses a list to mark nodes as already processed, this allows us to detect
-   *                  circular references.
+   *                  此重载使用列表来标记节点为已处理，这允许我们检测
+   *                  循环引用。
    *
-   * @param[in]       component the component to resolve.
-   * @param[in,out]   processedList list of nodes that have already been processed.
-   * @param[out]      resolvedList ordered list of components.
+   * @param[in]       component 要解析的组件。
+   * @param[in,out]   processedList 已处理节点的列表。
+   * @param[out]      resolvedList 已排序的组件列表。
    */
   auto resolve(sss::extsystem::Component* component, QList<sss::extsystem::Component*>& resolved_list,
                QList<sss::extsystem::Component*>& processed_list) -> void;
 
   /**
-   * @brief       Returns a string containing the flags that were set.
+   * @brief       返回包含已设置标志的字符串。
    *
-   * @param[in]   flags the flags value to be converted to a string.
+   * @param[in]   flags 要转换为字符串的标志值。
    *
-   * @returns     a string containing the list of flags that were set.
+   * @returns     包含已设置标志列表的字符串。
    */
   auto loadFlagString(sss::extsystem::ComponentLoader::LoadFlags flags) -> QString;
 

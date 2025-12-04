@@ -19,9 +19,9 @@ Ws1UIProvider::Ws1UIProvider(Ws1Component* component, int page_context_id, int s
 
 void Ws1UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manager) {
   auto* sample_action = new QAction(tr("Ws1 Sample Command"));
-  // Icon updates handled by Ws1Component via ThemeService signal for now,
-  // or we can move icon logic here if we pass ThemeService.
-  // For now, Ws1Component still has UpdateIcons logic.
+  // 目前图标更新由 Ws1Component 通过 ThemeService 信号处理，
+  // 或者如果我们传递 ThemeService，我们可以将图标逻辑移到这里。
+  // 目前，Ws1Component 仍然有 UpdateIcons 逻辑。
 
   connect(sample_action, &QAction::triggered, component_, []() {
     QMessageBox::information(nullptr, sss::dscore::CoreStrings::Information(),
@@ -36,7 +36,7 @@ void Ws1UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manag
 
   command_manager->RegisterAction(sample_action, "ws1.sample_command", visibility_contexts, enabled_contexts);
 
-  // Initial icon update if theme service available
+  // 如果主题服务可用，进行初始图标更新
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if ((theme_service != nullptr) && (theme_service->Theme() != nullptr)) {
     const QString base_path = ":/ws1/resources/icons";
@@ -47,7 +47,7 @@ void Ws1UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manag
 void Ws1UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
   auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
   if (main_menu_bar != nullptr) {
-    // Position between Settings (100) and Help (900). Set to 500.
+    // 定位在设置（100）和帮助（900）之间。设置为 500。
     auto* ws1_menu =
         command_manager->CreateActionContainer("Ws1", sss::dscore::ContainerType::kMenu, main_menu_bar, 500);
     if (ws1_menu != nullptr) {

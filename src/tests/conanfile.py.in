@@ -20,11 +20,11 @@ import os
 required_conan_version = ">=1.53.0"
 
 
-class extsystemPackageConan(ConanFile):
+class testsPackageConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     license = "Scantech"
     no_copy_source = True
-    name = "extsystem"
+    name = "tests"
     default_options = {}
 
     def _convert_value(self, value_str):
@@ -80,24 +80,20 @@ class extsystemPackageConan(ConanFile):
 
         # 备选方案：使用 platform 模块
         import platform
-
         system = platform.system().lower()
         platform_mapping = {
-            "windows": "windows",
-            "linux": "linux",
-            "darwin": "macos",
-            "android": "android",
+            'windows': 'windows',
+            'linux': 'linux',
+            'darwin': 'macos',
+            'android': 'android',
         }
-
+        
         # Check if we're cross-compiling for Android
-        if (
-            hasattr(self, "settings")
-            and hasattr(self.settings, "os")
-            and str(self.settings.os) == "Android"
-        ):
-            return "android"
-
+        if hasattr(self, 'settings') and hasattr(self.settings, 'os') and str(self.settings.os) == 'Android':
+            return 'android'
+            
         return platform_mapping.get(system, system)
+
 
     def config_options(self):
         pass
@@ -107,15 +103,15 @@ class extsystemPackageConan(ConanFile):
 
         # 定义所有可能的平台选项
         platform_options = {
-            "windows": "@EXTSYSTEM_CONAN_PKG_OPTIONS_WINDOWS@",
-            "linux": "@EXTSYSTEM_CONAN_PKG_OPTIONS_LINUX@",
-            "macos": "@EXTSYSTEM_CONAN_PKG_OPTIONS_MACOS@",
-            "android": "@EXTSYSTEM_CONAN_PKG_OPTIONS_ANDROID@",
+            'windows': "@TESTS_CONAN_PKG_OPTIONS_WINDOWS@",
+            'linux': "@TESTS_CONAN_PKG_OPTIONS_LINUX@",
+            'macos': "@TESTS_CONAN_PKG_OPTIONS_MACOS@",
+            'android': "@TESTS_CONAN_PKG_OPTIONS_ANDROID@",
         }
 
         # 始终包含的通用选项
         options_strings = [
-            "@EXTSYSTEM_CONAN_PKG_OPTIONS@",
+            "@TESTS_CONAN_PKG_OPTIONS@",
         ]
 
         # 添加当前平台特定的选项
@@ -127,17 +123,11 @@ class extsystemPackageConan(ConanFile):
 
         for options_str in options_strings:
             # 跳过空字符串或未替换的模板变量
-            if (
-                not options_str
-                or options_str.startswith("@")
-                and options_str.endswith("@")
-            ):
+            if not options_str or options_str.startswith("@") and options_str.endswith("@"):
                 continue
 
             # 以分号分割，得到列表
-            options_list = [
-                opt.strip() for opt in options_str.split(";") if opt.strip()
-            ]
+            options_list = [opt.strip() for opt in options_str.split(";") if opt.strip()]
             all_options.extend(options_list)
 
         # 去重
@@ -157,15 +147,15 @@ class extsystemPackageConan(ConanFile):
 
         # 定义所有可能的平台包
         platform_requires = {
-            "windows": "@EXTSYSTEM_CONAN_PKGS_WINDOWS@",
-            "linux": "@EXTSYSTEM_CONAN_PKGS_LINUX@",
-            "macos": "@EXTSYSTEM_CONAN_PKGS_MACOS@",
-            "android": "@EXTSYSTEM_CONAN_PKGS_ANDROID@",
+            'windows': "@TESTS_CONAN_PKGS_WINDOWS@",
+            'linux': "@TESTS_CONAN_PKGS_LINUX@",
+            'macos': "@TESTS_CONAN_PKGS_MACOS@",
+            'android': "@TESTS_CONAN_PKGS_ANDROID@",
         }
 
         # 始终包含的通用包
         requires_strings = [
-            "@EXTSYSTEM_CONAN_PKGS@",
+            "@TESTS_CONAN_PKGS@",
         ]
 
         # 添加当前平台特定的包
@@ -176,11 +166,7 @@ class extsystemPackageConan(ConanFile):
         all_requires = []
         for requires_str in requires_strings:
             # 跳过空字符串或未替换的模板变量
-            if (
-                not requires_str
-                or requires_str.startswith("@")
-                and requires_str.endswith("@")
-            ):
+            if not requires_str or requires_str.startswith("@") and requires_str.endswith("@"):
                 continue
 
             # 过滤空字符串并去除空格
@@ -208,20 +194,20 @@ class extsystemPackageConan(ConanFile):
         Copies sources from the local directory (where 'conan create .' is run)
         to the Conan source folder. This keeps private code off the server.
         """
-        local_path = os.getenv("EXTSYSTEM_CONAN_CREATE_SOURCE_PATH")
+        local_path = os.getenv("TESTS_CONAN_CREATE_SOURCE_PATH")
         if not local_path:
             # 如果没有设置，则可以选择抛出异常或者默认行为
             from conan.errors import ConanException
 
             raise ConanException(
-                "The EXTSYSTEM_CONAN_CREATE_SOURCE_PATH environment variable is not set."
+                "The TESTS_CONAN_CREATE_SOURCE_PATH environment variable is not set."
             )
         # 验证路径是否存在
         if not os.path.isdir(local_path):
             from conan.errors import ConanException
 
             raise ConanException(
-                f"The specified EXTSYSTEM_CONAN_CREATE_SOURCE_PATH directory does not exist: {local_path}"
+                f"The specified TESTS_CONAN_CREATE_SOURCE_PATH directory does not exist: {local_path}"
             )
         # 将本地源码复制到 source() 工作目录中（通常是 self.source_folder）
         self.output.info("Copying sources from local path: {}".format(local_path))
@@ -237,88 +223,64 @@ class extsystemPackageConan(ConanFile):
         tc.cache_variables["CMAKE_POLICY_DEFAULT_CMP0091"] = "NEW"
 
         # 从环境变量获取版本信息并传递给 CMake
-        product_version = "@EXTSYSTEM_PRODUCT_VERSION@"
-        product_version_revision = "@EXTSYSTEM_PRODUCT_VERSION_REVISION@"
-        find_pkg_names = "@EXTSYSTEM_FIND_PACKAGE_NAMES@"
-        find_pkg_names_windows = "@EXTSYSTEM_FIND_PACKAGE_NAMES_WINDOWS@"
-        find_pkg_names_linux = "@EXTSYSTEM_FIND_PACKAGE_NAMES_LINUX@"
-        find_pkg_names_macos = "@EXTSYSTEM_FIND_PACKAGE_NAMES_MACOS@"
-        find_pkg_names_android = "@EXTSYSTEM_FIND_PACKAGE_NAMES_ANDROID@"
-        find_subproject_pkg_names = "@EXTSYSTEM_FIND_SUBPROJECT_PACKAGE_NAMES@"
+        product_version = "@TESTS_PRODUCT_VERSION@"
+        product_version_revision = "@TESTS_PRODUCT_VERSION_REVISION@"
+        find_pkg_names = "@TESTS_FIND_PACKAGE_NAMES@"
+        find_pkg_names_windows = "@TESTS_FIND_PACKAGE_NAMES_WINDOWS@"
+        find_pkg_names_linux = "@TESTS_FIND_PACKAGE_NAMES_LINUX@"
+        find_pkg_names_macos = "@TESTS_FIND_PACKAGE_NAMES_MACOS@"
+        find_pkg_names_android = "@TESTS_FIND_PACKAGE_NAMES_ANDROID@"
+        find_subproject_pkg_names = "@TESTS_FIND_SUBPROJECT_PACKAGE_NAMES@"
         if find_subproject_pkg_names and find_subproject_pkg_names != "":
             # 如果有子项目的包名，则把子项目find加到整体的find中
             find_pkg_names = find_pkg_names + ";" + find_subproject_pkg_names
-        targets_to_link = "@EXTSYSTEM_TARGETS_TO_LINK@"
-        targets_to_link_windows = "@EXTSYSTEM_TARGETS_TO_LINK_WINDOWS@"
-        targets_to_link_linux = "@EXTSYSTEM_TARGETS_TO_LINK_LINUX@"
-        targets_to_link_macos = "@EXTSYSTEM_TARGETS_TO_LINK_MACOS@"
-        targets_to_link_android = "@EXTSYSTEM_TARGETS_TO_LINK_ANDROID@"
+        targets_to_link = "@TESTS_TARGETS_TO_LINK@"
+        targets_to_link_windows = "@TESTS_TARGETS_TO_LINK_WINDOWS@"
+        targets_to_link_linux = "@TESTS_TARGETS_TO_LINK_LINUX@"
+        targets_to_link_macos = "@TESTS_TARGETS_TO_LINK_MACOS@"
+        targets_to_link_android = "@TESTS_TARGETS_TO_LINK_ANDROID@"
 
         if product_version:
-            tc.variables["EXTSYSTEM_PRODUCT_VERSION"] = product_version
-            self.output.info(f"Setting EXTSYSTEM_PRODUCT_VERSION to: {product_version}")
+            tc.variables["TESTS_PRODUCT_VERSION"] = product_version
+            self.output.info(f"Setting TESTS_PRODUCT_VERSION to: {product_version}")
 
         if product_version_revision:
-            tc.variables["EXTSYSTEM_PRODUCT_VERSION_REVISION"] = (
-                product_version_revision
-            )
+            tc.variables["TESTS_PRODUCT_VERSION_REVISION"] = product_version_revision
             self.output.info(
-                f"Setting EXTSYSTEM_PRODUCT_VERSION_REVISION to: {product_version_revision}"
+                f"Setting TESTS_PRODUCT_VERSION_REVISION to: {product_version_revision}"
             )
 
         if find_pkg_names:
-            tc.variables[f"EXTSYSTEM_FIND_PACKAGE_NAMES"] = find_pkg_names
-            self.output.info(
-                f"Setting EXTSYSTEM_FIND_PACKAGE_NAMES to: {find_pkg_names}"
-            )
+            tc.variables[f"TESTS_FIND_PACKAGE_NAMES"] = find_pkg_names
+            self.output.info(f"Setting TESTS_FIND_PACKAGE_NAMES to: {find_pkg_names}")
         if find_pkg_names_windows:
-            tc.variables[f"EXTSYSTEM_FIND_PACKAGE_NAMES_WINDOWS"] = (
-                find_pkg_names_windows
-            )
-            self.output.info(
-                f"Setting EXTSYSTEM_FIND_PACKAGE_NAMES_WINDOWS to: {find_pkg_names_windows}"
-            )
+            tc.variables[f"TESTS_FIND_PACKAGE_NAMES_WINDOWS"] = find_pkg_names_windows
+            self.output.info(f"Setting TESTS_FIND_PACKAGE_NAMES_WINDOWS to: {find_pkg_names_windows}")
         if find_pkg_names_linux:
-            tc.variables[f"EXTSYSTEM_FIND_PACKAGE_NAMES_LINUX"] = find_pkg_names_linux
-            self.output.info(
-                f"Setting EXTSYSTEM_FIND_PACKAGE_NAMES_LINUX to: {find_pkg_names_linux}"
-            )
+            tc.variables[f"TESTS_FIND_PACKAGE_NAMES_LINUX"] = find_pkg_names_linux
+            self.output.info(f"Setting TESTS_FIND_PACKAGE_NAMES_LINUX to: {find_pkg_names_linux}")
         if find_pkg_names_macos:
-            tc.variables[f"EXTSYSTEM_FIND_PACKAGE_NAMES_MACOS"] = find_pkg_names_macos
-            self.output.info(
-                f"Setting EXTSYSTEM_FIND_PACKAGE_NAMES_MACOS to: {find_pkg_names_macos}"
-            )
+            tc.variables[f"TESTS_FIND_PACKAGE_NAMES_MACOS"] = find_pkg_names_macos
+            self.output.info(f"Setting TESTS_FIND_PACKAGE_NAMES_MACOS to: {find_pkg_names_macos}")
         if find_pkg_names_android:
-            tc.variables[f"EXTSYSTEM_FIND_PACKAGE_NAMES_ANDROID"] = (
-                find_pkg_names_android
-            )
-            self.output.info(
-                f"Setting EXTSYSTEM_FIND_PACKAGE_NAMES_ANDROID to: {find_pkg_names_android}"
-            )
+            tc.variables[f"TESTS_FIND_PACKAGE_NAMES_ANDROID"] = find_pkg_names_android
+            self.output.info(f"Setting TESTS_FIND_PACKAGE_NAMES_ANDROID to: {find_pkg_names_android}")
 
         if targets_to_link:
-            tc.variables[f"EXTSYSTEM_TARGETS_TO_LINK"] = targets_to_link
-            self.output.info(f"Setting EXTSYSTEM_TARGETS_TO_LINK to: {targets_to_link}")
+            tc.variables[f"TESTS_TARGETS_TO_LINK"] = targets_to_link
+            self.output.info(f"Setting TESTS_TARGETS_TO_LINK to: {targets_to_link}")
         if targets_to_link_windows:
-            tc.variables[f"EXTSYSTEM_TARGETS_TO_LINK_WINDOWS"] = targets_to_link_windows
-            self.output.info(
-                f"Setting EXTSYSTEM_TARGETS_TO_LINK_WINDOWS to: {targets_to_link_windows}"
-            )
+            tc.variables[f"TESTS_TARGETS_TO_LINK_WINDOWS"] = targets_to_link_windows
+            self.output.info(f"Setting TESTS_TARGETS_TO_LINK_WINDOWS to: {targets_to_link_windows}")
         if targets_to_link_linux:
-            tc.variables[f"EXTSYSTEM_TARGETS_TO_LINK_LINUX"] = targets_to_link_linux
-            self.output.info(
-                f"Setting EXTSYSTEM_TARGETS_TO_LINK_LINUX to: {targets_to_link_linux}"
-            )
+            tc.variables[f"TESTS_TARGETS_TO_LINK_LINUX"] = targets_to_link_linux
+            self.output.info(f"Setting TESTS_TARGETS_TO_LINK_LINUX to: {targets_to_link_linux}")
         if targets_to_link_macos:
-            tc.variables[f"EXTSYSTEM_TARGETS_TO_LINK_MACOS"] = targets_to_link_macos
-            self.output.info(
-                f"Setting EXTSYSTEM_TARGETS_TO_LINK_MACOS to: {targets_to_link_macos}"
-            )
+            tc.variables[f"TESTS_TARGETS_TO_LINK_MACOS"] = targets_to_link_macos
+            self.output.info(f"Setting TESTS_TARGETS_TO_LINK_MACOS to: {targets_to_link_macos}")
         if targets_to_link_android:
-            tc.variables[f"EXTSYSTEM_TARGETS_TO_LINK_ANDROID"] = targets_to_link_android
-            self.output.info(
-                f"Setting EXTSYSTEM_TARGETS_TO_LINK_ANDROID to: {targets_to_link_android}"
-            )
+            tc.variables[f"TESTS_TARGETS_TO_LINK_ANDROID"] = targets_to_link_android
+            self.output.info(f"Setting TESTS_TARGETS_TO_LINK_ANDROID to: {targets_to_link_android}")
 
         # tc.variables["CMAKE_SYSTEM_NAME"] = os.getenv("CONAN_TARGET_OS_NAME")
 
@@ -361,4 +323,3 @@ class extsystemPackageConan(ConanFile):
         self.cpp_info.set_property("pkg_config_name", f"{effective_name}")
         if self.options.get_safe("shared") is not None:
             self.cpp_info.set_property("is_shared", self.options.shared)
-

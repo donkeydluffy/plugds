@@ -11,12 +11,10 @@ namespace sss::dscore {
 class ActionProxy;
 
 /**
- * @brief       ICommand interface
+ * @brief       ICommand 接口
  *
- * @details     ICommand represents an actionable command in the system, commands
- *              are bound to QActions for given contexts, this allows the target of
- *              the command to change depending on the current context that the application
- *              is in.
+ * @details     ICommand 代表系统中一个可执行的命令，命令绑定到给定上下文的
+ *              QAction，这使得命令的目标可以根据应用程序当前所在的上下文而改变。
  */
 class Command : public sss::dscore::ICommand {
  private:
@@ -26,63 +24,63 @@ class Command : public sss::dscore::ICommand {
 
  public:
   /**
-   * @brief       Constructs a new Command with the given id.
+   * @brief       使用给定的ID构造新的Command。
    *
-   * @param[in]   id the identifier for this command.
+   * @param[in]   id 此命令的标识符。
    */
   explicit Command(QString id);
 
   /**
-   * @brief       Destroys the Command.
+   * @brief       销毁Command。
    */
   ~Command() override;
 
   /**
-   * @brief       Returns the proxy action.
+   * @brief       返回代理动作。
    *
    * @see         sss::dscore::ICommand::action
    *
-   * @returns     the proxy action
+   * @returns     代理动作
    */
   auto Action() -> QAction* override;
 
   /**
-   * @brief       Sets the active state of the command.
+   * @brief       设置命令的活动状态。
    *
    * @see         sss::dscore::ICommand::setActive
    *
-   * @param[in]   state true if active; otherwise false.
+   * @param[in]   state 如果活动则为true；否则为false。
    */
   auto SetActive(bool state) -> void override;
 
   /**
-   * @brief       Returns the active state of the command.
+   * @brief       返回命令的活动状态。
    *
    * @see         sss::dscore::ICommand::active
    *
-   * @returns     true if enabled; otherwise false.
+   * @returns     如果启用则为true；否则为false。
    */
   auto Active() -> bool override;
 
  protected:
   /**
-   * @brief       Registers an action to the given contexts.
+   * @brief       向给定上下文注册一个动作。
    *
-   * @note        The command manager becomes the owner of the action.
+   * @note        命令管理器成为该动作的所有者。
    *
-   * @param[in]   action the action.
-   * @param[in]   contexts the list of contexts this action is used in.
+   * @param[in]   action 动作。
+   * @param[in]   contexts 使用此动作的上下文列表。
    */
   auto RegisterAction(QAction* action, const sss::dscore::ContextList& visibility_contexts,
                       const sss::dscore::ContextList& enabled_contexts) -> void;
 
   /**
-   * @brief       Sets the current context for this command.
+   * @brief       设置此命令的当前上下文。
    *
-   * @brief       If there is a QAction registered with the contextId then it becomes the active
-   *              active, if there is no QAction for the context then the command is disabled.
+   * @brief       如果有与contextId注册的QAction，则它成为活动的；
+   *              如果该上下文没有QAction，则命令被禁用。
    *
-   * @param[in]   active_contexts the list of currently active contexts.
+   * @param[in]   active_contexts 当前活动上下文的列表。
    */
   auto SetContext(const sss::dscore::ContextList& active_contexts) -> void;
 

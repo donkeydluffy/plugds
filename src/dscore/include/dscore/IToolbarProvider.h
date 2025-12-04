@@ -7,18 +7,18 @@ namespace sss::dscore {
 class ICommandManager;
 
 /**
- * @brief       Interface for components that contribute to the application toolbar.
+ * @brief       为应用程序工具栏贡献内容的组件接口。
  *
- * @details     Implement this interface to define toolbar items (buttons, separators, widgets).
+ * @details     实现此接口来定义工具栏项目（按钮、分隔符、控件）。
  */
 class DS_CORE_DLLSPEC IToolbarProvider {
  public:
   virtual ~IToolbarProvider() = default;
 
   /**
-   * @brief       Contributes to the application toolbar structure.
+   * @brief       为应用程序工具栏结构做出贡献。
    *
-   * @param[in]   command_manager The application's command manager instance.
+   * @param[in]   command_manager 应用程序的命令管理器实例。
    */
   virtual void ContributeToToolbar(ICommandManager* command_manager) = 0;
 };

@@ -23,7 +23,7 @@ auto sss::dscore::ActionContainer::GetType() -> sss::dscore::ContainerType {
     return sss::dscore::ContainerType::kMenuBar;
   }
   if ((menu_ != nullptr) && (qobject_cast<QMenuBar*>(menu_->parent()) == nullptr)) {
-    // Use ribbon bar logic if needed in future, for now submenu
+    // 如果将来需要，使用功能区栏逻辑，目前为子菜单
     return sss::dscore::ContainerType::kMenu;
   }
   return sss::dscore::ContainerType::kMenu;

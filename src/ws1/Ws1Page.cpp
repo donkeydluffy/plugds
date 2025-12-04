@@ -16,7 +16,7 @@
 #include "dscore/IContextManager.h"
 // #include "dscore/IPageManager.h" // Removed
 #include "dscore/IThemeService.h"
-#include "dscore/IWorkbench.h"  // Needed to access global workbench
+#include "dscore/IWorkbench.h"  // 需要访问全局工作台
 #include "extsystem/IComponentManager.h"
 
 namespace sss::ws1 {
@@ -24,26 +24,26 @@ namespace sss::ws1 {
 Ws1Page::Ws1Page(int context_id, QObject* parent) : sss::dscore::IMode(parent), context_id_(context_id) {
   SPDLOG_INFO("Ws1Page (Mode) constructor called.");
 
-  // Connect to ThemeService
+  // 连接到主题服务
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
     connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws1Page::UpdateIcons);
   }
 
-  setupDefaultUi();  // Create widgets once
+  setupDefaultUi();  // 创建一次小部件
 }
 
 Ws1Page::~Ws1Page() {
-  // Widgets are owned by us or Qt parent?
-  // If we passed them to Workbench, they might be reparented.
-  // We should be careful about ownership.
-  // For simplicity in this prototype, we rely on QObject parent mechanism or memory leak risk if not careful.
-  // Ideally, when Deactivate is called, we take them back or hide them.
-  // But if Workbench::Clear() deletes them, we are in trouble if we hold pointers.
-  // Let's assume Workbench::Clear() does NOT delete widgets, just removes them.
-  // Our OverlayCanvas::Clear() removes them from layout and hides them. It does NOT delete them unless they are
-  // children of a deleted layout item? "delete child" in OverlayCanvas::Clear refers to QLayoutItem, not the widget. So
-  // we retain ownership.
+  // 小部件是由我们拥有还是由 Qt 父对象拥有？
+  // 如果我们将它们传递给 Workbench，它们可能会被重新指定父对象。
+  // 我们应该小心所有权问题。
+  // 为了在这个原型中简单起见，我们依赖 QObject 父对象机制，或者如果不小心会有内存泄漏风险。
+  // 理想情况下，当调用 Deactivate 时，我们将它们收回或隐藏它们。
+  // 但如果 Workbench::Clear() 删除它们，而我们持有指针，我们就会遇到麻烦。
+  // 让我们假设 Workbench::Clear() 不会删除小部件，只是移除它们。
+  // 我们的 OverlayCanvas::Clear() 将它们从布局中移除并隐藏它们。它不会删除它们，除非它们是
+  // 被删除的布局项的子对象？"delete child" 在 OverlayCanvas::Clear 中指的是 QLayoutItem，而不是小部件。所以
+  // 我们保留所有权。
   delete tree_view_;
   delete bg_label_;
   delete device_panel_;
@@ -59,7 +59,7 @@ QIcon Ws1Page::Icon() const {
   if (theme_service != nullptr) {
     return theme_service->GetIcon(":/ws1/resources/icons", "workspace1.svg");
   }
-  return {};  // Return an empty icon if theme service is not available
+  return {};  // 如果主题服务不可用则返回空图标
 }
 int Ws1Page::ContextId() const { return context_id_; }
 int Ws1Page::Priority() const { return 10; }
@@ -79,11 +79,11 @@ void Ws1Page::Activate() {
   workbench->SetBackgroundWidget(bg_label_);
 
   // 3. Overlays
-  // Note: We can use context-aware adding here.
-  // Since this Mode is active, its ContextId is active.
-  // We can bind widgets to this mode's context or sub-contexts.
+  // 注意：我们可以在这里使用上下文感知的添加。
+  // 由于此模式是活动的，其 ContextId 是活动的。
+  // 我们可以将小部件绑定到此模式的上下文或子上下文。
 
-  // Global to this Mode (visible when Mode context is active)
+  // 对此模式全局（模式上下文活动时可见）
   QList<int> mode_ctx = {context_id_};
 
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopRight, device_panel_, 0, mode_ctx);
@@ -93,7 +93,7 @@ void Ws1Page::Activate() {
   // Notification
   QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(tr("Welcome to Workspace 1"), 3000); });
 
-  // Update icons
+  // 更新图标
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if ((theme_service != nullptr) && (theme_service->Theme() != nullptr)) {
     UpdateIcons(theme_service->Theme()->Id());
@@ -104,23 +104,23 @@ void Ws1Page::Activate() {
 
 void Ws1Page::Deactivate() {
   SPDLOG_INFO("Ws1Page::Deactivate called.");
-  // Workbench::Clear() is called by ModeManager before next activation.
-  // We don't need to do much unless we want to save state.
+  // Workbench::Clear() 由 ModeManager 在下次激活前调用。
+  // 除非我们想保存状态，否则我们不需要做太多事情。
 }
 
 void Ws1Page::setupDefaultUi() {
-  // 1. Tree View
+  // 1. 树视图
   tree_view_ = new QTreeView();
   tree_view_->setHeaderHidden(true);
   setupModel();
   tree_view_->setModel(model_);
 
-  // 2. Background
+  // 2. 背景
   bg_label_ = new QLabel(tr("3D Rendering Area (Background)"));
   bg_label_->setObjectName("ws1_bg_label");
   bg_label_->setAlignment(Qt::AlignCenter);
 
-  // 3. Device Panel
+  // 3. 设备面板
   auto* collapsable = new sss::dscore::CollapsibleWidget(tr("Device Info"));
   auto* content_widget = new QWidget();
   auto* info_layout = new QVBoxLayout(content_widget);
@@ -131,7 +131,7 @@ void Ws1Page::setupDefaultUi() {
   collapsable->SetContentWidget(content_widget);
   device_panel_ = collapsable;
 
-  // 4. Function Bar
+  // 4. 功能栏
   func_bar_ = new QWidget();
   auto* func_layout = new QHBoxLayout(func_bar_);
   enable_button_ = new QPushButton(tr("Enable Context"));
@@ -142,7 +142,7 @@ void Ws1Page::setupDefaultUi() {
   connect(enable_button_, &QPushButton::clicked, this, &Ws1Page::onEnableSubContext);
   connect(disable_button_, &QPushButton::clicked, this, &Ws1Page::onDisableSubContext);
 
-  // 5. Coords
+  // 5. 坐标
   coords_label_ = new QLabel("X: 100.0 Y: 200.5 Z: 15.3");
   coords_label_->setObjectName("overlay_coords_label");
 }
@@ -183,7 +183,7 @@ void Ws1Page::setupModel() {
 }
 
 void Ws1Page::retranslateUi() {
-  // Update texts...
+  // 更新文本...
 }
 
 }  // namespace sss::ws1

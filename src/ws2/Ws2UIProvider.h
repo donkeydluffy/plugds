@@ -21,13 +21,13 @@ class Ws2UIProvider : public QObject,
   explicit Ws2UIProvider(Ws2Component* component, int page_context_id, int sub_context_id);
   ~Ws2UIProvider() override = default;
 
-  // ICommandProvider
+  // ICommandProvider 接口
   void RegisterCommands(sss::dscore::ICommandManager* command_manager) override;
 
-  // IMenuProvider
+  // IMenuProvider 接口
   void ContributeToMenu(sss::dscore::ICommandManager* command_manager) override;
 
-  // IToolbarProvider
+  // IToolbarProvider 接口
   void ContributeToToolbar(sss::dscore::ICommandManager* command_manager) override;
 
  private:

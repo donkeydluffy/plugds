@@ -11,10 +11,9 @@
 
 namespace sss::dscore {
 /**
- * @brief       The ICommandManager interface is responsible for creating Commands and updating them when the
- *              application context changes.
+ * @brief       ICommandManager 接口负责创建命令并在应用程序上下文更改时更新它们。
  *
- * @details     It provides methods for creating menus and locating commands.
+ * @details     它提供了创建菜单和定位命令的方法。
  *
  * @class       sss::dscore::ICommandManager ICommandManager.h <ICommandManager>
  */
@@ -24,25 +23,25 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
 
  public:
   /**
-   * @brief       Gets the sss::dscore::ICommandManager instance.
+   * @brief       获取 sss::dscore::ICommandManager 实例。
    *
-   * @returns     the ICommandManager instance.
+   * @returns     ICommandManager 实例。
    */
   static auto GetInstance() -> ICommandManager* { return sss::extsystem::GetTObject<ICommandManager>(); }
 
   /**
-   * @brief       Registers a QAction with a command for a given context.
+   * @brief       为给定上下文向命令注册 QAction。
    *
-   * @details     This function registers an action by command id, if the command already exists
-   *              then the action is added for the given context, otherwise a new command is created.
+   * @details     此函数通过命令ID注册动作，如果命令已存在，
+   *              则为给定上下文添加动作，否则创建新命令。
    *
    * @see         sss::dscore::ICommandManager::registerAction
    *
-   * @param[in]   action the action.
-   * @param[in]   id the identifier of the command.
-   * @param[in]   contexts the contexts this action is valid in.
+   * @param[in]   action 动作。
+   * @param[in]   id 命令的标识符。
+   * @param[in]   contexts 此动作有效的上下文。
    *
-   * @returns     a pointer to the ICommand
+   * @returns     指向 ICommand 的指针
    */
   virtual auto RegisterAction(QAction* action, QString id, const sss::dscore::ContextList& visibility_contexts,
                               const sss::dscore::ContextList& enabled_contexts) -> sss::dscore::ICommand* = 0;
@@ -64,57 +63,57 @@ class DS_CORE_DLLSPEC ICommandManager : public QObject {
   }
 
   /**
-   * @brief       Sets the currently active context.
+   * @brief       设置当前活动上下文。
    *
-   * @details     Updates all commands registered so that they connect to the correct QAction for the context.
+   * @details     更新所有已注册的命令，使它们连接到该上下文的正确 QAction。
    *
-   * @param[in]   context_id the context to set as active.
+   * @param[in]   context_id 要设置为活动的上下文。
    */
   virtual auto SetContext(int context_id) -> void = 0;
 
   /**
-   * @brief       Creates a generic action container.
+   * @brief       创建通用动作容器。
    *
-   * @param[in]   identifier The unique identifier for the container.
-   * @param[in]   type The type of container.
-   * @param[in]   parent_container The parent container (optional).
-   * @param[in]   order The display priority (lower is earlier). Default 0.
+   * @param[in]   identifier 容器的唯一标识符。
+   * @param[in]   type 容器的类型。
+   * @param[in]   parent_container 父容器（可选）。
+   * @param[in]   order 显示优先级（越小越早）。默认为 0。
    *
-   * @returns     A new IActionContainer instance.
+   * @returns     新的 IActionContainer 实例。
    */
   virtual auto CreateActionContainer(const QString& identifier, sss::dscore::ContainerType type,
                                      IActionContainer* parent_container, int order)
       -> sss::dscore::IActionContainer* = 0;
 
   /**
-   * @brief       Find a container.
+   * @brief       查找容器。
    *
-   * @details     Finds a container by the given identifier.
+   * @details     通过给定标识符查找容器。
    *
-   * @param[in]   identifier the unique identifier for the container.
+   * @param[in]   identifier 容器的唯一标识符。
    *
-   * @returns     the IActionContainer instance if exists; otherwise nullptr.
+   * @returns     如果存在则返回 IActionContainer 实例；否则返回 nullptr。
    */
   virtual auto FindContainer(const QString& identifier) -> sss::dscore::IActionContainer* = 0;
 
   /**
-   * @brief       Find a command.
+   * @brief       查找命令。
    *
-   * @details     Finds a registered command by given identifier.
+   * @details     通过给定标识符查找已注册的命令。
    *
-   * @param[in]   identifier the identifier for the command.
+   * @param[in]   identifier 命令的标识符。
    *
-   * @returns     The ICommand instance if the command exists; otherwise nullptr;
+   * @returns     如果命令存在则返回 ICommand 实例；否则返回 nullptr；
    */
   virtual auto FindCommand(const QString& identifier) -> sss::dscore::ICommand* = 0;
 
   /**
-   * @brief       Retranslates UI elements (Menus, Commands) managed by this manager.
-   *              Should be called when the application language changes.
+   * @brief       重新翻译由此管理器管理的UI元素（菜单、命令）。
+   *              当应用程序语言更改时应调用。
    */
   virtual auto RetranslateUi() -> void = 0;
 
-  // Classes with virtual functions should not have a public non-virtual destructor:
+  // 具有虚函数的类不应有公共的虚析构函数：
   ~ICommandManager() override = default;
 };
 }  // namespace sss::dscore

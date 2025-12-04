@@ -2,7 +2,7 @@
 
 #include <QIcon>
 #include <QMap>
-#include <memory>  // For std::unique_ptr
+#include <memory>  // 用于 std::unique_ptr
 
 #include "dscore/IThemeService.h"
 #include "dscore/Theme.h"
@@ -24,20 +24,20 @@ class DS_CORE_DLLSPEC ThemeService : public sss::dscore::IThemeService {
   [[nodiscard]] auto GetIcon(const QString& base_path, const QString& icon_name) const -> QIcon override;
 
  private:
-  std::unique_ptr<sss::dscore::Theme> current_theme_;  // Stores the active theme data
+  std::unique_ptr<sss::dscore::Theme> current_theme_;  // 存储当前活动的主题数据
 
-  // Helper methods for parsing and applying
+  // 用于解析和应用的帮助方法
   auto applyPaletteToQapp() -> void;
   auto applyStyleSheetToQapp() -> void;
 
-  // Helper to map string to QPalette::ColorRole (used during INI parsing)
+  // 将字符串映射到 QPalette::ColorRole 的辅助函数（用于 INI 解析）
   static auto stringToPaletteColorRole(const QString& str) -> QPalette::ColorRole;
-  // Helper to map string to Theme::ColorRole (used during INI parsing)
+  // 将字符串映射到 Theme::ColorRole 的辅助函数（用于 INI 解析）
   static auto stringToThemeColorRole(const QString& str) -> Theme::ColorRole;
   static auto themeColorRoleToString(Theme::ColorRole role) -> QString;
   static auto paletteColorRoleToString(QPalette::ColorRole role) -> QString;
 
-  // Icon Cache: Key = "theme_type|base_path|icon_name"
+  // 图标缓存：键 = "theme_type|base_path|icon_name"
   mutable QMap<QString, QIcon> icon_cache_;
 };
 

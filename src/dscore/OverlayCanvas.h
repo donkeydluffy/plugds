@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMap>
-#include <QToolButton>  // Required for QToolButton
+#include <QToolButton>  // QToolButton 所需
 #include <QVector>
 #include <QWidget>
 
@@ -15,10 +15,10 @@ QT_END_NAMESPACE
 namespace sss::dscore {
 
 /**
- * @brief A custom layout container that manages:
- * 1. Background Layer: Fills the remaining space.
- * 2. Squeeze Layer: Widgets docked to sides that reduce the Background's area.
- * 3. Overlay Layer: Widgets floating on top of everything, anchored to corners/center.
+ * @brief 一个自定义布局容器，管理：
+ * 1. 背景层：填充剩余空间。
+ * 2. 挤压层：停靠在侧边的小部件，减少背景的区域。
+ * 3. 覆盖层：浮动在所有内容上方的小部件，锚定到角落/中心。
  */
 class OverlayCanvas : public QWidget {
   Q_OBJECT
@@ -28,44 +28,44 @@ class OverlayCanvas : public QWidget {
   ~OverlayCanvas() override;
 
   /**
-   * @brief Sets the central background widget (e.g., 3D View).
-   * This widget will fill the space remaining after squeeze widgets are placed.
+   * @brief 设置中央背景小部件（例如，3D 视图）。
+   * 该小部件将填充挤压小部件放置后剩余的空间。
    */
   void SetBackgroundWidget(QWidget* widget);
 
   /**
-   * @brief Adds a widget that "squeezes" the background area.
+   * @brief 添加一个"挤压"背景区域的小部件。
    */
   void AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority = 0, const QList<int>& visible_contexts = {},
                         const QList<int>& enable_contexts = {});
 
   /**
-   * @brief Adds a widget that floats over everything.
+   * @brief 添加一个浮动在所有内容上方的小部件。
    */
   void AddOverlayWidget(OverlayZone zone, QWidget* widget, int priority = 0, const QList<int>& visible_contexts = {},
                         const QList<int>& enable_contexts = {});
 
   /**
-   * @brief Shows a transient notification message.
+   * @brief 显示一个临时通知消息。
    */
   void ShowNotification(const QString& message, int duration_ms = 3000);
 
   /**
-   * @brief Clears all registered widgets (Squeeze and Overlay) and resets the state.
-   * Does not delete the widgets, just removes them from layout management.
+   * @brief 清除所有已注册的小部件（挤压和覆盖）并重置状态。
+   * 不删除小部件，只是将它们从布局管理中移除。
    */
   void Clear();
 
   /**
-   * @brief Sets the button that toggles the sidebar visibility.
-   * This button will be positioned at the center-left edge of the canvas.
-   * @param button The QToolButton to manage.
+   * @brief 设置切换侧边栏可见性的按钮。
+   * 该按钮将定位在画布的中心左边缘。
+   * @param button 要管理的 QToolButton。
    */
   void SetSidebarToggleButton(QToolButton* button);
 
  public slots:  // NOLINT
   /**
-   * @brief Updates the visibility/enabled state of all widgets based on the current context.
+   * @brief 根据当前上下文更新所有小部件的可见性/启用状态。
    */
   void UpdateContextState();
 
@@ -89,32 +89,32 @@ class OverlayCanvas : public QWidget {
     QList<int> enable_contexts;
   };
 
-  // Background
+  // 背景
   QWidget* background_widget_ = nullptr;
 
-  // Squeeze Widgets
+  // 挤压小部件
   QVector<SqueezeItem> squeeze_widgets_;
 
-  // Overlay Items (Managed manually now for sorting)
+  // 覆盖项（现在手动管理以进行排序）
   QVector<OverlayItem> overlay_items_;
 
-  // Overlay Containers
-  // We use internal widgets with Layouts to manage stacking in each zone automatically.
+  // 覆盖容器
+  // 我们使用带有布局的内部小部件来自动管理每个区域中的堆叠。
   QMap<OverlayZone, QWidget*> overlay_containers_;
 
   void initOverlayContainers();
   void layoutSqueezeWidgets(const QRect& area, QRect& remaining_rect);
   void layoutOverlayWidgets(const QRect& area);
 
-  // Helper to get or create container
+  // 获取或创建容器的辅助函数
   QWidget* getOverlayContainer(OverlayZone zone);
 
-  // Rebuilds the layout of a specific overlay container based on sorted items
+  // 基于排序项重建特定覆盖容器的布局
   void refreshOverlayContainer(OverlayZone zone);
 
   QWidget* notification_widget_ = nullptr;
 
-  // Sidebar toggle button (managed and positioned by OverlayCanvas)
+  // 侧边栏切换按钮（由 OverlayCanvas 管理和定位）
   QToolButton* sidebar_toggle_button_ = nullptr;
 };
 

@@ -11,10 +11,10 @@ namespace sss::dscore {
 class Command;
 
 /**
- * @brief       The CommandManager class is responsible for creating Commands and updating them when the
- *              application context changes.
+ * @brief       CommandManager 类负责创建命令并在应用程序上下文更改时更新它们。
  *
- * @details     It provides methods for creating menus and locating commands.
+ * @details     它提供了创建菜单和定位命令的方法。
+ * @class       sss::dscore::CommandManager CommandManager.h <CommandManager>
  */
 class CommandManager : public sss::dscore::ICommandManager {
  private:
@@ -24,12 +24,12 @@ class CommandManager : public sss::dscore::ICommandManager {
 
  public:
   /**
-   * @brief       Constructs a new CommandManager.
+   * @brief       构造一个新的 CommandManager。
    */
   CommandManager();
 
   /**
-   * @brief       Destroys the CommandManager.
+   * @brief       销毁 CommandManager。
    */
   ~CommandManager() override;
 

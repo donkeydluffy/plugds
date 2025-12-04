@@ -24,7 +24,7 @@ class Ws2Component : public QObject, public sss::extsystem::IComponent {
   Ws2Component() = default;
   ~Ws2Component() override = default;
 
-  // IComponent interface
+  // IComponent 接口
   void InitialiseEvent() override;
   void InitialisationFinishedEvent() override;
   void FinaliseEvent() override;

@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <functional>
 
-#include "dscore/CoreSpec.h"    // For DS_CORE_DLLSPEC
-#include "dscore/IWorkbench.h"  // For enums
+#include "dscore/CoreSpec.h"    // 用于 DS_CORE_DLLSPEC
+#include "dscore/IWorkbench.h"  // 用于枚举
 
 QT_BEGIN_NAMESPACE
 class QTabWidget;
@@ -18,9 +18,9 @@ class OverlayCanvas;
 class ModeSwitcher;
 
 /**
- * @brief A reusable widget implementing the standard workspace layout:
- * - Left: TabWidget (Sidebar)
- * - Right: OverlayCanvas (3D View + HUDs)
+ * @brief 实现标准工作空间布局的可重用控件：
+ * - 左侧：TabWidget（侧边栏）
+ * - 右侧：OverlayCanvas（3D视图+HUD）
  */
 class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
   Q_OBJECT
@@ -30,7 +30,7 @@ class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
   explicit WorkbenchLayout(QWidget* parent = nullptr);
   ~WorkbenchLayout() override;
 
-  // Proxy methods to components
+  // 到组件的代理方法
   void AddSidePanel(const QString& id, QWidget* panel, const QString& title, const QIcon& icon = QIcon()) override;
   void SetBackgroundWidget(QWidget* widget) override;
   void AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority = 0, const QList<int>& visible_contexts = {},
@@ -40,7 +40,7 @@ class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
   void ShowNotification(const QString& message, int duration_ms = 3000) override;
 
   /**
-   * @brief Clears all content (Side panels, Squeeze, Overlays) from the workbench.
+   * @brief 从工作台中清除所有内容（侧边面板、挤压控件、覆盖控件）。
    */
   void Clear() override;
 
@@ -62,7 +62,7 @@ class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
   QToolButton* sidebar_toggle_btn_ = nullptr;
   ModeSwitcher* mode_switcher_ = nullptr;
   std::function<void(const QString&)> mode_switch_callback_;
-  int last_sidebar_width_ = 250;  // Default width to restore
+  int last_sidebar_width_ = 250;  // 要恢复的默认宽度
 };
 
 }  // namespace sss::dscore

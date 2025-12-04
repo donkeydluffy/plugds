@@ -28,25 +28,25 @@ void Ws1Component::InitialiseEvent() {
     return;
   }
 
-  // 1. Register Contexts
+  // 1. 注册上下文
   page_context_id_ = context_manager->RegisterContext("ws1.context");
   sub_context_id_ = context_manager->RegisterContext("ws1.sub_context.enabled");
 
-  // 2. Create and Register Mode
-  ws1_mode_ = new Ws1Page(page_context_id_, this);  // Parent is Ws1Component
-  ws1_mode_->SetSubContextId(sub_context_id_);      // Fix: Set the sub-context ID!
+  // 2. 创建并注册模式
+  ws1_mode_ = new Ws1Page(page_context_id_, this);  // 父对象是 Ws1Component
+  ws1_mode_->SetSubContextId(sub_context_id_);      // 修复：设置子上下文 ID！
 
   auto* mode_manager = sss::extsystem::GetTObject<sss::dscore::IModeManager>();
   if (mode_manager != nullptr) {
     mode_manager->AddMode(ws1_mode_);
-    // VIOLATION FIX: Do NOT activate mode here (Phase 2).
-    // Mode activation involves UI manipulation which should happen in Phase 3 (InitialisationFinishedEvent) or later.
+    // 违规修复：不要在此处激活模式（阶段 2）。
+    // 模式激活涉及 UI 操作，应该在阶段 3（InitialisationFinishedEvent）或更晚进行。
     // mode_manager->ActivateMode(ws1_mode_->Id());
   } else {
     SPDLOG_ERROR("Failed to get IModeManager.");
   }
 
-  // 3. Language & Theme Service Integration
+  // 3. 语言和主题服务集成
   auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
   if (lang_service != nullptr) {
     lang_service->RegisterTranslator("ws1", ":/ws1/i18n");
@@ -54,11 +54,11 @@ void Ws1Component::InitialiseEvent() {
     SPDLOG_WARN("ILanguageService not available.");
   }
 
-  // 4. Create and Register UI Provider
+  // 4. 创建并注册 UI 提供者
   ui_provider_ = std::make_unique<Ws1UIProvider>(this, page_context_id_, sub_context_id_);
   sss::extsystem::AddObject(ui_provider_.get());
 
-  // 5. Theme connection
+  // 5. 主题连接
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
     connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws1Component::UpdateIcons);

@@ -14,11 +14,11 @@ class IPageManager;
 class IStatusbarManager;
 
 /**
- * @brief       The Core class is the root component for the application.
+ * @brief       Core 类是应用程序的根组件。
  *
- * @details     Provides an implementation of ICore which provides the main window for the application and
- *              provides the framework of the application (interfaces) which other components use to extend
- *              functionality.
+ * @details     提供 ICore 的实现，为应用程序提供主窗口，并提供应用程序框架（接口），
+ *              其他组件使用这些接口来扩展功能。
+ * @class       sss::dscore::Core Core.h <Core>
  */
 class Core : public sss::dscore::ICore {
  private:
@@ -28,57 +28,56 @@ class Core : public sss::dscore::ICore {
 
  public:
   /**
-   * @brief       Constructs a new Core instance.
+   * @brief       构造一个新的 Core 实例。
    */
   Core();
 
   /**
-   * @brief       Destroys the Core.
+   * @brief       销毁 Core。
    */
   ~Core() override;
 
   /**
-   * @brief       Returns the main window instance.
+   * @brief       返回主窗口实例。
    *
-   * @details     Returns a pointer to the main window, this function always returns the same
-   *              QMainWindow pointer so can be called by any part of the application to get a
-   *              handle to the main window.
+   * @details     返回指向主窗口的指针，此函数始终返回相同的
+   *              QMainWindow 指针，因此可以被应用程序的任何部分调用以获取
+   *              主窗口的句柄。
    *
-   * @see         sss::dscore::ICore::mainWindow
+   * @see         sss::dscore::ICore::GetMainWindow
    *
-   * @returns     returns a pointer to the QMainWindow.
+   * @returns     返回指向 QMainWindow 的指针。
    */
   auto GetMainWindow() -> QMainWindow* override;
 
   /**
-   * @brief       Opens the core.
+   * @brief       打开核心。
    *
-   * @details     Should be once by the application after the components are loaded.  Components connect
-   *              to the sss::dscore::ICore::coreOpened signal to perform post load initialisation.
+   * @details     应该在组件加载后由应用程序调用一次。组件连接到
+   *              sss::dscore::ICore::CoreOpened 信号以执行加载后初始化。
    *
-   * @see         sss::dscore::ICore::open
+   * @see         sss::dscore::ICore::CoreOpened
    */
   auto Open() -> void;
 
   /**
-   * @brief       Provides a random number between the minumum and maximum values.
+   * @brief       提供介于最小值和最大值之间的随机数。
    *
-   * @param[in]   minimumValue the lower bound of the random number.
-   * @param[in]   maximumValue the upper bound of the random number.
+   * @param[in]   minimum_value 随机数的下界。
+   * @param[in]   maximum_value 随机数的上界。
    *
-   * @returns     a random number between the bounds.
+   * @returns     介于边界之间的随机数。
    */
 
   auto Random(int minimum_value, int maximum_value) -> int override;
 
   /**
-   * @brief       Returns the storage location.
+   * @brief       返回存储位置。
    *
-   * @note        This is the folder where persistent data should be stored, this is usually
-   *              provided by the operating system, however, for a portable version of the
-   *              application it may be another folder
+   * @note        这是应该存储持久数据的文件夹，通常由操作系统提供，
+   *              但是，对于应用程序的便携版本，它可能是另一个文件夹。
    *
-   * @returns     the folder where data should be saved.
+   * @returns     应该保存数据的文件夹。
    */
   auto StorageFolder() -> QString override;
 

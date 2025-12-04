@@ -20,7 +20,7 @@ sss::SplashScreen::SplashScreen() : QSplashScreen(QPixmap(), Qt::WindowStaysOnTo
     qWarning("Failed to load splash screen image: %s", qUtf8Printable(kSplashScreenFilename));
   }
 
-  // Handle null pixmap to avoid scaling errors
+  // 处理空像素图以避免缩放错误
   auto scaled_pixmap = pixmap;
   if (!scaled_pixmap.isNull()) {
     scaled_pixmap = pixmap.scaledToWidth(kSplashScreenWidth * pixmap.devicePixelRatio(), Qt::SmoothTransformation);
@@ -34,7 +34,7 @@ sss::SplashScreen::SplashScreen() : QSplashScreen(QPixmap(), Qt::WindowStaysOnTo
     QFontDatabase::addApplicationFont(font_dir_iterator.filePath());
   }
 
-  // Ensure we don't divide by zero if pixmap was null
+  // 确保在像素图为空时不会除零
   scale_factor_ =
       scaled_pixmap.isNull() ? 1.0F : static_cast<float>(scaled_pixmap.width()) / static_cast<float>(pixmap.width());
 

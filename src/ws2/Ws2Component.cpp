@@ -28,11 +28,11 @@ void Ws2Component::InitialiseEvent() {
     return;
   }
 
-  // 1. Register Contexts
+  // 1. 注册上下文
   page_context_id_ = context_manager->RegisterContext("ws2.context");
   sub_context_id_ = context_manager->RegisterContext("ws2.sub_context.enabled");
 
-  // 2. Create and Register Mode
+  // 2. 创建并注册模式
   ws2_mode_ = new Ws2Page(page_context_id_, this);
   ws2_mode_->SetSubContextId(sub_context_id_);
 
@@ -43,7 +43,7 @@ void Ws2Component::InitialiseEvent() {
     SPDLOG_ERROR("Failed to get IModeManager.");
   }
 
-  // 3. Language & Theme Service Integration
+  // 3. 语言和主题服务集成
   auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
   if (lang_service != nullptr) {
     lang_service->RegisterTranslator("ws2", ":/ws2/i18n");
@@ -51,11 +51,11 @@ void Ws2Component::InitialiseEvent() {
     SPDLOG_WARN("ILanguageService not available.");
   }
 
-  // 4. Create and Register UI Provider
+  // 4. 创建并注册 UI 提供者
   ui_provider_ = std::make_unique<Ws2UIProvider>(this, page_context_id_, sub_context_id_);
   sss::extsystem::AddObject(ui_provider_.get());
 
-  // 5. Theme connection
+  // 5. 主题连接
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
     connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws2Component::UpdateIcons);

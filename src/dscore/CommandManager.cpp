@@ -106,20 +106,20 @@ auto sss::dscore::CommandManager::createMenu(const QString& identifier, IActionC
   }
 
   if (parent_container == nullptr) {
-    // Wrapping the main menu bar
+    // 包装主菜单栏
     auto* main_window = sss::dscore::MainWindowInstance();
     main_window->menuBar()->show();
     new_container = new sss::dscore::ActionContainer(main_window->menuBar());
     new_container->SetOrder(order);
   } else {
-    // Creating a sub-menu (or top-level menu item in menu bar)
+    // 创建子菜单（或菜单栏中的顶级菜单项）
     auto* parent = qobject_cast<sss::dscore::ActionContainer*>(parent_container);
     QMenuBar* parent_menu_bar = nullptr;
     if (parent != nullptr) {
       parent_menu_bar = qobject_cast<QMenuBar*>(parent->GetWidget());
     }
 
-    // If parent is not a MenuBar, it might be a Menu (Submenu)
+    // 如果父级不是菜单栏，则可能是菜单（子菜单）
     QMenu* parent_menu = nullptr;
     if (parent_menu_bar == nullptr && parent != nullptr) {
       parent_menu = qobject_cast<QMenu*>(parent->GetWidget());
@@ -128,13 +128,13 @@ auto sss::dscore::CommandManager::createMenu(const QString& identifier, IActionC
     auto* menu = new QMenu(sss::dscore::constants::MenuText(identifier), (parent_menu_bar != nullptr)
                                                                              ? static_cast<QWidget*>(parent_menu_bar)
                                                                              : static_cast<QWidget*>(parent_menu));
-    menu->menuAction()->setData(order);  // Store order in QAction
+    menu->menuAction()->setData(order);  // 在 QAction 中存储排序值
 
     new_container = new sss::dscore::ActionContainer(menu);
     new_container->SetOrder(order);
 
     if (parent_menu_bar != nullptr) {
-      // Insert sorted into MenuBar
+      // 按排序插入菜单栏
       QAction* before = nullptr;
       for (auto* action : parent_menu_bar->actions()) {
         bool ok = false;
@@ -146,12 +146,12 @@ auto sss::dscore::CommandManager::createMenu(const QString& identifier, IActionC
       }
       parent_menu_bar->insertAction(before, menu->menuAction());
     } else if (parent_menu != nullptr) {
-      // Insert sorted into Parent Menu
+      // 按排序插入父级菜单
       QAction* before = nullptr;
       for (auto* action : parent_menu->actions()) {
         bool ok = false;
         int action_order = action->data().toInt(&ok);
-        // Only compare with actions that have order set (submenus/groups)
+        // 只与设置了排序的动作进行比较（子菜单/分组）
         if (ok && action_order > order) {
           before = action;
           break;
@@ -174,14 +174,14 @@ auto sss::dscore::CommandManager::createToolBar(const QString& identifier, int o
 
   auto* main_window = sss::dscore::MainWindowInstance();
 
-  // Create Toolbar
+  // 创建工具栏
   auto* tool_bar = new QToolBar(identifier);
   tool_bar->setProperty("order", order);
 
-  // Insert Sorted
+  // 按排序插入
   QToolBar* before = nullptr;
   for (auto* existing_toolbar : main_window->findChildren<QToolBar*>()) {
-    // check if it's a main window area toolbar
+    // 检查是否为主窗口区域的工具栏
     if (main_window->toolBarArea(existing_toolbar) == Qt::NoToolBarArea) continue;
 
     bool ok = false;
@@ -222,23 +222,23 @@ auto sss::dscore::CommandManager::FindCommand(const QString& identifier) -> sss:
 }
 
 auto sss::dscore::CommandManager::RetranslateUi() -> void {
-  // Update Commands
+  // 更新命令
   for (auto it = command_map_.begin(); it != command_map_.end(); ++it) {
     const QString& id = it.key();
     ICommand* command = it.value();
     if ((command != nullptr) && (command->Action() != nullptr)) {
-      // Only update standard commands or commands where we know the ID maps to a translated string.
-      // CommandText() handles lookup in CoreStrings or fallback.
-      // We assume non-core commands might just return the ID or original text if not mapped,
-      // but since CommandText falls back to kMap lookups which use QT_TR_NOOP, it *might* re-translate if context
-      // matches. However, the primary goal is to fix Core commands (File, Open, etc).
+      // 只更新标准命令或我们已知 ID 对应翻译字符串的命令。
+      // CommandText() 处理在核心字符串集合中的查找或回退处理。
+      // 我们假设非核心命令可能只返回 ID 或未映射时的原始文本，
+      // 但由于 CommandText 回退到使用 QT_TR_NOOP 的 kMap 查找，如果上下文匹配，它*可能*会重新翻译。
+      // 然而，主要目标是修复核心命令（文件、打开等）。
       QString text = sss::dscore::constants::CommandText(id);
-      // If CommandText returns the ID itself (fallback), we probably shouldn't overwrite
-      // unless we are sure it's not a user string.
-      // But CommandText implementation returns:
-      // 1. CoreStrings value (Translated)
-      // 2. QObject::tr(kMap value) (Translated if context matches)
-      // 3. string (ID)
+      // 如果 CommandText 返回 ID 本身（回退），我们可能不应该覆盖
+      // 除非我们确定它不是用户字符串。
+      // 但 CommandText 实现返回：
+      // 1. 核心字符串集合值（已翻译）
+      // 2. QObject::tr(kMap 值)（如果上下文匹配则翻译）
+      // 3. 字符串（ID）
 
       if (text != id) {
         command->Action()->setText(text);
@@ -246,7 +246,7 @@ auto sss::dscore::CommandManager::RetranslateUi() -> void {
     }
   }
 
-  // Update Menus / Containers
+  // 更新菜单/容器
   for (auto it = action_container_map_.begin(); it != action_container_map_.end(); ++it) {
     const QString& id = it.key();
     IActionContainer* container = it.value();

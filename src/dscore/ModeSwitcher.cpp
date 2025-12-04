@@ -27,7 +27,7 @@ class RotatedTabButton : public QToolButton {
     QString text = opt.text;
     QIcon icon = opt.icon;
     opt.text.clear();
-    opt.icon = QIcon();  // We draw icon manually
+    opt.icon = QIcon();  // 我们手动绘制图标
     p.drawComplexControl(QStyle::CC_ToolButton, opt);
 
     // 2. Draw Icon (Top Centered)
@@ -47,18 +47,18 @@ class RotatedTabButton : public QToolButton {
     if (!text.isEmpty()) {
       p.save();
 
-      // Translate to just below the icon, centered horizontally
+      // 平移到图标正下方，水平居中
       // icon (32) + padding (4) + gap (4)
       int text_start_y = icon_size + padding + 4;
       p.translate(width() / 2, text_start_y);  // NOLINT
       p.rotate(90);
 
-      // Available height for text
+      // 文本可用高度
       int available_height = height() - text_start_y - padding;
       QRect text_rect(0, -width() / 2, available_height, width());
 
-      // Elide text if it fits, though rotated elision is tricky.
-      // Standard drawText with rotation should handle basic rendering.
+      // 如果文本合适则省略，不过旋转的省略比较复杂。
+      // 标准的drawText配合旋转应该能处理基本渲染。
       p.drawText(text_rect, Qt::AlignLeft | Qt::AlignVCenter, text);
 
       p.restore();
@@ -81,9 +81,9 @@ class RotatedTabButton : public QToolButton {
 ModeSwitcher::ModeSwitcher(QWidget* parent) : QWidget(parent) {
   layout_ = new QVBoxLayout(this);
   layout_->setContentsMargins(2, 2, 2, 2);
-  layout_->setSpacing(4);  // Reduce spacing for tab-like feel
+  layout_->setSpacing(4);  // 减少间距以获得类似标签页的感觉
 
-  // Spacer to push buttons to the top
+  // 弹簧来将按钮推到顶部
   layout_->addStretch();
 
   button_group_ = new QButtonGroup(this);
@@ -95,7 +95,7 @@ ModeSwitcher::ModeSwitcher(QWidget* parent) : QWidget(parent) {
             emit ModeSelected(id);
           });
 
-  // Slightly wider to accommodate visual comfort
+  // 稍宽一些以提供视觉舒适感
   setFixedWidth(50);
 }
 
@@ -104,11 +104,11 @@ ModeSwitcher::~ModeSwitcher() = default;
 void ModeSwitcher::AddModeButton(const QString& id, const QString& title, const QIcon& icon) {
   auto* btn = new RotatedTabButton(this);
 
-  btn->setText(title);  // Standard text, drawing handles rotation
+  btn->setText(title);  // 标准文本，绘制处理旋转
   btn->setIcon(icon);
   btn->setIconSize(QSize(32, 32));
   btn->setCheckable(true);
-  btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);  // Logic handled in paintEvent
+  btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);  // 逻辑在paintEvent中处理
   btn->setProperty("mode_id", id);
   btn->setToolTip(title);
 
@@ -119,7 +119,7 @@ void ModeSwitcher::AddModeButton(const QString& id, const QString& title, const 
   btn->setMinimumHeight(60);
   btn->setMaximumHeight(160);
 
-  // Add to layout before the stretch item
+  // 在弹性项目之前添加到布局
   layout_->insertWidget(layout_->count() - 1, btn);
 
   button_group_->addButton(btn);

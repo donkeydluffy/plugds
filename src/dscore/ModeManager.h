@@ -10,7 +10,7 @@ namespace sss::dscore {
 class IWorkbench;
 
 /**
- * @brief Concrete implementation of IModeManager.
+ * @brief IModeManager 的具体实现。
  */
 class DS_CORE_DLLSPEC ModeManager : public IModeManager {
   Q_OBJECT
@@ -32,7 +32,7 @@ class DS_CORE_DLLSPEC ModeManager : public IModeManager {
 
  public:
   /**
-   * @brief Sets the global workbench instance used for mode content.
+   * @brief 设置用于模式内容的全局工作台实例。
    */
   void SetGlobalWorkbench(IWorkbench* workbench);
 

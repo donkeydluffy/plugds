@@ -5,13 +5,13 @@
 
 namespace sss::dscore {
 /**
- * @brief       The IStatusbarManager describes a manager for status bars.
+ * @brief       IStatusbarManager 描述状态栏管理器。
  *
- * @details     The status bar manager handles the management of the application status bar, components may use
- *              the status bar to display information about tasks or results that are running.
+ * @details     状态栏管理器处理应用程序状态栏的管理，组件可以使用状态栏来显示
+ *              正在运行的任务或结果的信息。
  *
- *              The status bar is normally context sensitive although components may created fixed entries that
- *              are shown regardless of the current application context
+ *              状态栏通常是上下文敏感的，虽然组件可以创建固定的条目，
+ *              无论当前应用程序上下文如何都会显示
  *
  * @class       sss::dscore::IStatusbarManager IStatusbarManager.h <IStatusbarManager>
  */
@@ -21,41 +21,41 @@ class DS_CORE_DLLSPEC IStatusbarManager : public QObject {
 
  public:
   /**
-   * @brief       Returns the IStatusbarManager instance.
+   * @brief       返回 IStatusbarManager 实例。
    *
-   * @returns     the IStatusbarManager instance.
+   * @returns     IStatusbarManager 实例。
    */
   static auto GetInstance() -> IStatusbarManager* { return sss::extsystem::GetTObject<IStatusbarManager>(); }
 
   /**
-   * @brief       Shows a temporary message in the status bar.
+   * @brief       在状态栏中显示临时消息。
    *
-   * @param[in]   message The message to display.
-   * @param[in]   timeout Time in milliseconds to show the message (0 = indefinite).
+   * @param[in]   message 要显示的消息。
+   * @param[in]   timeout 显示消息的时间（毫秒，0 = 无限期）。
    */
   virtual void SetStatusMessage(const QString& message, int timeout) = 0;
 
   /**
-   * @brief       Clears the current status message.
+   * @brief       清除当前状态消息。
    */
   virtual void ClearStatusMessage() = 0;
 
   /**
-   * @brief       Adds a permanent widget to the status bar.
+   * @brief       向状态栏添加永久控件。
    *
-   * @param[in]   widget The widget to add (ownership is transferred to the status bar).
-   * @param[in]   stretch The stretch factor.
+   * @param[in]   widget 要添加的控件（所有权转移到状态栏）。
+   * @param[in]   stretch 拉伸因子。
    */
   virtual void AddPermanentWidget(QWidget* widget, int stretch) = 0;
 
   /**
-   * @brief       Removes a permanent widget from the status bar.
+   * @brief       从状态栏移除永久控件。
    *
-   * @param[in]   widget The widget to remove.
+   * @param[in]   widget 要移除的控件。
    */
   virtual void RemovePermanentWidget(QWidget* widget) = 0;
 
-  // Classes with virtual functions should not have a public non-virtual destructor:
+  // 具有虚函数的类不应有公共的虚析构函数：
   ~IStatusbarManager() override = default;
 };
 }  // namespace sss::dscore

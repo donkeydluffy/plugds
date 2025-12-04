@@ -6,10 +6,10 @@
 
 namespace sss::extsystem {
 /**
- * @brief       The IComponentManager defines the contract for a class to manage loaded components.
+ * @brief       IComponentManager 定义了用于管理已加载组件的类的契约。
  *
- * @details     In addition to handling the management of components, this class also provides a global
- *              registry for components.
+ * @details     除了处理组件的管理外，此类还为组件提供全局
+ *              注册表。
  *
  * @class       sss::extsystem::IComponentManager IComponentManager.h <IComponentManager>
  */
@@ -19,41 +19,41 @@ class EXT_SYSTEM_DLLSPEC IComponentManager : public QObject {
 
  private:
   /**
-   * @brief       `Constructs a new IComponentManager.
+   * @brief       构造一个新的 IComponentManager。
    */
   IComponentManager() = default;
 
   /**
-   * @brief       Destroys the IComponentManager.
+   * @brief       销毁 IComponentManager。
    */
   ~IComponentManager() override;
 
  public:
   /**
-   * @brief       Add an object to the object registry.
+   * @brief       向对象注册表添加一个对象。
    *
-   * @param[in]   object object to store.
+   * @param[in]   object 要存储的对象。
    */
   auto AddObject(QObject* object) -> void;
 
   /**
-   * @brief       Removes an object to the object registry.
+   * @brief       从对象注册表中移除一个对象。
    *
-   * @param[in]   object object to remove.
+   * @param[in]   object 要移除的对象。
    */
   auto RemoveObject(QObject* object) -> void;
 
   /**
-   * @brief       Returns a list of all objects in the registry.
+   * @brief       返回注册表中所有对象的列表。
    *
-   * @returns     returns a list of all objects.
+   * @returns     返回所有对象的列表。
    */
   auto AllObjects() -> QList<QObject*>;
 
   /**
-   * @brief       Returns the singleton instance to the ComponentManager object.
+   * @brief       返回 ComponentManager 对象的单例实例。
    *
-   * @returns     the singleton instance
+   * @returns     单例实例
    */
   static auto GetInstance() -> IComponentManager*;
 
@@ -63,7 +63,7 @@ class EXT_SYSTEM_DLLSPEC IComponentManager : public QObject {
 }  // namespace sss::extsystem
 
 /**
- * @brief       Convenience functions to manipulate the object registry.
+ * @brief       操作对象注册表的便捷函数。
  *
  * @code(.cpp)
  *              sss::extsystem::AddObject(object);
@@ -78,30 +78,30 @@ class EXT_SYSTEM_DLLSPEC IComponentManager : public QObject {
 
 namespace sss::extsystem {
 /**
- * @brief       Adds an object to the registry.
+ * @brief       向注册表添加一个对象。
  *
- * @param[in]   object the object to add to the registry.
+ * @param[in]   object 要添加到注册表的对象。
  */
 inline auto AddObject(QObject* object) -> void { IComponentManager::GetInstance()->AddObject(object); }
 
 /**
- * @brief       Removes an object to the registry.
+ * @brief       从注册表中移除一个对象。
  *
- * @param[in]   object the object to remove from the registry.
+ * @param[in]   object 要从注册表中移除的对象。
  */
 inline auto RemoveObject(QObject* object) -> void { IComponentManager::GetInstance()->RemoveObject(object); }
 
 /**
- * @brief       Returns all registered objects.
+ * @brief       返回所有已注册的对象。
  *
- * @returns     the list of objects.
+ * @returns     对象列表。
  */
 inline auto AllObjects() -> QList<QObject*> { return IComponentManager::GetInstance()->AllObjects(); }
 
 /**
- * @brief       Returns the first matching object of type T.
+ * @brief       返回第一个匹配类型 T 的对象。
  *
- * @returns     the object of type T.
+ * @returns     类型 T 的对象。
  */
 template <typename T>
 inline auto GetTObject() -> T* {
@@ -115,9 +115,9 @@ inline auto GetTObject() -> T* {
 }
 
 /**
- * @brief       Returns all objects that implement type T.
+ * @brief       返回所有实现类型 T 的对象。
  *
- * @returns     the list of objects implementing type T.
+ * @returns     实现类型 T 的对象列表。
  */
 template <typename T>
 inline auto GetTObjects() -> QList<T*> {

@@ -33,7 +33,7 @@ auto sss::dscore::ActionProxy::SetActive(QAction* action) -> void {
     setMenuRole(action->menuRole());
 
     // 1. Sync Visual Properties: Real Action -> Proxy
-    // The plugin owns the real action and sets its icon/text. The Proxy must reflect this.
+    // 插件拥有真实的 action 并设置其图标/文本。代理必须反映这一点。
     setIcon(action->icon());
     setText(action->text());
     setToolTip(action->toolTip());

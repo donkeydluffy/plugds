@@ -158,22 +158,22 @@ QTabBar::tab {
 
     /* Default (Horizontal) sizing - Adaptive width based on text */
     padding: 6px 12px;
-    /* Use text-based sizing: min-width ensures readability, max-width prevents overflow */
+    /* 使用基于文本的尺寸：min-width 确保可读性，max-width 防止溢出 */
     min-width: 100px;
-    max-width: 250px;  /* Increased to accommodate longer text like "Workspace 1" */
+    max-width: 250px;  /* 增加以容纳更长的文本，如"工作区 1" */
     margin-right: 2px;
 }
 
 /* Vertical Tabs (Left/Right) - Fix for truncated text */
 QTabBar::tab:left, QTabBar::tab:right {
-    /* Height matches the width needed for horizontal tabs (100-250px range) */
-    min-height: 120px;   /* Minimum height, accommodates shorter tab text */
-    max-height: 250px;   /* Maximum height, accommodates longer tab text */
-    min-width: 30px;     /* Thickness of the tab */
-    max-width: 40px;     /* Maximum thickness */
-    padding: 12px 4px;   /* Adjust padding for vertical layout */
+    /* 高度与水平选项卡所需的宽度匹配（100-250px 范围） */
+    min-height: 120px;   /* 最小高度，适应较短的选项卡文本 */
+    max-height: 250px;   /* 最大高度，适应较长的选项卡文本 */
+    min-width: 30px;     /* 选项卡的厚度 */
+    max-width: 40px;     /* 最大厚度 */
+    padding: 12px 4px;   /* 调整垂直布局的内边距 */
 
-    /* Adjust borders and radius for vertical orientation */
+    /* 调整垂直方向的边框和圆角 */
     border-bottom: 1px solid @@THEME_COLOR_PanelBorder@@;
     border-right: none;
     border-top-right-radius: 0px;
@@ -200,37 +200,37 @@ QTabWidget#workbench_sidebar::pane {
     top: -1px;
 }
 
-/* Distinguish Sidebar Tabs (Darker/Contrast) */
+/* 区分侧边栏选项卡（较深/对比色） */
 QTabWidget#workbench_sidebar > QTabBar::tab {
-    background: @@THEME_COLOR_ScrollBarBackground@@; /* Darker background */
+    background: @@THEME_COLOR_ScrollBarBackground@@; /* 较深的背景色 */
     color: @@THEME_COLOR_TextSecondary@@;
     border-color: @@THEME_COLOR_PanelBorder@@;
 }
 
 QTabWidget#workbench_sidebar > QTabBar::tab:selected {
-    background: @@PALETTE_Window@@; /* Active matches panel */
+    background: @@PALETTE_Window@@; /* 激活状态与面板匹配 */
     color: @@THEME_COLOR_TextPrimary@@;
-    border-bottom-color: @@THEME_COLOR_BrandColor@@; /* Highlight active tab */
-    border-bottom-width: 2px; /* Make it look like an underline indicator */
+    border-bottom-color: @@THEME_COLOR_BrandColor@@; /* 高亮显示活动选项卡 */
+    border-bottom-width: 2px; /* 使其看起来像下划线指示器 */
 }
 
-/* --- Main Window Tabs (Right Side, East) --- */
+/* --- 主窗口选项卡（右侧，东方） --- */
 QTabWidget#main_tab_widget::pane {
     border: 1px solid @@THEME_COLOR_PanelBorder@@;
-    background: @@THEME_COLOR_EditorBackground@@; /* Main content area usually lighter/editor color */
+    background: @@THEME_COLOR_EditorBackground@@; /* 主内容区域通常较浅/编辑器颜色 */
 }
 
 QTabWidget#main_tab_widget > QTabBar::tab {
     background: @@THEME_COLOR_PanelBackground@@;
     color: @@THEME_COLOR_TextPrimary@@;
-    border-left: 3px solid transparent; /* Indicator space */
+    border-left: 3px solid transparent; /* 指示器空间 */
     padding: 8px 12px;
 }
 
 QTabWidget#main_tab_widget > QTabBar::tab:selected {
-    background: @@THEME_COLOR_EditorBackground@@; /* Blend with content */
+    background: @@THEME_COLOR_EditorBackground@@; /* 与内容融合 */
     font-weight: bold;
-    border-left: 3px solid @@THEME_COLOR_BrandColor@@; /* Left indicator for East tabs */
+    border-left: 3px solid @@THEME_COLOR_BrandColor@@; /* 东方选项卡的左侧指示器 */
 }
 
 QTabBar::tab:selected {
@@ -319,8 +319,8 @@ QAbstractScrollArea {
 
 /* --- Custom Workspace Styles --- */
 
-/* Workbench Sidebar */
-/* Duplicate rules removed, handled above */
+/* 工作台侧边栏 */
+/* 重复的规则已移除，上面已处理 */
 
 /* Background Placeholder */
 QLabel#ws1_bg_label {

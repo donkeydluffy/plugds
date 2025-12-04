@@ -82,7 +82,7 @@ void CoreUIProvider::RegisterCommands(sss::dscore::ICommandManager* command_mana
 
   if (theme_service != nullptr) {
     connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, update_icons);
-    // Initial update
+    // 初始更新
     if (theme_service->Theme() != nullptr) {
       update_icons(theme_service->Theme()->Id());
     } else {
@@ -92,7 +92,7 @@ void CoreUIProvider::RegisterCommands(sss::dscore::ICommandManager* command_mana
 }
 
 void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
-  // Find the Application MenuBar (created by MenuAndToolbarManager)
+  // 查找应用程序菜单栏（由 MenuAndToolbarManager 创建）
   auto* app_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
 
   // Settings Menu

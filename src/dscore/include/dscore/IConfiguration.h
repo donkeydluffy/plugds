@@ -7,29 +7,29 @@
 
 namespace sss::dscore {
 /**
- * @brief       The IConfiguration interface provides a contract for loading & saving data.
+ * @brief       IConfiguration 接口为数据加载和保存提供契约。
  *
  * @class       sss::dscore::IConfiguration IConfiguration.h <IConfiguration>
  */
 class DS_CORE_DLLSPEC IConfiguration {
  public:
   /**
-   * @brief       Saves the configuration to a JSON object.
+   * @brief       将配置保存到 JSON 对象。
    *
-   * @returns     the JSON configuration.
+   * @returns     JSON 配置对象。
    */
   virtual auto SaveConfiguration() -> QJsonObject = 0;
 
   /**
-   * @brief       Loads the configuration.
+   * @brief       加载配置。
    *
-   * @param[in]   configuration the configuration as JSON object.
+   * @param[in]   configuration JSON 格式的配置对象。
    *
-   * @returns     true if loaded; otherwise false.
+   * @returns     如果加载成功返回 true；否则返回 false。
    */
   virtual auto LoadConfiguration(QJsonObject configuration) -> bool = 0;
 
-  // Classes with virtual functions should not have a public non-virtual destructor:
+  // 具有虚函数的类不应有公共的虚析构函数：
   virtual ~IConfiguration() = default;
 };
 }  // namespace sss::dscore

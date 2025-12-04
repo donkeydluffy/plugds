@@ -8,41 +8,39 @@
 
 namespace sss::extsystem {
 /**
- * @brief       The IComponent interface defines the contract for a loadable component.
+ * @brief       IComponent 接口定义了可加载组件的契约。
  *
- * @details     Interface that a component must implement, the plugin system will call various functions to
- *              load and initialise the plugin at the appropriate time.
+ * @details     组件必须实现的接口，插件系统将在适当的时候调用各种函数来
+ *              加载和初始化插件。
  *
  * @class       sss::extsystem::IComponent IComponent.h <IComponent>
  */
 class EXT_SYSTEM_DLLSPEC IComponent {
  public:
   /**
-   * @brief       Destroys the IComponent.
+   * @brief       销毁 IComponent。
    */
   virtual ~IComponent();
 
   /**
-   * @brief       The initialiseEvent is called by the component loader to initialise the component.
+   * @brief       初始化事件由组件加载器调用来初始化组件。
    *
-   * @details     Called by the component loader after all components have been loaded, called in load order.
+   * @details     在所有组件加载完成后由组件加载器调用，按加载顺序调用。
    */
   virtual auto InitialiseEvent() -> void;
 
   /**
-   * @brief       The initialisationFinishedEvent function is called by the component loader after all
-   *              components have been initialised.
+   * @brief       初始化完成事件函数在所有组件初始化完成后由组件加载器调用。
    *
-   * @details     Called by the component loader after all components have been
-   *              initialised, called in reverse load order.
+   * @details     在所有组件初始化完成后由组件加载器调用，按加载顺序的逆序调用。
    */
   virtual auto InitialisationFinishedEvent() -> void;
 
   /**
-   * @brief       The finaliseEvent method is called before the component is unloaded.
+   * @brief       结束事件方法在组件卸载前被调用。
    *
-   * @note        The event is called in reverse load order for all loaded components, once every component
-   *              has been finalised the component manager then unloads all components in thr same order.
+   * @note        对于所有已加载的组件，该事件按加载顺序的逆序调用，一旦每个组件
+   *              都完成结束操作，组件管理器将以相同的顺序卸载所有组件。
    */
   virtual auto FinaliseEvent() -> void;
 };

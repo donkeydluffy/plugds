@@ -7,18 +7,18 @@ namespace sss::dscore {
 class IStatusbarManager;
 
 /**
- * @brief       Interface for components that contribute to the application status bar.
+ * @brief       为应用程序状态栏贡献内容的组件接口。
  *
- * @details     Implement this interface to add widgets or indicators to the global status bar.
+ * @details     实现此接口来向全局状态栏添加控件或指示器。
  */
 class DS_CORE_DLLSPEC IStatusbarProvider {
  public:
   virtual ~IStatusbarProvider() = default;
 
   /**
-   * @brief       Contributes to the application status bar.
+   * @brief       为应用程序状态栏做出贡献。
    *
-   * @param[in]   statusbar_manager The application's status bar manager instance.
+   * @param[in]   statusbar_manager 应用程序的状态栏管理器实例。
    */
   virtual void ContributeToStatusbar(IStatusbarManager* statusbar_manager) = 0;
 };

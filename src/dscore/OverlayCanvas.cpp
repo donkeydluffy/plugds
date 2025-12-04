@@ -14,7 +14,7 @@
 namespace sss::dscore {
 
 OverlayCanvas::OverlayCanvas(QWidget* parent) : QWidget(parent) {
-  // OverlayCanvas manages its own layout manually in resizeEvent
+  // OverlayCanvas 在 resizeEvent 中手动管理自己的布局
   initOverlayContainers();
 
   auto* cm = sss::dscore::IContextManager::GetInstance();
@@ -37,9 +37,9 @@ void OverlayCanvas::ShowNotification(const QString& message, int duration_ms) {
       "#555555; }");
   notification_widget_->adjustSize();
 
-  // Initial position (will be fixed by layout, but set here for immediate show)
+  // 初始位置（将由布局固定，但此处设置以便立即显示）
   int x = (width() - notification_widget_->width()) / 2;
-  int y = 20;  // Slight margin from top
+  int y = 20;  // 距离顶部稍微留出边距
   notification_widget_->move(x, y);
 
   auto* effect = new QGraphicsOpacityEffect(notification_widget_);
@@ -67,25 +67,25 @@ void OverlayCanvas::ShowNotification(const QString& message, int duration_ms) {
 }
 
 void OverlayCanvas::Clear() {
-  // Clear Squeeze Widgets
+  // 清除压缩部件
   for (auto& item : squeeze_widgets_) {
     if (item.widget != nullptr) {
       item.widget->hide();
-      item.widget->setParent(nullptr);  // Detach from canvas
+      item.widget->setParent(nullptr);  // 从画布分离
     }
   }
   squeeze_widgets_.clear();
 
-  // Clear Overlay Widgets
+  // 清除覆盖部件
   for (auto& item : overlay_items_) {
     if (item.widget != nullptr) {
       item.widget->hide();
-      item.widget->setParent(nullptr);  // Detach from canvas
+      item.widget->setParent(nullptr);  // 从画布分离
     }
   }
   overlay_items_.clear();
 
-  // Clear containers
+  // 清除容器
   for (auto* container : overlay_containers_) {
     if (container != nullptr && container->layout() != nullptr) {
       QLayoutItem* child = nullptr;
@@ -95,7 +95,7 @@ void OverlayCanvas::Clear() {
     }
   }
 
-  // Reset Background (optional, usually controlled by SetBackgroundWidget)
+  // 重置背景（可选，通常由 SetBackgroundWidget 控制）
   // SetBackgroundWidget(nullptr);
 
   update();
@@ -115,9 +115,9 @@ void OverlayCanvas::SetSidebarToggleButton(QToolButton* button) {
   if (sidebar_toggle_button_ != nullptr) {
     sidebar_toggle_button_->setParent(this);
     sidebar_toggle_button_->show();
-    sidebar_toggle_button_->raise();  // Ensure it's always on top
+    sidebar_toggle_button_->raise();  // 确保它始终在最顶层
   }
-  update();  // Trigger relayout
+  update();  // 触发重新布局
 }
 
 void OverlayCanvas::SetBackgroundWidget(QWidget* widget) {
@@ -125,7 +125,7 @@ void OverlayCanvas::SetBackgroundWidget(QWidget* widget) {
     return;
   }
 
-  // Remove old
+  // 移除旧的
   if (background_widget_ != nullptr) {
     background_widget_->hide();
     background_widget_->setParent(nullptr);
@@ -134,10 +134,10 @@ void OverlayCanvas::SetBackgroundWidget(QWidget* widget) {
   background_widget_ = widget;
   if (background_widget_ != nullptr) {
     background_widget_->setParent(this);
-    background_widget_->lower();  // Ensure it is at the bottom
+    background_widget_->lower();  // 确保它在最底层
     background_widget_->show();
   }
-  update();  // Trigger relayout
+  update();  // 触发重新布局
 }
 
 void OverlayCanvas::AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority,
@@ -147,16 +147,16 @@ void OverlayCanvas::AddSqueezeWidget(SqueezeSide side, QWidget* widget, int prio
   }
 
   widget->setParent(this);
-  // Visibility will be set by updateContextState
+  // 可见性将由 updateContextState 设置
 
   squeeze_widgets_.append({widget, side, priority, visible_contexts, enable_contexts});
 
-  // Sort squeeze widgets by priority (descending)
-  // Higher priority = Processed first = Outermost position
+  // 按优先级排序压缩部件（降序）
+  // 更高优先级 = 首先处理 = 最外层位置
   std::stable_sort(squeeze_widgets_.begin(), squeeze_widgets_.end(),
                    [](const SqueezeItem& a, const SqueezeItem& b) { return a.priority > b.priority; });
 
-  UpdateContextState();  // Initial state check
+  UpdateContextState();  // 初始状态检查
 }
 
 void OverlayCanvas::AddOverlayWidget(OverlayZone zone, QWidget* widget, int priority,
@@ -177,35 +177,35 @@ void OverlayCanvas::UpdateContextState() {
   if (cm != nullptr) {
     active_contexts = cm->GetActiveContexts();
   }
-  // Ensure Global context (0) is always considered active for matching
+  // 确保全局上下文（0）始终被视为活动状态以进行匹配
   if (!active_contexts.contains(0)) {
     active_contexts.append(0);
   }
 
-  // Helper: Check if active_contexts matches any ID in required_contexts (Intersection).
-  // Empty required_contexts implies Global/Always active.
+  // 辅助函数：检查 active_contexts 是否与 required_contexts 中的任何 ID 匹配（交集）。
+  // 空的 required_contexts 表示全局/始终活动。
   auto is_active = [&](const QList<int>& required_contexts) -> bool {
     if (required_contexts.isEmpty()) return true;
-    // If it contains 0, it's always active
+    // 如果包含 0，则始终活动
     if (required_contexts.contains(0)) return true;
 
     return std::any_of(std::begin(required_contexts), std::end(required_contexts),
                        [&](int id) { return active_contexts.contains(id); });
   };
 
-  // Update Squeeze Widgets
+  // 更新压缩部件
   for (const auto& item : squeeze_widgets_) {
     bool visible = is_active(item.visible_contexts);
     bool enabled = is_active(item.enable_contexts);
 
     item.widget->setVisible(visible);
-    // Only change enabled state if visible (optimization)
+    // 仅在可见时更改启用状态（优化）
     if (visible) {
       item.widget->setEnabled(enabled);
     }
   }
 
-  // Update Overlay Widgets
+  // 更新覆盖部件
   for (const auto& item : overlay_items_) {
     bool visible = is_active(item.visible_contexts);
     bool enabled = is_active(item.enable_contexts);
@@ -216,9 +216,9 @@ void OverlayCanvas::UpdateContextState() {
     }
   }
 
-  // Trigger relayout
+  // 触发重新布局
   update();
-  // Force layout recalculation as visibility might have changed
+  // 强制重新计算布局，因为可见性可能已改变
   QResizeEvent event(size(), size());
   resizeEvent(&event);
 }
@@ -251,7 +251,7 @@ void OverlayCanvas::initOverlayContainers() {
         break;
       case OverlayZone::kLeft:
       case OverlayZone::kRight:
-        layout = new QVBoxLayout(c);  // Left/Right zones should stack vertically
+        layout = new QVBoxLayout(c);  // 左/右区域应垂直堆叠
         break;
       case OverlayZone::kCenter:
         layout = new QVBoxLayout(c);
@@ -303,13 +303,13 @@ void OverlayCanvas::refreshOverlayContainer(OverlayZone zone) {
     return;
   }
 
-  // Clear layout (remove items without deleting widgets)
+  // 清除布局（移除项但不删除部件）
   QLayoutItem* child = nullptr;
   while ((child = layout->takeAt(0)) != nullptr) {
-    delete child;  // The LayoutItem wrapper, not the widget
+    delete child;  // 删除 LayoutItem 包装器，不是部件本身
   }
 
-  // Filter items for this zone
+  // 筛选此区域的项
   QVector<OverlayItem*> zone_items;
   for (auto& item : overlay_items_) {
     if (item.zone == zone) {
@@ -317,14 +317,14 @@ void OverlayCanvas::refreshOverlayContainer(OverlayZone zone) {
     }
   }
 
-  // Sort by priority (Higher priority first = Top of stack)
+  // 按优先级排序（更高优先级在前 = 堆栈顶部）
   std::stable_sort(zone_items.begin(), zone_items.end(),
                    [](const OverlayItem* a, const OverlayItem* b) { return a->priority > b->priority; });
 
-  // Add to layout
+  // 添加到布局
   for (auto* item : zone_items) {
     layout->addWidget(item->widget);
-    // Visibility/Enabled state will be set by updateContextState
+    // 可见性/启用状态将由 updateContextState 设置
   }
   container->adjustSize();
 }
@@ -426,25 +426,25 @@ void OverlayCanvas::layoutOverlayWidgets(const QRect& area) {
         x = area.center().x() - (w / 2);
         y = area.center().y() - (h / 2);
         break;
-      case OverlayZone::kTop:  // Full width at top
+      case OverlayZone::kTop:  // 顶部全宽
         x = area.left();
         y = area.top();
-        w = area.width();  // Span full width
+        w = area.width();  // 跨越全宽
         break;
-      case OverlayZone::kBottom:  // Full width at bottom
+      case OverlayZone::kBottom:  // 底部全宽
         x = area.left();
         y = area.bottom() - h;
-        w = area.width();  // Span full width
+        w = area.width();  // 跨越全宽
         break;
-      case OverlayZone::kLeft:  // Full height on left
+      case OverlayZone::kLeft:  // 左侧全高
         x = area.left();
         y = area.top();
-        h = area.height();  // Span full height
+        h = area.height();  // 跨越全高
         break;
-      case OverlayZone::kRight:  // Full height on right
+      case OverlayZone::kRight:  // 右侧全高
         x = area.right() - w;
         y = area.top();
-        h = area.height();  // Span full height
+        h = area.height();  // 跨越全高
         break;
     }
 

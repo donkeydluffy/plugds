@@ -33,7 +33,7 @@ CollapsibleWidget::~CollapsibleWidget() = default;
 void CollapsibleWidget::SetContentWidget(QWidget* widget) {
   if (widget == nullptr) return;
 
-  // Remove old content if any (simple implementation assumes one content)
+  // 如果有旧内容则移除（简单实现假设只有一个内容）
   if (content_area_ != nullptr) {
     content_area_->hide();
     main_layout_->removeWidget(content_area_);

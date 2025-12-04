@@ -4,7 +4,7 @@
 
 namespace sss {
 /**
- * @brief       The SplashScreen dialog for the application.
+ * @brief       应用程序的启动画面对话框。
  */
 class SplashScreen : public QSplashScreen {
  private:
@@ -12,43 +12,43 @@ class SplashScreen : public QSplashScreen {
 
  private:
   /**
-   * @brief       Constructs a new SplashScreen instance.
+   * @brief       构造新的 SplashScreen 实例。
    *
-   * @note        The constructor is private as SplashScreen is a singleton class, to obtain the SplashScreen
-   *              use the getInstance() function.
+   * @note        构造函数是私有的，因为 SplashScreen 是单例类，要获取 SplashScreen
+   *              实例请使用 getInstance() 函数。
    */
   SplashScreen();
 
  public:
   /**
-   * @brief       Delete the copy constructor.
+   * @brief       删除拷贝构造函数。
    */
   SplashScreen(const SplashScreen&) = delete;
 
   /**
-   * @brief       Delete the assignment operator.
+   * @brief       删除赋值运算符。
    */
   SplashScreen& operator=(const SplashScreen&) = delete;
   /**
-   * @brief       Destroys the SplashScreen.
+   * @brief       销毁 SplashScreen。
    */
   ~SplashScreen() override;
 
   /**
-   * @brief           Returns the instance of the SplashScreen class.
+   * @brief           返回 SplashScreen 类的实例。
    *
-   * @returns         the SplashScreen instance.
+   * @returns         SplashScreen 实例。
    */
   static auto GetInstance() -> SplashScreen*;
 
  protected:
   /**
-   * @brief           Draw the contents of splash screen.
+   * @brief           绘制启动画面内容。
    *
-   * @details         Draws the splash screen, uses the default implementation and then overlays version
-   *                  information over the top.
+   * @details         绘制启动画面，使用默认实现，然后在顶部叠加版本
+   *                  信息。
    *
-   * @param[in]       painter the painter to draw to.
+   * @param[in]       painter 用于绘制的画笔。
    */
   auto drawContents(QPainter* painter) -> void override;
 

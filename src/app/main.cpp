@@ -22,7 +22,7 @@
 auto constexpr kSplashscreenTimeout = 3000;
 
 int main(int argc, char** argv) {
-  // 初始化spdlog
+  // 初始化spdlog日志系统
   auto file_logger = spdlog::basic_logger_mt("main", "ds.log", true);
   spdlog::set_default_logger(file_logger);
   spdlog::set_level(spdlog::level::debug);
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 
   component_manager->AddObject(component_loader);
 
-  // SPDLOG_DEBUG("Application started.");
+  // SPDLOG_DEBUG("应用程序已启动。");
 
   QStringList component_locations = QStringList() << "APPDIR" << "DS_COMPONENT_DIR";
 
@@ -132,11 +132,11 @@ int main(int argc, char** argv) {
 
   SPDLOG_INFO("Starting to load components...");
 
-  // LIFECYCLE MANAGEMENT:
-  // 1. Phase 1 (Core Init): CoreComponent (dependency root) initializes first, setting up Managers.
-  // 2. Phase 2 (Plugin Init): Other plugins initialize, registering Contexts/Providers.
-  // 3. Phase 3 (Finished): After all Init, InitialisationFinishedEvent runs in reverse order.
-  //    CoreComponent runs last, building the UI and showing the window.
+  // 生命周期管理：
+  // 1. 阶段1 (核心初始化): CoreComponent (依赖根节点) 首先初始化，设置管理器。
+  // 2. 阶段2 (插件初始化): 其他插件初始化，注册上下文/提供者。
+  // 3. 阶段3 (完成): 所有初始化完成后，InitialisationFinishedEvent 按相反顺序运行。
+  //    CoreComponent 最后运行，构建 UI 并显示窗口。
   component_loader->LoadComponents([disabled_components](sss::extsystem::Component* component) -> bool {
     auto component_id = (component->Name() + "." + component->Vendor()).toLower();
     bool should_load = !disabled_components.contains(component_id);

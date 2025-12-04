@@ -7,19 +7,18 @@ namespace sss::dscore {
 class ICommandManager;
 
 /**
- * @brief       Interface for components that contribute to the application menu.
+ * @brief       为应用程序菜单贡献内容的组件接口。
  *
- * @details     Implement this interface to define the menu structure (menus, groups) and place
- *              registered commands into them.
+ * @details     实现此接口来定义菜单结构（菜单、组）并将注册的命令放置到其中。
  */
 class DS_CORE_DLLSPEC IMenuProvider {
  public:
   virtual ~IMenuProvider() = default;
 
   /**
-   * @brief       Contributes to the application menu structure.
+   * @brief       为应用程序菜单结构做出贡献。
    *
-   * @param[in]   command_manager The application's command manager instance, used to find containers and commands.
+   * @param[in]   command_manager 应用程序的命令管理器实例，用于查找容器和命令。
    */
   virtual void ContributeToMenu(ICommandManager* command_manager) = 0;
 };

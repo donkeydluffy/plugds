@@ -18,11 +18,12 @@ QT_END_NAMESPACE
 
 class IActionContainer;
 class ICommand;
-class ModeManager;      // Forward declaration
-class WorkbenchLayout;  // Forward declaration
+class ModeManager;      // 前向声明
+class WorkbenchLayout;  // 前向声明
 
 /**
- * @brief       The MainWindow class provides the Main Application window.
+ * @brief       MainWindow 类提供主应用程序窗口。
+ * @class       sss::dscore::MainWindow MainWindow.h <MainWindow>
  */
 class MainWindow : public QMainWindow {
  private:
@@ -30,19 +31,19 @@ class MainWindow : public QMainWindow {
 
  public:
   /**
-   * @brief       Constructs a new MainWindow instance which is a child of the parent.
+   * @brief       构造新的 MainWindow 实例，作为父对象的子对象。
    *
-   * @param[in]   parent the owner widget.
+   * @param[in]   parent 所有者控件。
    */
   explicit MainWindow(QWidget* parent = nullptr);
 
   /**
-   * @brief       Destroys the MainWindow.
+   * @brief       销毁 MainWindow。
    */
   ~MainWindow() override;
 
   /**
-   * @brief       The initialise class sets up various subsystems for the main application.
+   * @brief       初始化类为主应用程序设置各种子系统。
    */
   auto Initialise() -> void;
 
@@ -59,7 +60,7 @@ class MainWindow : public QMainWindow {
 
  private:
   /**
-   * @brief       Updates the title bar when light/dark mode changes.
+   * @brief       在明暗模式切换时更新标题栏。
    */
   auto updateTitlebar() -> void;
 

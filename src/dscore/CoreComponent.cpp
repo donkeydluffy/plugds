@@ -24,12 +24,12 @@ CoreComponent::~CoreComponent() = default;
 auto CoreComponent::InitialiseEvent() -> void {
   SPDLOG_INFO("[CoreComponent] InitialiseEvent started (Phase 1: Infrastructure Initialization)");
 
-  // PHASE 1: Infrastructure Initialization
-  // In this phase, we establish the core managers. Plugins will rely on these being present
-  // when their InitialiseEvent (Phase 2) is called.
-  // NO UI construction should happen here that depends on other plugins.
+  // 第一阶段：基础设施初始化
+  // 在此阶段，我们建立核心管理器。插件将依赖这些已存在的管理器
+  // 当它们的 InitialiseEvent (第二阶段) 被调用时。
+  // 不应在此处构建依赖于其他插件的 UI。
 
-  // 1. Initialize Infrastructure Services FIRST
+  // 1. 首先初始化基础设施服务
   context_manager_ = std::make_unique<sss::dscore::ContextManager>();
   SPDLOG_INFO("[CoreComponent] Created ContextManager instance: {}", (void*)context_manager_.get());
   sss::extsystem::AddObject(context_manager_.get());
@@ -38,27 +38,27 @@ auto CoreComponent::InitialiseEvent() -> void {
   SPDLOG_INFO("[CoreComponent] Created CommandManager instance: {}", (void*)command_manager_.get());
   sss::extsystem::AddObject(command_manager_.get());
 
-  // Language and Theme services
+  // 语言和主题服务
   language_service_ = std::make_unique<sss::dscore::LanguageService>();
   SPDLOG_INFO("[CoreComponent] Created LanguageService instance: {}", (void*)language_service_.get());
   sss::extsystem::AddObject(language_service_.get());
 
-  // Register dscore translations
+  // 注册 dscore 翻译文件
   language_service_->RegisterTranslator("dscore", ":/dscore/i18n");
 
   theme_service_ = std::make_unique<sss::dscore::ThemeService>();
   SPDLOG_INFO("[CoreComponent] Created ThemeService instance: {}", (void*)theme_service_.get());
   sss::extsystem::AddObject(theme_service_.get());
 
-  // Load default theme
+  // 加载默认主题
   theme_service_->LoadTheme("dark");
 
-  // 2. Create and Register UI Provider
+  // 2. 创建并注册 UI 提供者
   core_ui_provider_ = std::make_unique<sss::dscore::CoreUIProvider>();
   sss::extsystem::AddObject(core_ui_provider_.get());
   SPDLOG_INFO("[CoreComponent] Created and registered CoreUIProvider");
 
-  // 3. Initialize Core (which creates MainWindow and PageManager, dependent on services)
+  // 3. 初始化 Core（创建 MainWindow 和 PageManager，依赖于服务）
   core_ = std::make_unique<sss::dscore::Core>();
   SPDLOG_INFO("[CoreComponent] Created Core instance: {}", (void*)core_.get());
   sss::extsystem::AddObject(core_.get());
@@ -75,14 +75,14 @@ auto CoreComponent::InitialiseEvent() -> void {
 auto CoreComponent::InitialisationFinishedEvent() -> void {
   SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent started (Phase 3: UI Composition & Presentation)");
 
-  // PHASE 3: UI Composition & Presentation
-  // This event is called in REVERSE load order. Since Core is loaded first, this function runs LAST.
-  // At this point, all other plugins have finished their InitialiseEvent.
-  // It is now safe to:
-  // 1. Discover providers (Menu, Toolbar, Statusbar) from all plugins.
-  // 2. Build the final UI.
-  // 3. Activate the default mode/context.
-  // 4. Show the main window.
+  // 第三阶段：UI 组合与展示
+  // 此事件按反向加载顺序调用。由于 Core 最先加载，此函数最后执行。
+  // 此时，所有其他插件都已完成它们的 InitialiseEvent。
+  // 现在可以安全地：
+  // 1. 发现来自所有插件的服务提供者（菜单、工具栏、状态栏）。
+  // 2. 构建最终的用户界面。
+  // 3. 激活默认的模式/上下文。
+  // 4. 显示主窗口。
 
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
   if (main_window == nullptr) {
@@ -90,13 +90,13 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
     return;
   }
 
-  // Use the owned core_ member directly
+  // 直接使用拥有的 core_ 成员
   if (core_) {
-    // Trigger MenuAndToolbarManager to build the UI from registered providers
+    // 触发 MenuAndToolbarManager 从已注册的服务提供者构建 UI
     menu_and_toolbar_manager_ = std::make_unique<sss::dscore::MenuAndToolbarManager>();
     menu_and_toolbar_manager_->Build();
 
-    // Process Statusbar Providers (Phase 3)
+    // 处理状态栏服务提供者（第三阶段）
     auto* statusbar_manager = sss::extsystem::GetTObject<sss::dscore::IStatusbarManager>();
     if (statusbar_manager != nullptr) {
       auto statusbar_providers = sss::extsystem::GetTObjects<sss::dscore::IStatusbarProvider>();
@@ -106,13 +106,13 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
       }
     }
 
-    // 3. Activate the default mode/context
+    // 3. 激活默认模式/上下文
     auto* mode_manager = sss::extsystem::GetTObject<sss::dscore::IModeManager>();
     if (mode_manager != nullptr) {
       auto modes = mode_manager->Modes();
       if (!modes.isEmpty()) {
-        // Note: In the future, read "LastMode" from ISettingsService.
-        // For now, pick the first one (likely WS1 if loaded).
+        // 注意：将来从 ISettingsService 读取"LastMode"。
+        // 目前选择第一个（如果加载了，可能是 WS1）。
         auto* first_mode = modes.first();
         SPDLOG_INFO("[CoreComponent] Activating initial mode: {}", first_mode->Title().toStdString());
         mode_manager->ActivateMode(first_mode->Id());
@@ -165,7 +165,7 @@ auto CoreComponent::FinaliseEvent() -> void {
     SPDLOG_INFO("[CoreComponent] ThemeService removed");
   }
 
-  // unique_ptr will auto-delete here
+  // unique_ptr 将在此处自动删除
 
   SPDLOG_INFO("[CoreComponent] FinaliseEvent completed");
 }

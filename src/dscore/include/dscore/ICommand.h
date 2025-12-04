@@ -8,12 +8,10 @@
 
 namespace sss::dscore {
 /**
- * @brief       ICommand interface
+ * @brief       ICommand 接口
  *
- * @details     ICommand represents an actionable command in the system, commands
- *              are bound to QActions for given contexts, this allows the target of
- *              the command to change depending on the current context that the application
- *              is in.
+ * @details     ICommand 代表系统中的可执行命令，命令绑定到给定上下文的 QAction，
+ *              这允许命令的目标根据应用程序当前上下文而改变。
  *
  * @class       sss::dscore::ICommand ICommand.h <ICommand>
  */
@@ -23,33 +21,32 @@ class DS_CORE_DLLSPEC ICommand : public QObject {
 
  public:
   /**
-   * @brief       Returns the proxy action.
+   * @brief       返回代理动作。
    *
-   * @returns     the proxy action
+   * @returns     代理动作
    */
   virtual auto Action() -> QAction* = 0;
 
   /**
-   * @brief       Sets the active state of the command.
+   * @brief       设置命令的活动状态。
    *
-   * @param[in]   state true if active; otherwise false.
+   * @param[in]   state 如果活动则为 true；否则为 false。
    */
   virtual auto SetActive(bool state) -> void = 0;
 
   /**
-   * @brief       Returns the active state of the command.
+   * @brief       返回命令的活动状态。
    *
-   * @returns     true if enabled; otherwise false.
+   * @returns     如果启用则为 true；否则为 false。
    */
   virtual auto Active() -> bool = 0;
 
   /**
-   * @brief       Attaches a command to an abstract push button
+   * @brief       将命令附加到抽象按钮
    *
-   * @details     Binds to the buttons signals and then emits the appropriate
-   *              signals from the push button
+   * @details     绑定到按钮信号，然后从按钮发出适当的信号
    *
-   * @param[in]   widget the abstract button subclassed widget
+   * @param[in]   widget 抽象按钮子类化的小部件
    */
   virtual auto AttachToWidget(QAbstractButton* widget) -> void {
     connect(widget, &QAbstractButton::clicked, [this](bool) { this->Action()->trigger(); });
@@ -57,7 +54,7 @@ class DS_CORE_DLLSPEC ICommand : public QObject {
     connect(this->Action(), &QAction::changed, [this, widget] { widget->setEnabled(this->Active()); });
   }
 
-  // Classes with virtual functions should not have a public non-virtual destructor:
+  // 具有虚函数的类不应有公共的虚析构函数：
   ~ICommand() override = default;
 };
 }  // namespace sss::dscore

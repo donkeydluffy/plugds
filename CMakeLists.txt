@@ -72,6 +72,7 @@ endif()
 # add_conan_package("fmt/10.0.0" "fmt" "header_only=True") # 全平台依赖
 add_conan_package("spdlog/1.11.0" "spdlog" "header_only=True")
 add_conan_package("qt/5.15.14" "Qt5" "shared=True")
+add_conan_package("doctest/2.4.11" "doctest" "")
 
 # 运行 Conan install
 include(conan_install)
@@ -133,6 +134,13 @@ define_conan_publish_targets_for_subproject(
   "${PRODUCT_VERSION_REVISION}"
   "qt=Qt5::Core=Qt5::Widgets=Qt5::LinguistTools;spdlog=spdlog::spdlog_header_only"
   "extsystem;dscore")
+define_conan_publish_targets_for_subproject(
+  "src/tests"
+  "tests"
+  "0.1.0"
+  "${PRODUCT_VERSION_REVISION}"
+  "qt=Qt5::Core=Qt5::Widgets;spdlog=spdlog::spdlog_header_only;doctest=doctest::doctest"
+  "extsystem;dscore")
 # CONAN_PUBLISH_TARGETS_END (do not remove or modify this line)
 message(STATUS "Finished configuring Conan publish targets.")
 
@@ -146,6 +154,8 @@ add_subdirectory(src/dscore)
 add_subdirectory(src/app)
 add_subdirectory(src/ws1)
 add_subdirectory(src/ws2)
+
+add_subdirectory(src/tests)
 # SUBPROJECTS_END (do not remove or modify this line)
 message(STATUS "Finished configuring subprojects.")
 
@@ -160,15 +170,6 @@ if(ALL_PUBLISH_TARGETS)
 else()
   message(STATUS "No individual publish targets defined for 'publish_all_conan_packages'.")
 endif()
-
-# --- 其他项目配置 ---
-# 如果有顶层可执行文件或测试依赖于这些库：
-# add_executable(MainApp main.cpp)
-# target_link_libraries(MainApp PRIVATE liba)
-
-# 启用 CTest (如果需要)
-# enable_testing()
-# add_test(NAME MyTest COMMAND MainApp)
 
 message(STATUS "Project '${PROJECT_NAME}' configuration completed.")
 message(STATUS "Use 'cmake --list-presets' to view available presets (including configurePresets and buildPresets).")

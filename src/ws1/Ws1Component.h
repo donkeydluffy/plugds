@@ -24,7 +24,7 @@ class Ws1Component : public QObject, public sss::extsystem::IComponent {
   Ws1Component() = default;
   ~Ws1Component() override = default;
 
-  // IComponent interface
+  // IComponent 接口
   void InitialiseEvent() override;
   void InitialisationFinishedEvent() override;
   void FinaliseEvent() override;
@@ -33,11 +33,11 @@ class Ws1Component : public QObject, public sss::extsystem::IComponent {
   void UpdateIcons(const QString& theme_id);
 
  private:
-  // Removed createSampleCommand and createSwitchCommands methods
+  // 已移除 createSampleCommand 和 createSwitchCommands 方法
 
   int page_context_id_ = 0;
   int sub_context_id_ = 0;
-  Ws1Page* ws1_mode_ = nullptr;  // Keep track of our mode instance
+  Ws1Page* ws1_mode_ = nullptr;  // 跟踪我们的模式实例
 
   std::unique_ptr<Ws1UIProvider> ui_provider_;
 };

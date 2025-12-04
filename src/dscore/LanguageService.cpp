@@ -4,7 +4,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QWidget>
-// #include <spdlog/spdlog.h> // Removed as spdlog is for application logging, not library utility
+// #include <spdlog/spdlog.h> // 已移除，因为 spdlog 用于应用程序日志，而非库工具
 
 namespace sss::dscore {
 
@@ -14,20 +14,20 @@ LanguageService::~LanguageService() = default;
 
 auto LanguageService::RegisterTranslator(const QString& component_name, const QString& translation_path) -> void {
   components_.push_back({component_name, translation_path});
-  // If we wanted to load immediately if the language matches, we could do it here.
+  // 如果我们希望在语言匹配时立即加载，可以在这里执行。
 }
 
 auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
   if (current_locale_ == locale && !active_translators_.empty()) return;
 
-  // OPTIMIZATION: Lock UI updates to prevent flickering during global event dispatch
-  // when QCoreApplication::installTranslator triggers QEvent::LanguageChange on all widgets.
+  // 优化：锁定UI更新以防止全局事件分发时出现闪烁
+  // 当 QCoreApplication::installTranslator 在所有部件上触发 QEvent::LanguageChange 时。
   QWidgetList top_levels = QApplication::topLevelWidgets();
   for (QWidget* widget : top_levels) {
     if (widget != nullptr) widget->setUpdatesEnabled(false);
   }
 
-  // Unload old translators
+  // 卸载旧的翻译器
   for (auto& translator : active_translators_) {
     QCoreApplication::removeTranslator(translator.get());
   }
@@ -35,7 +35,7 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
 
   current_locale_ = locale;
 
-  // Load new ones
+  // 加载新的翻译器
   for (const auto& comp : components_) {
     auto translator = std::make_unique<QTranslator>();
     // Format: name_lang_country.qm, e.g., ws1_zh_CN.qm or ws1_zh.qm
@@ -47,7 +47,7 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
       QCoreApplication::installTranslator(translator.get());
       active_translators_.push_back(std::move(translator));
     } else {
-      // Try fallback to just language code (ws1_zh.qm)
+      // 尝试回退到仅语言代码（如 ws1_zh.qm）
       QString short_filename = QString("%1_%2").arg(comp.name, locale.name().split('_').first());
       qDebug() << "Trying fallback:" << short_filename;
       if (translator->load(short_filename, comp.path)) {
@@ -60,12 +60,12 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
     }
   }
 
-  // Re-enable updates
+  // 重新启用更新
   for (QWidget* widget : top_levels) {
     if (widget != nullptr) widget->setUpdatesEnabled(true);
   }
 
-  // QCoreApplication automatically sends QEvent::LanguageChange
+  // QCoreApplication 会自动发送 QEvent::LanguageChange 事件
 }
 
 auto LanguageService::GetCurrentLocale() const -> QLocale { return current_locale_; }

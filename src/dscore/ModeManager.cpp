@@ -25,8 +25,8 @@ void ModeManager::AddMode(IMode* mode) {
     workbench_->AddModeButton(mode->Id(), mode->Title(), mode->Icon());
   }
 
-  // If this is the first mode, activate it? Or wait for explicit activation.
-  // Let's wait for explicit activation via UI or config.
+  // 如果这是第一个模式，是否激活它？还是等待显式激活。
+  // 让我们等待通过UI或配置进行显式激活。
 }
 
 void ModeManager::ActivateMode(const QString& id) {

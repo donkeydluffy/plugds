@@ -50,7 +50,7 @@ QIcon Ws2Page::Icon() const {
   return {};
 }
 int Ws2Page::ContextId() const { return context_id_; }
-int Ws2Page::Priority() const { return 20; }  // Higher priority or just different order
+int Ws2Page::Priority() const { return 20; }  // 更高优先级或只是不同顺序
 
 void Ws2Page::Activate() {
   SPDLOG_INFO("Ws2Page::Activate called.");
@@ -60,13 +60,13 @@ void Ws2Page::Activate() {
     return;
   }
 
-  // 1. Left Sidebar
+  // 1. 左侧边栏
   workbench->AddSidePanel("ws2.sidebar.tree", tree_view_, tr("Project Explorer"), QIcon{});
 
-  // 2. Background
+  // 2. 背景
   workbench->SetBackgroundWidget(bg_label_);
 
-  // 3. Overlays
+  // 3. 覆盖层
   QList<int> mode_ctx = {context_id_};
 
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopLeft, device_panel_, 0, mode_ctx);
@@ -86,18 +86,18 @@ void Ws2Page::Activate() {
 void Ws2Page::Deactivate() { SPDLOG_INFO("Ws2Page::Deactivate called."); }
 
 void Ws2Page::setupDefaultUi() {
-  // 1. Tree View
+  // 1. 树视图
   tree_view_ = new QTreeView();
   tree_view_->setHeaderHidden(true);
   setupModel();
   tree_view_->setModel(model_);
 
-  // 2. Background
+  // 2. 背景
   bg_label_ = new QLabel(tr("Workspace 2 Area (Background)"));
   bg_label_->setObjectName("ws2_bg_label");
   bg_label_->setAlignment(Qt::AlignCenter);
 
-  // 3. Device Panel
+  // 3. 设备面板
   auto* collapsable = new sss::dscore::CollapsibleWidget(tr("System Status"));
   auto* content_widget = new QWidget();
   auto* info_layout = new QVBoxLayout(content_widget);
@@ -108,7 +108,7 @@ void Ws2Page::setupDefaultUi() {
   collapsable->SetContentWidget(content_widget);
   device_panel_ = collapsable;
 
-  // 4. Function Bar
+  // 4. 功能栏
   func_bar_ = new QWidget();
   auto* func_layout = new QHBoxLayout(func_bar_);
   enable_button_ = new QPushButton(tr("Start Process"));
@@ -119,7 +119,7 @@ void Ws2Page::setupDefaultUi() {
   connect(enable_button_, &QPushButton::clicked, this, &Ws2Page::onEnableSubContext);
   connect(disable_button_, &QPushButton::clicked, this, &Ws2Page::onDisableSubContext);
 
-  // 5. Coords
+  // 5. 坐标
   coords_label_ = new QLabel("Active Item: None");
   coords_label_->setObjectName("overlay_status_label");
 }
@@ -160,7 +160,7 @@ void Ws2Page::setupModel() {
 }
 
 void Ws2Page::retranslateUi() {
-  // Update texts...
+  // 更新文本...
 }
 
 }  // namespace sss::ws2

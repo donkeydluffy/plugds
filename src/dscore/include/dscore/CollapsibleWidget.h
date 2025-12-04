@@ -15,7 +15,8 @@ QT_END_NAMESPACE
 namespace sss::dscore {
 
 /**
- * @brief A widget that has a header (toggle button) and a content area that can be collapsed/expanded.
+ * @brief       具有标题（切换按钮）和可折叠/展开内容区域的小部件。
+ * @class       sss::dscore::CollapsibleWidget CollapsibleWidget.h <CollapsibleWidget>
  */
 class DS_CORE_DLLSPEC CollapsibleWidget : public QWidget {
   Q_OBJECT

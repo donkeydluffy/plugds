@@ -33,5 +33,12 @@
     "conan_pkg_name": "ws2",
     "shared": true,
     "publish": true
+  },
+  "tests": {
+    "type": "exe",
+    "version": "0.1.0",
+    "conan_pkg_name": "tests",
+    "shared": false,
+    "publish": false
   }
 }

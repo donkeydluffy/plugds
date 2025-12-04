@@ -12,11 +12,11 @@ namespace sss::dscore {
 class ICommandManager;
 
 /**
- * @brief       CoreUIProvider provides the standard default UI contributions (menus, commands, toolbars).
+ * @brief       CoreUIProvider 提供标准的默认 UI 贡献（菜单、命令、工具栏）。
  *
- * @details     This class encapsulates the UI contributions that were previously part of CoreComponent
- *              or MainWindow. It implements the standard providers to populate the application with
- *              default File, Settings, Help menus and common commands like Open, Save, etc.
+ * @details     此类封装了之前属于 CoreComponent 或 MainWindow 的 UI 贡献。
+ *              它实现了标准提供者来为应用程序填充默认的文件、设置、帮助菜单
+ *              以及打开、保存等常用命令。
  */
 class DS_CORE_DLLSPEC CoreUIProvider : public QObject,
                                        public sss::dscore::ICommandProvider,

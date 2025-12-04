@@ -59,7 +59,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
   QDirIterator dir(component_folder);
 
-  // find compatible components, and create a list of components to consider for loading
+  // 查找兼容的组件，并创建要考虑加载的组件列表
 
   while (dir.hasNext()) {
     dir.next();
@@ -102,16 +102,16 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
     SPDLOG_INFO("Library {} metadata keys: {}", component_filename.toStdString(),
                 QStringList(meta_data_object.keys()).join(",").toStdString());
 
-    // Try to get component metadata from both "MetaData" and directly in the root
+    // 尝试从 "MetaData" 和直接在根目录中获取组件元数据
     auto component_metadata = meta_data_object.value("MetaData");
 
-    // If MetaData doesn't exist, use the root metadata object
+    // 如果 MetaData 不存在，使用根元数据对象
     if (component_metadata.isNull() || component_metadata.isUndefined()) {
       component_metadata = QJsonValue(meta_data_object);
       SPDLOG_INFO("Library {} using root metadata as component metadata", component_filename.toStdString());
     }
 
-    // Check the actual type of component_metadata
+    // 检查 component_metadata 的实际类型
     QString metadata_type;
     switch (component_metadata.type()) {
       case QJsonValue::Null:
@@ -155,29 +155,29 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
     SPDLOG_INFO("Library {} debug flag: {}, application debug: {}", component_filename.toStdString(),
                 debug_build.toBool() ? "true" : "false", application_debug_build ? "true" : "false");
 
-    // Allow loading component even if there's a debug/release mismatch for debugging purposes
+    // 出于调试目的，即使存在调试/发布不匹配也允许加载组件
     // if (debug_build != application_debug_build) {
     //   SPDLOG_INFO(QString("Library %1 debug flag mismatch").arg(component_filename).toStdString());
     //   delete plugin_loader;
     //   continue;
     // }
 
-    // Still log a warning about the mismatch
+    // 仍然记录关于不匹配的警告
     if (debug_build != application_debug_build) {
       SPDLOG_WARN("Component {} has a debug/release mismatch with the application. This may cause instability.",
                   component_filename.toStdString());
     }
 
-    // Check for both "Name" and "name" since case sensitivity might be an issue
+    // 检查 "Name" 和 "name"，因为大小写敏感可能是个问题
     auto component_metadata_obj = component_metadata.toObject();
     auto component_name = component_metadata_obj.value("Name");
 
-    // If "Name" doesn't exist or is empty, try "name" lowercase
+    // 如果 "Name" 不存在或为空，尝试小写的 "name"
     if (component_name.isNull() || component_name.toString().isEmpty()) {
       component_name = component_metadata_obj.value("name");
     }
 
-    // If still no name, use the className from the plugin metadata
+    // 如果仍然没有名称，使用插件元数据中的 className
     if (component_name.isNull() || component_name.toString().isEmpty()) {
       component_name = component_metadata_obj.value("className");
       SPDLOG_INFO("Library {} using className as component name: {}", component_filename.toStdString(),
@@ -240,7 +240,7 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
   QList<sss::extsystem::Component*> component_load_list;
   QList<sss::extsystem::Component*> resolved_load_list;
 
-  // find and add dependencies from the search
+  // 查找并添加来自搜索的依赖项
 
   auto component_iterator = QMapIterator<QString, sss::extsystem::Component*>(component_search_list_);
 
@@ -275,17 +275,17 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
     }
   }
 
-  // resolve the dependencies to create a load order
+  // 解析依赖项以创建加载顺序
 
-  // Clear existing resolved_load_list to ensure a fresh start for dependency resolution
+  // 清除现有的 resolved_load_list 以确保依赖项解析重新开始
   resolved_load_list.clear();
 
   QList<sss::extsystem::Component*>
-      processed_list_global;  // Use a global processed list for cycle detection across all calls
+      processed_list_global;  // 使用全局处理列表进行跨所有调用的循环检测
 
   for (auto* current : component_load_list) {
     if (!resolved_load_list.contains(current) && !processed_list_global.contains(current)) {
-      QList<sss::extsystem::Component*> current_processed_list;  // This processed_list is for current recursion stack
+      QList<sss::extsystem::Component*> current_processed_list;  // 此 processed_list 用于当前递归堆栈
       resolve(current, resolved_load_list, current_processed_list);
     }
   }
@@ -295,7 +295,7 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
     SPDLOG_INFO("- {}", component->Name().toStdString());
   }
 
-  // load the components that we have satisfied dependencies for
+  // 加载我们已满足依赖项的组件
 
   for (auto* component : resolved_load_list) {
     if (component->load_flags_ != 0) {
@@ -322,7 +322,7 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
       }
     }
 
-    // check if dependencies are loaded, if not then this component cannot be loaded
+    // 检查依赖项是否已加载，如果没有加载则此组件无法加载
 
     auto* plugin_loader = new QPluginLoader(component->Filename());
 
@@ -354,7 +354,7 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
     component->is_loaded_ = true;
   }
 
-  // call initialiseEvent for each component (in load order)
+  // 为每个组件调用 initialiseEvent（按加载顺序）
 
   for (auto component_pair : load_order_) {
     auto* component_interface = qobject_cast<sss::extsystem::IComponent*>(component_pair.first->instance());
@@ -362,7 +362,7 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
     component_interface->InitialiseEvent();
   }
 
-  // call initialisationFinishedEvent for each component (in reverse load order)
+  // 为每个组件调用 initialisationFinishedEvent（按反向加载顺序）
 
   for (auto loaded_component_iterator = load_order_.rbegin(); loaded_component_iterator < load_order_.rend();
        loaded_component_iterator++) {
@@ -387,34 +387,34 @@ auto sss::extsystem::ComponentLoader::resolve(sss::extsystem::Component* compone
                                               QList<sss::extsystem::Component*>& resolved_list,
                                               QList<sss::extsystem::Component*>& processed_list_current_branch)
     -> void {
-  // If component is already in the final resolved list, skip it.
+  // 如果组件已经在最终解析列表中，跳过它。
   if (resolved_list.contains(component)) {
     return;
   }
 
-  // If component is already in the current processing branch, it's a circular dependency.
+  // 如果组件已经在当前处理分支中，则是循环依赖。
   if (processed_list_current_branch.contains(component)) {
     component->load_flags_.setFlag(LoadFlag::kCircularDependency);
     SPDLOG_ERROR("Circular dependency detected involving component: {}", component->Name().toStdString());
-    return;  // Break this branch of recursion
+    return;  // 中断此递归分支
   }
 
-  processed_list_current_branch.append(component);  // Mark component as currently being processed
+  processed_list_current_branch.append(component);  // 将组件标记为当前正在处理
 
   for (auto* dependency : component->dependencies_) {
-    // Only resolve dependency if it's not already resolved
+    // 仅在依赖项尚未解析时才解析它
     if (!resolved_list.contains(dependency)) {
       resolve(dependency, resolved_list, processed_list_current_branch);
     }
   }
 
-  // After resolving all its dependencies (or handling circular ones), add the component
-  // if it's not already resolved and not marked with a circular dependency.
+  // 解析所有其依赖项（或处理循环依赖项）后，添加组件
+  // 如果它尚未解析且未标记为循环依赖。
   if (!resolved_list.contains(component) && !component->load_flags_.testFlag(LoadFlag::kCircularDependency)) {
     resolved_list.append(component);
   }
 
-  processed_list_current_branch.removeAll(component);  // Remove from current processing branch once done
+  processed_list_current_branch.removeAll(component);  // 完成后从当前处理分支中移除
 }
 
 auto sss::extsystem::ComponentLoader::UnloadComponents() -> void {
@@ -433,9 +433,9 @@ auto sss::extsystem::ComponentLoader::UnloadComponents() -> void {
     if (plugin_loader != nullptr) {
 #if !defined(Q_OS_MACOS)
       /**
-       * NOTE: calling unload on macOS causes the application to crash, so we leak the memory as it's of no
-       * consequence as all memory will be freed when we exit.  For Windows and Linux we include the unload
-       * for completeness and to stop memory leak analysers reporting a leak.
+       * 注意：在 macOS 上调用 unload 会导致应用程序崩溃，所以我们泄漏内存，
+       * 因为这没有后果，所有内存将在我们退出时释放。
+       * 对于 Windows 和 Linux，我们包含 unload 以完整性并阻止内存泄漏分析器报告泄漏。
        */
       plugin_loader->unload();
 #endif

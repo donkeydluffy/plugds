@@ -9,12 +9,11 @@
 
 namespace sss::dscore {
 /**
- * @brief       The ContextManager class is used to manage the current application context.
+ * @brief       ContextManager 类用于管理当前应用程序上下文。
  *
- * @details     A context is a state that the application enters, for example an application may have multiple
- *              editor types and each editor will have its own context id.  When an editor becomes active, the
- *              context for that editor is set as active, and the visibility or active state of commands or menus
- *              will be updated.
+ * @details     上下文是应用程序进入的一种状态，例如应用程序可能有多种编辑器类型，
+ *              每个编辑器都有自己的上下文ID。当编辑器变为活动状态时，该编辑器的上下文
+ *              被设置为活动状态，命令或菜单的可见性或活动状态将被更新。
  */
 class ContextManager : public sss::dscore::IContextManager {
  private:
@@ -24,22 +23,21 @@ class ContextManager : public sss::dscore::IContextManager {
 
  public:
   /**
-   * @brief       Constructs a new ContextManager instance.
+   * @brief       构造新的 ContextManager 实例。
    */
   ContextManager();
 
   /**
-   * @brief       Registers a context with the application.
+   * @brief       向应用程序注册上下文。
    *
-   * @details     A context represents a state that the software enters, usually when an editor has
-   *              focus.  The context manager maintains this providing a mechanism to update menus
-   *              the reflect the current context state.
+   * @details     上下文代表软件进入的一种状态，通常在编辑器获得焦点时。
+   *              上下文管理器维护此状态，提供更新菜单以反映当前上下文状态的机制。
    *
    * @see         sss::dscore::IContextManager::registerContext
    *
-   * @param[in]   contextIdentifier the id of the new context.
+   * @param[in]   contextIdentifier 新上下文的ID。
    *
-   * @returns     the numeric identifier of this context.
+   * @returns     此上下文的数字标识符。
    */
   auto RegisterContext(QString context_identifier) -> int override;
 
