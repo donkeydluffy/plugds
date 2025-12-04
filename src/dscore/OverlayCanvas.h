@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMap>
-#include <QToolButton>  // QToolButton 所需
+#include <QToolButton>
 #include <QVector>
 #include <QWidget>
 

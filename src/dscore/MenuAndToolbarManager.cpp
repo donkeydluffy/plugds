@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include "dscore/CoreConstants.h"
-#include "dscore/IActionContainer.h"  // For ContainerType
+#include "dscore/IActionContainer.h"
 #include "dscore/ICommandManager.h"
 #include "dscore/ICommandProvider.h"
 #include "dscore/IMenuProvider.h"

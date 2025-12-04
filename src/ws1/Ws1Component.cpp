@@ -13,7 +13,7 @@
 #include "dscore/ICommandManager.h"
 #include "dscore/IContextManager.h"
 #include "dscore/ILanguageService.h"
-#include "dscore/IModeManager.h"  // Include IModeManager
+#include "dscore/IModeManager.h"
 #include "dscore/IThemeService.h"
 #include "extsystem/IComponentManager.h"
 

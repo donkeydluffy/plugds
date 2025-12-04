@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <functional>
 
-#include "dscore/CoreSpec.h"    // 用于 DS_CORE_DLLSPEC
-#include "dscore/IWorkbench.h"  // 用于枚举
+#include "dscore/CoreSpec.h"
+#include "dscore/IWorkbench.h"
 
 QT_BEGIN_NAMESPACE
 class QTabWidget;

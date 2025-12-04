@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include <QSet>
-#include <algorithm>  // std::all_of 所必需
+#include <algorithm>
 #include <utility>
 
 #include "ActionProxy.h"

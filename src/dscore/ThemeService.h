@@ -2,7 +2,7 @@
 
 #include <QIcon>
 #include <QMap>
-#include <memory>  // 用于 std::unique_ptr
+#include <memory>
 
 #include "dscore/IThemeService.h"
 #include "dscore/Theme.h"

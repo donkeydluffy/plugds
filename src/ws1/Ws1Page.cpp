@@ -14,9 +14,8 @@
 
 #include "dscore/CollapsibleWidget.h"
 #include "dscore/IContextManager.h"
-// #include "dscore/IPageManager.h" // Removed
 #include "dscore/IThemeService.h"
-#include "dscore/IWorkbench.h"  // 需要访问全局工作台
+#include "dscore/IWorkbench.h"
 #include "extsystem/IComponentManager.h"
 
 namespace sss::ws1 {

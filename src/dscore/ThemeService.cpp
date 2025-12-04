@@ -8,12 +8,12 @@
 #include <QFont>
 #include <QFontInfo>
 #include <QMetaEnum>
-#include <QProxyStyle>  // 包含QProxyStyle相关头文件
+#include <QProxyStyle>
 #include <QSettings>
-#include <QStyleFactory>  // 包含QStyleFactory相关头文件
+#include <QStyleFactory>
 #include <QWidget>
-#include <algorithm>  // 用于std::sort
-#include <utility>    // 用于std::pair
+#include <algorithm>
+#include <utility>
 
 namespace sss::dscore {
 

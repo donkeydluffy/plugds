@@ -18,8 +18,8 @@ QT_END_NAMESPACE
 
 class IActionContainer;
 class ICommand;
-class ModeManager;      // 前向声明
-class WorkbenchLayout;  // 前向声明
+class ModeManager;
+class WorkbenchLayout;
 
 /**
  * @brief       MainWindow 类提供主应用程序窗口。
