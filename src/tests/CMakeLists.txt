@@ -7,6 +7,7 @@ project(
   VERSION 0.1.0)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 
 # find_package
 set(PACKAGES_VAR "TESTS_FIND_PACKAGE_NAMES")
@@ -71,7 +72,9 @@ option(TESTS_BUILD_SHARED_LIBS "Build shared library (when project type is 'lib'
 # 使用 CMake 的 if 语句处理 CMake 变量
 if(PROJECT_TYPE_CMAKE_VAR STREQUAL "exe")
   # 可执行文件不能像库那样设为 SHARED。若是可执行文件，则取消或确保 TESTS_BUILD_SHARED_LIBS 为 OFF。
-  set(TESTS_BUILD_SHARED_LIBS OFF CACHE BOOL "Executables cannot be built as shared libraries" FORCE)
+  set(TESTS_BUILD_SHARED_LIBS
+      OFF
+      CACHE BOOL "Executables cannot be built as shared libraries" FORCE)
 endif()
 
 # --- 自动查找所有源文件和头文件 ---
@@ -82,6 +85,39 @@ file(
   "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.cc")
+
+# 添加 dscore 的源文件以进行白盒测试，避免为了测试而导出内部类
+list(
+  APPEND
+  PROJECT_SOURCES_GLOBBED
+  "${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/Component.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/ComponentLoader.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/IComponent.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/IComponentManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/CommandManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/ContextManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/LanguageService.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/MenuAndToolbarManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/StatusbarManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/ThemeService.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/Theme.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/ModeManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/ActionContainer.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/ActionProxy.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/CoreStrings.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/IModeManager.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/IMode.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/Command.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/CollapsibleWidget.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/OverlayCanvas.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/SystemMonitorWidget.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/WorkbenchLayout.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/Core.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/CoreComponent.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/MainWindow.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/ModeSwitcher.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/CoreUIProvider.cpp")
+
 file(
   GLOB_RECURSE
   PROJECT_HEADERS_GLOBBED
@@ -90,6 +126,32 @@ file(
   "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.hxx"
   "${CMAKE_CURRENT_SOURCE_DIR}/*.inl")
+
+# Add dscore headers to PROJECT_HEADERS_GLOBBED so that automoc processes them
+file(
+  GLOB
+  DSCORE_HEADERS
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/include/dscore/*.h")
+list(APPEND PROJECT_HEADERS_GLOBBED ${DSCORE_HEADERS})
+
+# Add extsystem headers to PROJECT_HEADERS_GLOBBED so that automoc processes them
+file(
+  GLOB
+  EXTSYSTEM_HEADERS
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/include/extsystem/*.h")
+list(APPEND PROJECT_HEADERS_GLOBBED ${EXTSYSTEM_HEADERS})
+
+file(
+  GLOB
+  DSCORE_UI
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/../dscore/*.ui")
+list(APPEND PROJECT_SOURCES_GLOBBED ${DSCORE_UI})
+
 file(
   GLOB_RECURSE
   PROJECT_PUBLIC_HEADERS
@@ -128,7 +190,7 @@ if(TESTS_PRODUCT_VERSION EQUAL 0
     REGEX MATCHALL
           "[0-9]+"
           VERSION_LIST
-${TESTS_PRODUCT_VERSION})
+          ${TESTS_PRODUCT_VERSION})
   list(LENGTH VERSION_LIST VERSION_LIST_LENGTH)
   # 根据版本号长度设置版本号, 最多支持 4 位版本号
   if(VERSION_LIST_LENGTH GREATER 0)
@@ -164,15 +226,18 @@ endif()
 # 设置完整产品版本号
 if(NOT TESTS_PRODUCT_VERSION_REVISION OR "${TESTS_PRODUCT_VERSION_REVISION}" STREQUAL "")
   set(TESTS_PRODUCT_FULL_VERSION
-      "${TESTS_PRODUCT_VERSION_MAJOR}.${TESTS_PRODUCT_VERSION_MINOR}.${TESTS_PRODUCT_VERSION_PATCH}.${TESTS_PRODUCT_VERSION_TWEAK}")
+      "${TESTS_PRODUCT_VERSION_MAJOR}.${TESTS_PRODUCT_VERSION_MINOR}.${TESTS_PRODUCT_VERSION_PATCH}.${TESTS_PRODUCT_VERSION_TWEAK}"
+  )
 else()
   set(TESTS_PRODUCT_FULL_VERSION
-      "${TESTS_PRODUCT_VERSION_MAJOR}.${TESTS_PRODUCT_VERSION_MINOR}.${TESTS_PRODUCT_VERSION_PATCH}+${TESTS_PRODUCT_VERSION_REVISION}")
+      "${TESTS_PRODUCT_VERSION_MAJOR}.${TESTS_PRODUCT_VERSION_MINOR}.${TESTS_PRODUCT_VERSION_PATCH}+${TESTS_PRODUCT_VERSION_REVISION}"
+  )
 endif()
 
 # 设置完整文件版本号
 set(TESTS_PRODUCT_FILE_FULL_VERSION
-    "${TESTS_PRODUCT_VERSION_MAJOR}.${TESTS_PRODUCT_VERSION_MINOR}.${TESTS_PRODUCT_VERSION_PATCH}.${TESTS_PRODUCT_VERSION_TWEAK}")
+    "${TESTS_PRODUCT_VERSION_MAJOR}.${TESTS_PRODUCT_VERSION_MINOR}.${TESTS_PRODUCT_VERSION_PATCH}.${TESTS_PRODUCT_VERSION_TWEAK}"
+)
 
 # 设置公司版权信息
 string(TIMESTAMP PRODUCT_CURRENT_YEAR "%Y")
@@ -219,7 +284,31 @@ endif()
 # 这有助于在 IDE 中组织文件以匹配磁盘结构。分组将根据相对于
 # CMAKE_CURRENT_SOURCE_DIR 的文件路径直接创建。
 if(PROJECT_SOURCES_GLOBBED)
-  source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PROJECT_SOURCES_GLOBBED})
+  set(_local_sources "")
+  set(_external_sources "")
+
+  # 获取当前源码目录的绝对路径，确保比较准确
+  get_filename_component(_abs_curr_dir "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
+
+  foreach(_src ${PROJECT_SOURCES_GLOBBED})
+    get_filename_component(_abs_src "${_src}" ABSOLUTE)
+    string(FIND "${_abs_src}" "${_abs_curr_dir}" _idx)
+
+    if(_idx EQUAL 0)
+      list(APPEND _local_sources "${_src}")
+    else()
+      list(APPEND _external_sources "${_src}")
+    endif()
+  endforeach()
+
+  if(_local_sources)
+    source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${_local_sources})
+  endif()
+
+  # 外部文件不能使用 TREE 模式，直接分组显示
+  if(_external_sources)
+    source_group("External Sources" FILES ${_external_sources})
+  endif()
 endif()
 if(PROJECT_HEADERS_GLOBBED AND PROJECT_TYPE_CMAKE_VAR STREQUAL "lib")
   source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PROJECT_HEADERS_GLOBBED})
@@ -244,8 +333,14 @@ if(IS_INTERFACE_LIBRARY)
 else()
   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                                     $<INSTALL_INTERFACE:include>)
-  target_include_directories(${PROJECT_NAME} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
+  target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dscore>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../dscore/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extsystem>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../extsystem/include>)
   target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 endif()
 
@@ -297,13 +392,16 @@ if(DEFINED PROJECT_COMPILE_DEFINITIONS AND PROJECT_COMPILE_DEFINITIONS)
   endif()
 endif()
 
+# 当直接编译 dscore 源码进行测试时，必须定义 dscore_EXPORTS
+# 这可以防止类被标记为 dllimport，从而解决 C2491 错误
+target_compile_definitions(${PROJECT_NAME} PRIVATE DS_COMPONENT_CORE_EXPORT DS_LIBRARY_COMPONENTSYSTEM_EXPORT)
+
 # --- 安装规则（用于 Conan 打包） ---
 # 根据项目类型和是否有头文件来决定 install 命令的参数
- install(
+install(
   TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin)
-
 
 if(MSVC
    AND NOT IS_INTERFACE_LIBRARY

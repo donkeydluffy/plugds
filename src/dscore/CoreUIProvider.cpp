@@ -3,11 +3,13 @@
 #include <QAction>
 #include <QObject>
 
+#include "SystemMonitorWidget.h"
 #include "dscore/CoreConstants.h"
 #include "dscore/IActionContainer.h"
 #include "dscore/ICommand.h"
 #include "dscore/ICommandManager.h"
 #include "dscore/ILanguageService.h"
+#include "dscore/IStatusbarManager.h"
 #include "dscore/IThemeService.h"
 #include "extsystem/IComponentManager.h"
 
@@ -142,6 +144,13 @@ void CoreUIProvider::ContributeToToolbar(sss::dscore::ICommandManager* command_m
                                 sss::dscore::constants::menugroups::kGroupToolbarMain);
     main_toolbar->AppendCommand(sss::dscore::constants::commands::kSave,
                                 sss::dscore::constants::menugroups::kGroupToolbarMain);
+  }
+}
+
+void CoreUIProvider::ContributeToStatusbar(sss::dscore::IStatusbarManager* statusbar_manager) {
+  if (statusbar_manager != nullptr) {
+    auto* monitor_widget = new sss::dscore::SystemMonitorWidget();
+    statusbar_manager->AddPermanentWidget(monitor_widget, 0);
   }
 }
 

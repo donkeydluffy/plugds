@@ -5,6 +5,7 @@
 #include "dscore/CoreSpec.h"
 #include "dscore/ICommandProvider.h"
 #include "dscore/IMenuProvider.h"
+#include "dscore/IStatusbarProvider.h"
 #include "dscore/IToolbarProvider.h"
 
 namespace sss::dscore {
@@ -21,9 +22,11 @@ class ICommandManager;
 class DS_CORE_DLLSPEC CoreUIProvider : public QObject,
                                        public sss::dscore::ICommandProvider,
                                        public sss::dscore::IMenuProvider,
-                                       public sss::dscore::IToolbarProvider {
+                                       public sss::dscore::IToolbarProvider,
+                                       public sss::dscore::IStatusbarProvider {
   Q_OBJECT
-  Q_INTERFACES(sss::dscore::ICommandProvider sss::dscore::IMenuProvider sss::dscore::IToolbarProvider)
+  Q_INTERFACES(sss::dscore::ICommandProvider sss::dscore::IMenuProvider sss::dscore::IToolbarProvider
+                   sss::dscore::IStatusbarProvider)
 
  public:
   explicit CoreUIProvider(QObject* parent = nullptr);
@@ -37,6 +40,9 @@ class DS_CORE_DLLSPEC CoreUIProvider : public QObject,
 
   // IToolbarProvider
   void ContributeToToolbar(sss::dscore::ICommandManager* command_manager) override;
+
+  // IStatusbarProvider
+  void ContributeToStatusbar(sss::dscore::IStatusbarManager* statusbar_manager) override;
 };
 
 }  // namespace sss::dscore

@@ -140,7 +140,7 @@ define_conan_publish_targets_for_subproject(
   "0.1.0"
   "${PRODUCT_VERSION_REVISION}"
   "qt=Qt5::Core=Qt5::Widgets=Qt5::Test;spdlog=spdlog::spdlog_header_only;doctest=doctest::doctest"
-  "extsystem;dscore")
+  "")
 # CONAN_PUBLISH_TARGETS_END (do not remove or modify this line)
 message(STATUS "Finished configuring Conan publish targets.")
 
