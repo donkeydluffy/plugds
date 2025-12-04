@@ -14,9 +14,11 @@
 
 #include "dscore/CollapsibleWidget.h"
 #include "dscore/IContextManager.h"
+#include "dscore/ILanguageService.h"
 #include "dscore/IThemeService.h"
 #include "dscore/IWorkbench.h"
 #include "extsystem/IComponentManager.h"
+#include "ws1/Ws1Strings.h"
 
 namespace sss::ws1 {
 
@@ -27,6 +29,12 @@ Ws1Page::Ws1Page(int context_id, QObject* parent) : sss::dscore::IMode(parent), 
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
     connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws1Page::UpdateIcons);
+  }
+
+  auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
+  if (lang_service != nullptr) {
+    connect(lang_service, &sss::dscore::ILanguageService::LanguageChanged, this,
+            [this](const QLocale&) { retranslateUi(); });
   }
 
   setupDefaultUi();  // 创建一次小部件
@@ -52,7 +60,7 @@ Ws1Page::~Ws1Page() {
 }
 
 QString Ws1Page::Id() const { return "ws1.mode"; }
-QString Ws1Page::Title() const { return tr("Workspace 1"); }
+QString Ws1Page::Title() const { return Ws1Strings::WorkspaceTitle(); }
 QIcon Ws1Page::Icon() const {
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
@@ -72,7 +80,7 @@ void Ws1Page::Activate() {
   }
 
   // 1. Left Sidebar
-  workbench->AddSidePanel("ws1.sidebar.tree", tree_view_, tr("Model Tree"), QIcon{});
+  workbench->AddSidePanel("ws1.sidebar.tree", tree_view_, Ws1Strings::ModelTree(), QIcon{});
 
   // 2. Background
   workbench->SetBackgroundWidget(bg_label_);
@@ -90,7 +98,7 @@ void Ws1Page::Activate() {
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomLeft, coords_label_, 0, mode_ctx);
 
   // Notification
-  QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(tr("Welcome to Workspace 1"), 3000); });
+  QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(Ws1Strings::WelcomeMessage(), 3000); });
 
   // 更新图标
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
@@ -115,26 +123,27 @@ void Ws1Page::setupDefaultUi() {
   tree_view_->setModel(model_);
 
   // 2. 背景
-  bg_label_ = new QLabel(tr("3D Rendering Area (Background)"));
+  bg_label_ = new QLabel(Ws1Strings::RenderingArea());
   bg_label_->setObjectName("ws1_bg_label");
   bg_label_->setAlignment(Qt::AlignCenter);
 
   // 3. 设备面板
-  auto* collapsable = new sss::dscore::CollapsibleWidget(tr("Device Info"));
+  auto* collapsable = new sss::dscore::CollapsibleWidget(Ws1Strings::DeviceInfo());
   auto* content_widget = new QWidget();
   auto* info_layout = new QVBoxLayout(content_widget);
   info_layout->setContentsMargins(4, 4, 4, 4);
-  info_label_ = new QLabel(tr("Scanner A: Ready"));
+  info_label_ = new QLabel(Ws1Strings::ScannerReady());
   info_layout->addWidget(info_label_);
-  info_layout->addWidget(new QLabel(tr("Temp: 45C | FPS: 60")));
+  status_label_ = new QLabel(Ws1Strings::StatusInfo());
+  info_layout->addWidget(status_label_);
   collapsable->SetContentWidget(content_widget);
   device_panel_ = collapsable;
 
   // 4. 功能栏
   func_bar_ = new QWidget();
   auto* func_layout = new QHBoxLayout(func_bar_);
-  enable_button_ = new QPushButton(tr("Enable Context"));
-  disable_button_ = new QPushButton(tr("Disable Context"));
+  enable_button_ = new QPushButton(Ws1Strings::EnableContext());
+  disable_button_ = new QPushButton(Ws1Strings::DisableContext());
   func_layout->addWidget(enable_button_);
   func_layout->addWidget(disable_button_);
 
@@ -176,13 +185,35 @@ void Ws1Page::onDisableSubContext() {  // NOLINT
 void Ws1Page::setupModel() {
   model_ = new QStandardItemModel(this);
   QStandardItem* root_node = model_->invisibleRootItem();
-  root_node->appendRow(new QStandardItem(tr("Reference")));
-  root_node->appendRow(new QStandardItem(tr("Data")));
-  root_node->appendRow(new QStandardItem(tr("Features")));
+  root_node->appendRow(new QStandardItem(Ws1Strings::Reference()));
+  root_node->appendRow(new QStandardItem(Ws1Strings::Data()));
+  root_node->appendRow(new QStandardItem(Ws1Strings::Features()));
 }
 
 void Ws1Page::retranslateUi() {
-  // 更新文本...
+  if (tree_view_ != nullptr) {
+    // 重建模型以更新文本（简单方法）
+    delete model_;
+    setupModel();
+    tree_view_->setModel(model_);
+    // SidePanel 标题更新需要通过 Workbench 接口？
+    // 目前 IWorkbench 没有 UpdateSidePanelTitle。
+    // 这是一个限制。我们可能需要扩展 IWorkbench。
+    // 但为了现在，我们至少更新内容。
+  }
+
+  if (bg_label_ != nullptr) bg_label_->setText(Ws1Strings::RenderingArea());
+
+  if ((device_panel_ != nullptr) && (qobject_cast<sss::dscore::CollapsibleWidget*>(device_panel_) != nullptr)) {
+    auto* cw = qobject_cast<sss::dscore::CollapsibleWidget*>(device_panel_);
+    cw->SetTitle(Ws1Strings::DeviceInfo());
+  }
+
+  if (info_label_ != nullptr) info_label_->setText(Ws1Strings::ScannerReady());
+  if (status_label_ != nullptr) status_label_->setText(Ws1Strings::StatusInfo());
+
+  if (enable_button_ != nullptr) enable_button_->setText(Ws1Strings::EnableContext());
+  if (disable_button_ != nullptr) disable_button_->setText(Ws1Strings::DisableContext());
 }
 
 }  // namespace sss::ws1

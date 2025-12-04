@@ -39,6 +39,15 @@ class DS_CORE_DLLSPEC CoreStrings : public QObject {
   static auto About() -> QString;
   static auto Language() -> QString;
   static auto Theme() -> QString;
+
+  // --- System Monitor ---
+  static auto CpuLabel() -> QString;              // "CPU: --.--%"
+  static auto MemLabel() -> QString;              // "MEM: --.--%"
+  static auto CpuValue(double value) -> QString;  // "CPU: %1%"
+  static auto MemValue(double value) -> QString;  // "MEM: %1%"
+  static auto MemValueInit() -> QString;          // "MEM: -%"
+  static auto MemTooltip(uint64_t used, uint64_t total, uint64_t swap_used, uint64_t swap_total) -> QString;
+  static auto MemTooltipWin(uint32_t load, uint64_t virt_used, uint64_t virt_total) -> QString;
 };
 
 }  // namespace sss::dscore

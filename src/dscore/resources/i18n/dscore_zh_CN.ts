@@ -87,5 +87,37 @@
         <source>Theme</source>
         <translation>主题</translation>
     </message>
+    <message>
+        <source>CPU: --.--%</source>
+        <translation>CPU: --.--%</translation>
+    </message>
+    <message>
+        <source>MEM: --.--%</source>
+        <translation>内存: --.--%</translation>
+    </message>
+    <message>
+        <source>CPU: %1%</source>
+        <translation>CPU: %1%</translation>
+    </message>
+    <message>
+        <source>MEM: -%</source>
+        <translation>内存: -%</translation>
+    </message>
+    <message>
+        <source>MEM: %1%</source>
+        <translation>内存: %1%</translation>
+    </message>
+    <message>
+        <source>RAM: %1 / %2 MB
+Swap: %3 / %4 MB</source>
+        <translation>内存: %1 / %2 MB
+交换: %3 / %4 MB</translation>
+    </message>
+    <message>
+        <source>Physical Load: %1%
+Virtual Usage: %2 / %3 MB</source>
+        <translation>物理负载: %1%
+虚拟使用: %2 / %3 MB</translation>
+    </message>
 </context>
 </TS>

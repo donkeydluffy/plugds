@@ -11,6 +11,7 @@
 #include "dscore/IContextManager.h"
 #include "dscore/IThemeService.h"
 #include "extsystem/IComponentManager.h"
+#include "ws1/Ws1Strings.h"
 
 namespace sss::ws1 {
 
@@ -18,14 +19,10 @@ Ws1UIProvider::Ws1UIProvider(Ws1Component* component, int page_context_id, int s
     : QObject(component), component_(component), page_context_id_(page_context_id), sub_context_id_(sub_context_id) {}
 
 void Ws1UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manager) {
-  auto* sample_action = new QAction(tr("Ws1 Sample Command"));
-  // 目前图标更新由 Ws1Component 通过 ThemeService 信号处理，
-  // 或者如果我们传递 ThemeService，我们可以将图标逻辑移到这里。
-  // 目前，Ws1Component 仍然有 UpdateIcons 逻辑。
+  auto* sample_action = new QAction(Ws1Strings::SampleCommand());
 
   connect(sample_action, &QAction::triggered, component_, []() {
-    QMessageBox::information(nullptr, sss::dscore::CoreStrings::Information(),
-                             tr("This is a sample command from the Ws1 plugin."));
+    QMessageBox::information(nullptr, sss::dscore::CoreStrings::Information(), Ws1Strings::SampleCommandDesc());
   });
 
   sss::dscore::ContextList visibility_contexts;

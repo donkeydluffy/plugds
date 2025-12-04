@@ -65,7 +65,8 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
     if (widget != nullptr) widget->setUpdatesEnabled(true);
   }
 
-  // QCoreApplication 会自动发送 QEvent::LanguageChange 事件
+  // QCoreApplication 会自动发送 QEvent::LanguageChange 事件?
+  emit LanguageChanged(current_locale_);
 }
 
 auto LanguageService::GetCurrentLocale() const -> QLocale { return current_locale_; }

@@ -11,6 +11,7 @@
 #include "dscore/IContextManager.h"
 #include "dscore/IThemeService.h"
 #include "extsystem/IComponentManager.h"
+#include "ws2/Ws2Strings.h"
 
 namespace sss::ws2 {
 
@@ -18,11 +19,10 @@ Ws2UIProvider::Ws2UIProvider(Ws2Component* component, int page_context_id, int s
     : QObject(component), component_(component), page_context_id_(page_context_id), sub_context_id_(sub_context_id) {}
 
 void Ws2UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manager) {
-  auto* sample_action = new QAction(tr("Ws2 Sample Command"));
+  auto* sample_action = new QAction(Ws2Strings::SampleCommand());
 
   connect(sample_action, &QAction::triggered, component_, []() {
-    QMessageBox::information(nullptr, sss::dscore::CoreStrings::Information(),
-                             tr("This is a sample command from the Ws2 plugin."));
+    QMessageBox::information(nullptr, sss::dscore::CoreStrings::Information(), Ws2Strings::SampleCommandDesc());
   });
 
   sss::dscore::ContextList visibility_contexts;

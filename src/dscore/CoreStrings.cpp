@@ -24,4 +24,20 @@ auto CoreStrings::About() -> QString { return tr("About"); }
 auto CoreStrings::Language() -> QString { return tr("Language"); }
 auto CoreStrings::Theme() -> QString { return tr("Theme"); }
 
+auto CoreStrings::CpuLabel() -> QString { return tr("CPU: --.--%"); }
+auto CoreStrings::MemLabel() -> QString { return tr("MEM: --.--%"); }
+auto CoreStrings::CpuValue(double value) -> QString { return tr("CPU: %1%").arg(value, 5, 'f', 1); }
+auto CoreStrings::MemValue(double value) -> QString { return tr("MEM: %1%").arg(value, 0, 'f', 1); }
+auto CoreStrings::MemValueInit() -> QString { return tr("MEM: -%"); }
+auto CoreStrings::MemTooltip(uint64_t used, uint64_t total, uint64_t swap_used, uint64_t swap_total) -> QString {
+  return tr("RAM: %1 / %2 MB\nSwap: %3 / %4 MB").arg(used).arg(total).arg(swap_used).arg(swap_total);
+}
+// Assuming DWORD is available or using uint32_t. Since this cpp file might not include windows.h, we use
+// uint32_t/unsigned long. Actually, CoreStrings.cpp includes CoreStrings.h which includes QObject. To be safe with
+// types and avoiding windows.h dependency here if possible, we stick to standard types. DWORD is unsigned long on
+// Windows.
+auto CoreStrings::MemTooltipWin(uint32_t load, uint64_t virt_used, uint64_t virt_total) -> QString {
+  return tr("Physical Load: %1%\nVirtual Usage: %2 / %3 MB").arg(load).arg(virt_used).arg(virt_total);
+}
+
 }  // namespace sss::dscore

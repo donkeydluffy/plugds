@@ -14,9 +14,11 @@
 
 #include "dscore/CollapsibleWidget.h"
 #include "dscore/IContextManager.h"
+#include "dscore/ILanguageService.h"
 #include "dscore/IThemeService.h"
 #include "dscore/IWorkbench.h"
 #include "extsystem/IComponentManager.h"
+#include "ws2/Ws2Strings.h"
 
 namespace sss::ws2 {
 
@@ -26,6 +28,12 @@ Ws2Page::Ws2Page(int context_id, QObject* parent) : sss::dscore::IMode(parent), 
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
     connect(theme_service, &sss::dscore::IThemeService::ThemeChanged, this, &Ws2Page::UpdateIcons);
+  }
+
+  auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
+  if (lang_service != nullptr) {
+    connect(lang_service, &sss::dscore::ILanguageService::LanguageChanged, this,
+            [this](const QLocale&) { retranslateUi(); });
   }
 
   setupDefaultUi();
@@ -41,7 +49,7 @@ Ws2Page::~Ws2Page() {
 }
 
 QString Ws2Page::Id() const { return "ws2.mode"; }
-QString Ws2Page::Title() const { return tr("工作区 2"); }
+QString Ws2Page::Title() const { return Ws2Strings::WorkspaceTitle(); }
 QIcon Ws2Page::Icon() const {
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
@@ -61,7 +69,7 @@ void Ws2Page::Activate() {
   }
 
   // 1. 左侧边栏
-  workbench->AddSidePanel("ws2.sidebar.tree", tree_view_, tr("项目浏览器"), QIcon{});
+  workbench->AddSidePanel("ws2.sidebar.tree", tree_view_, Ws2Strings::ProjectBrowser(), QIcon{});
 
   // 2. 背景
   workbench->SetBackgroundWidget(bg_label_);
@@ -73,7 +81,7 @@ void Ws2Page::Activate() {
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomRight, func_bar_, 0, mode_ctx);
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopCenter, coords_label_, 0, mode_ctx);
 
-  QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(tr("欢迎使用工作区 2"), 3000); });
+  QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(Ws2Strings::WelcomeMessage(), 3000); });
 
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if ((theme_service != nullptr) && (theme_service->Theme() != nullptr)) {
@@ -93,26 +101,27 @@ void Ws2Page::setupDefaultUi() {
   tree_view_->setModel(model_);
 
   // 2. 背景
-  bg_label_ = new QLabel(tr("工作区 2 区域（背景）"));
+  bg_label_ = new QLabel(Ws2Strings::RenderingArea());
   bg_label_->setObjectName("ws2_bg_label");
   bg_label_->setAlignment(Qt::AlignCenter);
 
   // 3. 设备面板
-  auto* collapsable = new sss::dscore::CollapsibleWidget(tr("系统状态"));
+  auto* collapsable = new sss::dscore::CollapsibleWidget(Ws2Strings::SystemStatus());
   auto* content_widget = new QWidget();
   auto* info_layout = new QVBoxLayout(content_widget);
   info_layout->setContentsMargins(4, 4, 4, 4);
-  info_label_ = new QLabel(tr("扫描仪 B：空闲"));
+  info_label_ = new QLabel(Ws2Strings::ScannerIdle());
   info_layout->addWidget(info_label_);
-  info_layout->addWidget(new QLabel(tr("内存：45% | CPU：12%")));
+  status_label_ = new QLabel(Ws2Strings::StatusInfo());
+  info_layout->addWidget(status_label_);
   collapsable->SetContentWidget(content_widget);
   device_panel_ = collapsable;
 
   // 4. 功能栏
   func_bar_ = new QWidget();
   auto* func_layout = new QHBoxLayout(func_bar_);
-  enable_button_ = new QPushButton(tr("开始进程"));
-  disable_button_ = new QPushButton(tr("停止进程"));
+  enable_button_ = new QPushButton(Ws2Strings::StartProcess());
+  disable_button_ = new QPushButton(Ws2Strings::StopProcess());
   func_layout->addWidget(enable_button_);
   func_layout->addWidget(disable_button_);
 
@@ -154,13 +163,30 @@ void Ws2Page::onDisableSubContext() const {
 void Ws2Page::setupModel() {
   model_ = new QStandardItemModel(this);
   QStandardItem* root_node = model_->invisibleRootItem();
-  root_node->appendRow(new QStandardItem(tr("输入")));
-  root_node->appendRow(new QStandardItem(tr("输出")));
-  root_node->appendRow(new QStandardItem(tr("日志")));
+  root_node->appendRow(new QStandardItem(Ws2Strings::Input()));
+  root_node->appendRow(new QStandardItem(Ws2Strings::Output()));
+  root_node->appendRow(new QStandardItem(Ws2Strings::Logs()));
 }
 
 void Ws2Page::retranslateUi() {
-  // 更新文本...
+  if (tree_view_ != nullptr) {
+    delete model_;
+    setupModel();
+    tree_view_->setModel(model_);
+  }
+
+  if (bg_label_ != nullptr) bg_label_->setText(Ws2Strings::RenderingArea());
+
+  if ((device_panel_ != nullptr) && (qobject_cast<sss::dscore::CollapsibleWidget*>(device_panel_) != nullptr)) {
+    auto* cw = qobject_cast<sss::dscore::CollapsibleWidget*>(device_panel_);
+    cw->SetTitle(Ws2Strings::SystemStatus());
+  }
+
+  if (info_label_ != nullptr) info_label_->setText(Ws2Strings::ScannerIdle());
+  if (status_label_ != nullptr) status_label_->setText(Ws2Strings::StatusInfo());
+
+  if (enable_button_ != nullptr) enable_button_->setText(Ws2Strings::StartProcess());
+  if (disable_button_ != nullptr) disable_button_->setText(Ws2Strings::StopProcess());
 }
 
 }  // namespace sss::ws2

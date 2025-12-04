@@ -5,6 +5,8 @@
 #include <QProcess>
 #include <QTextStream>
 
+#include "dscore/CoreStrings.h"
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -19,8 +21,8 @@ SystemMonitorWidget::SystemMonitorWidget(QWidget* parent) : QWidget(parent) {
   layout->setContentsMargins(10, 0, 10, 0);
   layout->setSpacing(15);
 
-  cpu_label_ = new QLabel("CPU: --.--%", this);
-  mem_label_ = new QLabel("MEM: --.--%", this);
+  cpu_label_ = new QLabel(CoreStrings::CpuLabel(), this);
+  mem_label_ = new QLabel(CoreStrings::MemLabel(), this);
 
   // 设置固定宽度以防止数值变化时抖动
 
@@ -131,13 +133,13 @@ void SystemMonitorWidget::updateCpuUsage() {
 #endif
 
   if (valid) {
-    cpu_label_->setText(QString("CPU: %1%").arg(cpu_percent, 5, 'f', 1));  // 固定宽度格式
+    cpu_label_->setText(CoreStrings::CpuValue(cpu_percent));
   }
   // 如果无效（首次运行），保持默认的 "--.--%" 或之前的值
 }
 
 void SystemMonitorWidget::updateMemoryUsage() {
-  QString mem_text = "MEM: -%";
+  QString mem_text = CoreStrings::MemValueInit();
   QString tooltip = "";
 
 #ifdef Q_OS_LINUX
@@ -167,31 +169,26 @@ void SystemMonitorWidget::updateMemoryUsage() {
 
     if (mem_total > 0) {
       double mem_percent = (static_cast<double>(mem_total - mem_available) / mem_total) * 100.0;
-      mem_text = QString("MEM: %1%").arg(mem_percent, 0, 'f', 1);
+      mem_text = CoreStrings::MemValue(mem_percent);
 
       uint64_t swap_used = swap_total - swap_free;
 
-      tooltip = QString("RAM: %1 / %2 MB\nSwap: %3 / %4 MB")
-                    .arg((mem_total - mem_available) / 1024)
-                    .arg(mem_total / 1024)
-                    .arg(swap_used / 1024)
-                    .arg(swap_total / 1024);
+      tooltip = CoreStrings::MemTooltip((mem_total - mem_available) / 1024, mem_total / 1024, swap_used / 1024,
+                                        swap_total / 1024);
     }
   }
 #elif defined(Q_OS_WIN)
   MEMORYSTATUSEX statex;
   statex.dwLength = sizeof(statex);
   if (GlobalMemoryStatusEx(&statex) != 0) {
-    mem_text = QString("MEM: %1%").arg(statex.dwMemoryLoad);
+    mem_text = CoreStrings::MemValue(static_cast<double>(statex.dwMemoryLoad));
 
     uint64_t total_commit = statex.ullTotalPageFile;
     uint64_t avail_commit = statex.ullAvailPageFile;
     uint64_t used_commit = total_commit - avail_commit;
 
-    tooltip = QString("Physical Load: %1%\nVirtual Usage: %2 / %3 MB")
-                  .arg(statex.dwMemoryLoad)
-                  .arg(used_commit / (1024 * 1024))
-                  .arg(total_commit / (1024 * 1024));
+    tooltip =
+        CoreStrings::MemTooltipWin(statex.dwMemoryLoad, used_commit / (1024 * 1024), total_commit / (1024 * 1024));
   }
 #endif
 

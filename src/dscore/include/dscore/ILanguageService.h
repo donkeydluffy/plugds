@@ -16,7 +16,7 @@ class DS_CORE_DLLSPEC ILanguageService : public QObject {
   Q_OBJECT
 
  public:
-  virtual ~ILanguageService() = default;
+  ~ILanguageService() override = default;
 
   /**
    * @brief 注册组件的翻译文件。
@@ -40,6 +40,13 @@ class DS_CORE_DLLSPEC ILanguageService : public QObject {
    * @returns 当前 QLocale。
    */
   [[nodiscard]] virtual auto GetCurrentLocale() const -> QLocale = 0;
+
+ signals:
+  /**
+   * @brief 当语言发生变化时发出。
+   * @param locale 新的区域设置。
+   */
+  void LanguageChanged(const QLocale& locale);
 };
 
 }  // namespace sss::dscore
