@@ -26,7 +26,7 @@ auto ThemeService::stringToPaletteColorRole(const QString& str) -> QPalette::Col
   // 使用keyToValue进行字符串到枚举值的直接转换
   int val = meta_enum.keyToValue(str.toLatin1().constData());
   if (val == -1) {
-    qWarning() << "ThemeService: Unknown QPalette::ColorRole string:" << str;
+    qWarning() << "ThemeService：未知的 QPalette::ColorRole 字符串：" << str;
     return QPalette::NColorRoles;  // 返回无效角色
   }
   return static_cast<QPalette::ColorRole>(val);
@@ -64,7 +64,7 @@ auto ThemeService::stringToThemeColorRole(const QString& str) -> Theme::ColorRol
       {"THEME_COLOR_OverlayAccent", Theme::kOverlayAccent}};
   Theme::ColorRole role = kStringToRoleMap.value(str, Theme::kCount);  // 正确：使用.value()和QString键
   if (role == Theme::kCount) {
-    qWarning() << "ThemeService: Unknown Theme::ColorRole string for lookup:" << str;
+    qWarning() << "ThemeService：未知的 Theme::ColorRole 查找字符串：" << str;
   }
   return role;
 }
@@ -157,10 +157,10 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   // 1. 解析 [Palette] 组 -> QPalette
   settings.beginGroup("Palette");
   QStringList palette_keys = settings.childKeys();
-  qDebug() << "ThemeService: Found" << palette_keys.size() << "palette entries.";
+  qDebug() << "ThemeService：找到" << palette_keys.size() << "个调色板条目。";
 
   if (palette_keys.isEmpty()) {
-    qWarning() << "ThemeService: [Palette] section is empty or missing!";
+    qWarning() << "ThemeService：[Palette] 部分为空或缺失！";
   }
 
   for (const auto& key : settings.childKeys()) {

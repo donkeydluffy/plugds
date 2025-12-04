@@ -4,7 +4,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QWidget>
-// #include <spdlog/spdlog.h> // 已移除，因为 spdlog 用于应用程序日志，而非库工具
+// #include <spdlog/spdlog.h>
 
 namespace sss::dscore {
 
@@ -40,22 +40,22 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
     auto translator = std::make_unique<QTranslator>();
     // Format: name_lang_country.qm, e.g., ws1_zh_CN.qm or ws1_zh.qm
     QString filename = QString("%1_%2").arg(comp.name, locale.name());
-    qDebug() << "Trying to load translator:" << filename << "from" << comp.path;
+    qDebug() << "尝试加载翻译器：" << filename << "从" << comp.path;
 
     if (translator->load(filename, comp.path)) {
-      qDebug() << "Loaded successfully:" << filename;
+      qDebug() << "成功加载：" << filename;
       QCoreApplication::installTranslator(translator.get());
       active_translators_.push_back(std::move(translator));
     } else {
       // 尝试回退到仅语言代码（如 ws1_zh.qm）
       QString short_filename = QString("%1_%2").arg(comp.name, locale.name().split('_').first());
-      qDebug() << "Trying fallback:" << short_filename;
+      qDebug() << "尝试回退：" << short_filename;
       if (translator->load(short_filename, comp.path)) {
-        qDebug() << "Loaded fallback successfully:" << short_filename;
+        qDebug() << "成功加载回退：" << short_filename;
         QCoreApplication::installTranslator(translator.get());
         active_translators_.push_back(std::move(translator));
       } else {
-        qWarning() << "Failed to load translator for" << comp.name;
+        qWarning() << "加载翻译器失败：" << comp.name;
       }
     }
   }

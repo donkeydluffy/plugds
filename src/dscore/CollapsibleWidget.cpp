@@ -11,7 +11,7 @@ CollapsibleWidget::CollapsibleWidget(const QString& title, QWidget* parent) : QW
   main_layout_->setContentsMargins(0, 0, 0, 0);
   main_layout_->setSpacing(0);
 
-  // Header / Toggle Button
+  // 标题栏 / 切换按钮
   toggle_button_ = new QToolButton(this);
   toggle_button_->setText(title);
   toggle_button_->setCheckable(true);
@@ -63,7 +63,7 @@ void CollapsibleWidget::onToggle(bool checked) {
     content_area_->setVisible(checked);
   }
 
-  // Important: Notify parent layout (OverlayCanvas) to adjust size
+  // 重要：通知父布局（OverlayCanvas）调整大小
   updateGeometry();
   if (parentWidget() != nullptr) {
     parentWidget()->adjustSize();

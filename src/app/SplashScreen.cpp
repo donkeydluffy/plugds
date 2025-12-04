@@ -17,7 +17,7 @@ constexpr auto kVersionRect = QRectF(45, 123, 210, 32);
 sss::SplashScreen::SplashScreen() : QSplashScreen(QPixmap(), Qt::WindowStaysOnTopHint) {
   auto pixmap = QPixmap(kSplashScreenFilename);
   if (pixmap.isNull()) {
-    qWarning("Failed to load splash screen image: %s", qUtf8Printable(kSplashScreenFilename));
+    qWarning("加载启动画面图像失败：%s", qUtf8Printable(kSplashScreenFilename));
   }
 
   // 处理空像素图以避免缩放错误

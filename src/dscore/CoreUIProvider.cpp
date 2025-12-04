@@ -97,8 +97,8 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
   // 查找应用程序菜单栏（由 MenuAndToolbarManager 创建）
   auto* app_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
 
-  // Settings Menu
-  // Note: passing app_menu_bar as parent ensures it is attached to the menu bar, not creating a wrapper.
+  // 设置菜单
+  // 注意：传递 app_menu_bar 作为父对象确保它附加到菜单栏，而不是创建包装器。
   auto* settings_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kSettings,
                                                                sss::dscore::ContainerType::kMenu, app_menu_bar, 100);
 
@@ -107,7 +107,7 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
     settings_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupTheme, 200);
   }
 
-  // Language Submenu
+  // 语言子菜单
   auto* lang_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kLanguage,
                                                            sss::dscore::ContainerType::kMenu, settings_menu, 100);
   if (lang_menu != nullptr) {
@@ -116,7 +116,7 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
     lang_menu->AppendCommand(sss::dscore::constants::commands::kLangChinese, "Ds.Group.Default");
   }
 
-  // Theme Submenu
+  // 主题子菜单
   auto* theme_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kTheme,
                                                             sss::dscore::ContainerType::kMenu, settings_menu, 200);
   if (theme_menu != nullptr) {
@@ -125,7 +125,7 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
     theme_menu->AppendCommand(sss::dscore::constants::commands::kThemeLight, "Ds.Group.Default");
   }
 
-  // Help Menu
+  // 帮助菜单
   auto* help_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kHelp,
                                                            sss::dscore::ContainerType::kMenu, app_menu_bar, 900);
   if (help_menu != nullptr) {

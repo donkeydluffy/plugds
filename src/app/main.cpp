@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
   spdlog::set_level(spdlog::level::debug);
   spdlog::flush_on(spdlog::level::info);
 
-  SPDLOG_INFO("Application starting...");
+  SPDLOG_INFO("应用程序正在启动...");
 
   qApp->setApplicationName("DefinSight");
   qApp->setOrganizationName("3d-scantech");
@@ -68,13 +68,13 @@ int main(int argc, char** argv) {
 
   sss::SplashScreen* splash_screen = sss::SplashScreen::GetInstance();
 
-  SPDLOG_INFO("Created splash screen.");
+  SPDLOG_INFO("已创建启动画面。");
 
   splash_screen->show();
 
   auto* component_manager = sss::extsystem::IComponentManager::GetInstance();
 
-  SPDLOG_INFO("Component manager instance obtained.");
+  SPDLOG_INFO("已获取组件管理器实例。");
 
   component_manager->AddObject(component_loader);
 
@@ -82,14 +82,14 @@ int main(int argc, char** argv) {
 
   QStringList component_locations = QStringList() << "APPDIR" << "DS_COMPONENT_DIR";
 
-  SPDLOG_INFO("Component locations: {}", component_locations.join(", ").toStdString());
+  SPDLOG_INFO("组件位置: {}", component_locations.join(", ").toStdString());
 
   for (const auto& dir_name : component_locations) {
     if (QProcessEnvironment::systemEnvironment().contains(dir_name)) {
       auto dir_path = QProcessEnvironment::systemEnvironment().value(dir_name);
       auto components_path = dir_path + "/components";
 
-      SPDLOG_INFO("Found component path via {}: {}", dir_name.toStdString(), components_path.toStdString());
+      SPDLOG_INFO("通过 {} 找到组件路径: {}", dir_name.toStdString(), components_path.toStdString());
 
       component_loader->AddComponents(components_path);
     }
@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
   if (application_dir.exists("components")) {
     auto components_path = application_dir.absoluteFilePath("components");
 
-    SPDLOG_INFO("Found local component path: {}", components_path.toStdString());
+    SPDLOG_INFO("找到本地组件路径: {}", components_path.toStdString());
 
     component_loader->AddComponents(components_path);
   }
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  SPDLOG_INFO("Starting to load components...");
+  SPDLOG_INFO("开始加载组件...");
 
   // 生命周期管理：
   // 1. 阶段1 (核心初始化): CoreComponent (依赖根节点) 首先初始化，设置管理器。
@@ -141,55 +141,55 @@ int main(int argc, char** argv) {
     auto component_id = (component->Name() + "." + component->Vendor()).toLower();
     bool should_load = !disabled_components.contains(component_id);
 
-    SPDLOG_INFO("Component {}: CanBeDisabled={}, ShouldLoad={}", component_id.toStdString(),
+    SPDLOG_INFO("组件 {}: 可被禁用={}, 应该加载={}", component_id.toStdString(),
                 component->CanBeDisabled() ? "true" : "false", should_load ? "true" : "false");
 
     return should_load;
   });
 
   auto components = component_loader->Components();
-  SPDLOG_INFO("Total components loaded: {}", components.size());
+  SPDLOG_INFO("总共加载的组件数: {}", components.size());
 
-  SPDLOG_INFO("Component loading completed.");
+  SPDLOG_INFO("组件加载完成。");
 
   int exit_code;
   auto* main_window = (sss::extsystem::GetTObject<QMainWindow>());
 
   if (main_window != nullptr) {
-    SPDLOG_INFO("Found main window: {}", (void*)main_window);
+    SPDLOG_INFO("找到主窗口: {}", (void*)main_window);
 
 #if defined(Q_OS_WINDOWS)
-    SPDLOG_INFO("Setting window icon (Windows)");
+    SPDLOG_INFO("设置窗口图标 (Windows)");
     qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
 #else
-    SPDLOG_INFO("Setting window icon (Other)");
+    SPDLOG_INFO("设置窗口图标 (其他)");
     qApp->setWindowIcon(QIcon(":/app/images/appicon/colour/appicon-512x512@2x.png"));
 #endif
 
-    SPDLOG_INFO("Starting event loop...");
+    SPDLOG_INFO("启动事件循环...");
 
     QTimer::singleShot(kSplashscreenTimeout, [=]() {
-      SPDLOG_INFO("Closing splash screen...");
+      SPDLOG_INFO("关闭启动画面...");
       splash_screen->deleteLater();
     });
 
     exit_code = QApplication::exec();
 
-    SPDLOG_INFO("Event loop exited with code: {}", exit_code);
+    SPDLOG_INFO("事件循环退出，代码: {}", exit_code);
   } else {
-    SPDLOG_ERROR("ERROR: Main window not found! Application will exit.");
+    SPDLOG_ERROR("错误：找不到主窗口！应用程序将退出。");
     exit_code = 1;
   }
 
   component_loader->UnloadComponents();
 
-  SPDLOG_INFO("Unloading components...");
+  SPDLOG_INFO("卸载组件...");
 
   delete component_loader;
-  SPDLOG_INFO("Component loader deleted.");
+  SPDLOG_INFO("组件加载器已删除。");
 
   delete application_instance;
-  SPDLOG_INFO("Application instance deleted.");
+  SPDLOG_INFO("应用程序实例已删除。");
 
   return exit_code;
 }

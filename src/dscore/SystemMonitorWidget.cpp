@@ -22,15 +22,15 @@ SystemMonitorWidget::SystemMonitorWidget(QWidget* parent) : QWidget(parent) {
   cpu_label_ = new QLabel("CPU: --.--%", this);
   mem_label_ = new QLabel("MEM: --.--%", this);
 
-  // Set fixed width to prevent jitter when values change
+  // 设置固定宽度以防止数值变化时抖动
 
-  // Adjust width as needed for font size
+  // 根据字体大小调整宽度
 
   cpu_label_->setMinimumWidth(70);
 
   mem_label_->setMinimumWidth(70);
 
-  // Simple style without padding to avoid clipping
+  // 简单样式，无边距以避免裁剪
 
   QString style = "QLabel { color: #888; font-size: 11px; }";
 
@@ -42,16 +42,16 @@ SystemMonitorWidget::SystemMonitorWidget(QWidget* parent) : QWidget(parent) {
 
   layout->addWidget(mem_label_, 0, Qt::AlignVCenter);
 
-  // Ensure the widget is tall enough to prop up the status bar and contain the text
+  // 确保控件足够高以支撑状态栏并包含文本
 
   setMinimumHeight(24);
 
-  // Seed the previous CPU values immediately so the next update has a diff to work with.
+  // 立即初始化之前的CPU值，以便下次更新时有差值可以计算
   updateCpuUsage();
 
   update_timer_ = new QTimer(this);
   connect(update_timer_, &QTimer::timeout, this, &SystemMonitorWidget::updateStats);
-  update_timer_->start(2000);  // Update every 2 seconds
+  update_timer_->start(2000);  // 每2秒更新一次
 }
 
 SystemMonitorWidget::~SystemMonitorWidget() = default;
@@ -71,7 +71,7 @@ void SystemMonitorWidget::updateCpuUsage() {
     QTextStream in(&file);
     QString line = in.readLine();  // cpu ...
     if (line.startsWith("cpu ")) {
-      // cpu  user nice system idle iowait irq softirq steal guest guest_nice
+      // CPU  用户态 优先级 系统态 空闲 等待IO 中断 软中断 虚拟化 虚拟化 nice
       QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
       if (parts.size() >= 5) {
         uint64_t user = parts[1].toULongLong();
@@ -79,7 +79,7 @@ void SystemMonitorWidget::updateCpuUsage() {
         uint64_t system = parts[3].toULongLong();
         uint64_t idle = parts[4].toULongLong();
 
-        // Generally total is sum of all fields, but user+nice+system+idle is the main chunk
+        // 通常总计是所有字段的总和，但用户态+优先级+系统态+空闲是主要部分
         uint64_t total = user + nice + system + idle;
 
         if (parts.size() > 5) total += parts[5].toULongLong();  // iowait
@@ -89,8 +89,8 @@ void SystemMonitorWidget::updateCpuUsage() {
         uint64_t total_diff = total - prev_total_time_;
         uint64_t idle_diff = idle - prev_idle_time_;
 
-        // Only update if we have a valid previous state (diff > 0) and it's not the very first run (where prev was 0)
-        // If prev_total_time_ was 0, it means this is the first run, so we just store the values.
+        // 只有在有有效的前一状态（差值 > 0）且不是首次运行时才更新（此时 prev 为 0）
+        // 如果 prev_total_time_ 为 0，说明是首次运行，我们只需存储这些值
         if (prev_total_time_ > 0 && total_diff > 0) {
           cpu_percent = (1.0 - static_cast<double>(idle_diff) / total_diff) * 100.0;
           valid = true;
@@ -114,7 +114,7 @@ void SystemMonitorWidget::updateCpuUsage() {
     ul_user.HighPart = user_time.dwHighDateTime;
 
     uint64_t current_idle = ul_idle.QuadPart;
-    // KernelTime includes IdleTime.
+    // 内核时间包含空闲时间
     uint64_t current_total = ul_kernel.QuadPart + ul_user.QuadPart;
 
     uint64_t total_diff = current_total - prev_total_time_;
@@ -131,9 +131,9 @@ void SystemMonitorWidget::updateCpuUsage() {
 #endif
 
   if (valid) {
-    cpu_label_->setText(QString("CPU: %1%").arg(cpu_percent, 5, 'f', 1));  // Fixed width format
+    cpu_label_->setText(QString("CPU: %1%").arg(cpu_percent, 5, 'f', 1));  // 固定宽度格式
   }
-  // If not valid (first run), leave as default "--.--%" or previous value
+  // 如果无效（首次运行），保持默认的 "--.--%" 或之前的值
 }
 
 void SystemMonitorWidget::updateMemoryUsage() {

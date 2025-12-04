@@ -41,7 +41,7 @@ Ws2Page::~Ws2Page() {
 }
 
 QString Ws2Page::Id() const { return "ws2.mode"; }
-QString Ws2Page::Title() const { return tr("Workspace 2"); }
+QString Ws2Page::Title() const { return tr("工作区 2"); }
 QIcon Ws2Page::Icon() const {
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if (theme_service != nullptr) {
@@ -56,12 +56,12 @@ void Ws2Page::Activate() {
   SPDLOG_INFO("Ws2Page::Activate called.");
   auto* workbench = sss::extsystem::GetTObject<sss::dscore::IWorkbench>();
   if (workbench == nullptr) {
-    SPDLOG_ERROR("Global IWorkbench not found!");
+    SPDLOG_ERROR("找不到全局 IWorkbench！");
     return;
   }
 
   // 1. 左侧边栏
-  workbench->AddSidePanel("ws2.sidebar.tree", tree_view_, tr("Project Explorer"), QIcon{});
+  workbench->AddSidePanel("ws2.sidebar.tree", tree_view_, tr("项目浏览器"), QIcon{});
 
   // 2. 背景
   workbench->SetBackgroundWidget(bg_label_);
@@ -73,7 +73,7 @@ void Ws2Page::Activate() {
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomRight, func_bar_, 0, mode_ctx);
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopCenter, coords_label_, 0, mode_ctx);
 
-  QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(tr("Welcome to Workspace 2"), 3000); });
+  QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(tr("欢迎使用工作区 2"), 3000); });
 
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
   if ((theme_service != nullptr) && (theme_service->Theme() != nullptr)) {
@@ -93,26 +93,26 @@ void Ws2Page::setupDefaultUi() {
   tree_view_->setModel(model_);
 
   // 2. 背景
-  bg_label_ = new QLabel(tr("Workspace 2 Area (Background)"));
+  bg_label_ = new QLabel(tr("工作区 2 区域（背景）"));
   bg_label_->setObjectName("ws2_bg_label");
   bg_label_->setAlignment(Qt::AlignCenter);
 
   // 3. 设备面板
-  auto* collapsable = new sss::dscore::CollapsibleWidget(tr("System Status"));
+  auto* collapsable = new sss::dscore::CollapsibleWidget(tr("系统状态"));
   auto* content_widget = new QWidget();
   auto* info_layout = new QVBoxLayout(content_widget);
   info_layout->setContentsMargins(4, 4, 4, 4);
-  info_label_ = new QLabel(tr("Scanner B: Idle"));
+  info_label_ = new QLabel(tr("扫描仪 B：空闲"));
   info_layout->addWidget(info_label_);
-  info_layout->addWidget(new QLabel(tr("Memory: 45% | CPU: 12%")));
+  info_layout->addWidget(new QLabel(tr("内存：45% | CPU：12%")));
   collapsable->SetContentWidget(content_widget);
   device_panel_ = collapsable;
 
   // 4. 功能栏
   func_bar_ = new QWidget();
   auto* func_layout = new QHBoxLayout(func_bar_);
-  enable_button_ = new QPushButton(tr("Start Process"));
-  disable_button_ = new QPushButton(tr("Stop Process"));
+  enable_button_ = new QPushButton(tr("开始进程"));
+  disable_button_ = new QPushButton(tr("停止进程"));
   func_layout->addWidget(enable_button_);
   func_layout->addWidget(disable_button_);
 
@@ -154,9 +154,9 @@ void Ws2Page::onDisableSubContext() const {
 void Ws2Page::setupModel() {
   model_ = new QStandardItemModel(this);
   QStandardItem* root_node = model_->invisibleRootItem();
-  root_node->appendRow(new QStandardItem(tr("Inputs")));
-  root_node->appendRow(new QStandardItem(tr("Outputs")));
-  root_node->appendRow(new QStandardItem(tr("Logs")));
+  root_node->appendRow(new QStandardItem(tr("输入")));
+  root_node->appendRow(new QStandardItem(tr("输出")));
+  root_node->appendRow(new QStandardItem(tr("日志")));
 }
 
 void Ws2Page::retranslateUi() {

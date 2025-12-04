@@ -54,7 +54,7 @@ void WorkbenchLayout::setupUi() {
   main_splitter_->addWidget(left_tab_widget_);
   main_splitter_->addWidget(overlay_canvas_);
 
-  // Default Ratio and initial state
+  // 默认比例和初始状态
   main_splitter_->setCollapsible(0, true);
   main_splitter_->setStretchFactor(0, 0);  // 初始时给left_tab_widget_分配0拉伸因子
   main_splitter_->setStretchFactor(1, 1);  // 给overlay_canvas_分配1拉伸因子（填充空间）
@@ -104,12 +104,12 @@ void WorkbenchLayout::ShowNotification(const QString& message, int duration_ms) 
 }
 
 void WorkbenchLayout::Clear() {
-  // Clear Left Sidebar
+  // 清除左侧边栏
   if (left_tab_widget_ != nullptr) {
     left_tab_widget_->clear();
   }
 
-  // Clear Overlay Canvas
+  // 清除覆盖画布
   if (overlay_canvas_ != nullptr) {
     overlay_canvas_->Clear();
   }

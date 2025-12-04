@@ -28,7 +28,7 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
       workbench_layout_(new sss::dscore::WorkbenchLayout(this)) {
   ui_->setupUi(this);
 
-  // Set Global Workbench as Central Widget in Splitter
+  // 设置全局工作台为分割器中的中央控件
   ui_->splitter->addWidget(workbench_layout_);
   ui_->splitter->setStretchFactor(0, 1);  // 工作台占用全部空间
 
@@ -38,12 +38,12 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
 
   setWindowTitle(QString(tr("Ds")));
 
-  // Initialize ModeManager and register services
+  // 初始化 ModeManager 并注册服务
   if (mode_manager_ != nullptr) {
     mode_manager_->SetGlobalWorkbench(workbench_layout_);
-    sss::extsystem::AddObject(mode_manager_);  // Register IModeManager service
+    sss::extsystem::AddObject(mode_manager_);  // 注册 IModeManager 服务
 
-    // Register Global Workbench service
+    // 注册全局工作台服务
     sss::extsystem::AddObject(workbench_layout_);
   }
 }

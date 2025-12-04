@@ -24,7 +24,7 @@ void Ws2Component::InitialiseEvent() {
 
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if (context_manager == nullptr) {
-    SPDLOG_ERROR("Failed to get IContextManager.");
+    SPDLOG_ERROR("获取 IContextManager 失败。");
     return;
   }
 
@@ -40,7 +40,7 @@ void Ws2Component::InitialiseEvent() {
   if (mode_manager != nullptr) {
     mode_manager->AddMode(ws2_mode_);
   } else {
-    SPDLOG_ERROR("Failed to get IModeManager.");
+    SPDLOG_ERROR("获取 IModeManager 失败。");
   }
 
   // 3. 语言和主题服务集成
@@ -48,7 +48,7 @@ void Ws2Component::InitialiseEvent() {
   if (lang_service != nullptr) {
     lang_service->RegisterTranslator("ws2", ":/ws2/i18n");
   } else {
-    SPDLOG_WARN("ILanguageService not available.");
+    SPDLOG_WARN("ILanguageService 不可用。");
   }
 
   // 4. 创建并注册 UI 提供者

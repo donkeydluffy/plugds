@@ -55,7 +55,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 #endif
   // SPDLOG_INFO(QString("Searching folder for components %1").arg(component_folder).toStdString());
 
-  SPDLOG_INFO("Searching folder {} for components", component_folder.toStdString());
+  SPDLOG_INFO("正在搜索文件夹 {} 中的组件", component_folder.toStdString());
 
   QDirIterator dir(component_folder);
 
@@ -66,19 +66,19 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     auto component_filename = dir.fileInfo().absoluteFilePath();
 
-    SPDLOG_INFO("Found file: {} (isDir: {})", component_filename.toStdString(),
-                dir.fileInfo().isDir() ? "true" : "false");
+    SPDLOG_INFO("找到文件：{}（是否为目录：{}）", component_filename.toStdString(),
+                dir.fileInfo().isDir() ? "是" : "否");
 
     if (dir.fileInfo().isDir()) {
-      SPDLOG_INFO("Skipping directory: {}", component_filename.toStdString());
+      SPDLOG_INFO("跳过目录：{}", component_filename.toStdString());
       continue;
     }
 
     bool is_lib = QLibrary::isLibrary(component_filename);
-    SPDLOG_INFO("File {} isLibrary: {}", component_filename.toStdString(), is_lib ? "true" : "false");
+    SPDLOG_INFO("文件 {} 是否为库：{}", component_filename.toStdString(), is_lib ? "是" : "否");
 
     if (!is_lib) {
-      SPDLOG_INFO("Skipping non-library file: {}", component_filename.toStdString());
+      SPDLOG_INFO("跳过非库文件：{}", component_filename.toStdString());
       continue;
     }
 
@@ -164,8 +164,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     // 仍然记录关于不匹配的警告
     if (debug_build != application_debug_build) {
-      SPDLOG_WARN("Component {} has a debug/release mismatch with the application. This may cause instability.",
-                  component_filename.toStdString());
+      SPDLOG_WARN("组件 {} 与应用程序的调试/发布模式不匹配。这可能导致不稳定。", component_filename.toStdString());
     }
 
     // 检查 "Name" 和 "name"，因为大小写敏感可能是个问题
@@ -280,8 +279,7 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
   // 清除现有的 resolved_load_list 以确保依赖项解析重新开始
   resolved_load_list.clear();
 
-  QList<sss::extsystem::Component*>
-      processed_list_global;  // 使用全局处理列表进行跨所有调用的循环检测
+  QList<sss::extsystem::Component*> processed_list_global;  // 使用全局处理列表进行跨所有调用的循环检测
 
   for (auto* current : component_load_list) {
     if (!resolved_load_list.contains(current) && !processed_list_global.contains(current)) {
