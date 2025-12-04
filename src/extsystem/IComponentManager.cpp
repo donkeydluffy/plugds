@@ -8,7 +8,12 @@ auto sss::extsystem::IComponentManager::GetInstance() -> sss::extsystem::ICompon
   return &component_manager;
 }
 
-auto sss::extsystem::IComponentManager::AddObject(QObject* object) -> void { object_list_.append(object); }
+auto sss::extsystem::IComponentManager::AddObject(QObject* object) -> void {
+  if (object == nullptr) {
+    return;
+  }
+  object_list_.append(object);
+}
 
 auto sss::extsystem::IComponentManager::RemoveObject(QObject* object) -> void { object_list_.removeAll(object); }
 

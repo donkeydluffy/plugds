@@ -6,6 +6,8 @@ project(
   LANGUAGES CXX
   VERSION 0.1.0)
 
+set(CMAKE_AUTOMOC ON)
+
 # find_package
 set(PACKAGES_VAR "TESTS_FIND_PACKAGE_NAMES")
 if(NOT DEFINED ${PACKAGES_VAR})
@@ -242,7 +244,8 @@ if(IS_INTERFACE_LIBRARY)
 else()
   target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                                     $<INSTALL_INTERFACE:include>)
-  target_include_directories(${PROJECT_NAME} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+  target_include_directories(${PROJECT_NAME} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+                                                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
   target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 endif()
 

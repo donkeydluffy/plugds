@@ -8,22 +8,6 @@
 
 #include "test_classes.h"
 
-// 测试夹具，确保 Qt 对象在测试中可以使用 QCoreApplication
-struct QCoreApplicationFixture {
-  QCoreApplication* app;  // NOLINT
-  QCoreApplicationFixture() : app(nullptr) {
-    if (QCoreApplication::instance() == nullptr) {
-      static int argc = 0;
-      app = new QCoreApplication(argc, nullptr);
-    }
-  }
-  ~QCoreApplicationFixture() { delete app; }
-};
-
-namespace {
-QCoreApplicationFixture app_fixture;
-}
-
 TEST_SUITE("IComponentManager") {
   TEST_CASE("GetInstance returns same instance (Singleton)") {
     sss::extsystem::IComponentManager* instance1 = sss::extsystem::IComponentManager::GetInstance();
@@ -37,7 +21,7 @@ TEST_SUITE("IComponentManager") {
     QList<QObject*> current_objects = manager->AllObjects();
     for (QObject* obj : current_objects) {
       manager->RemoveObject(obj);
-      delete obj;  // 清理管理的 QObject
+      // delete obj; // Unsafe
     }
     CHECK(manager->AllObjects().isEmpty());
 
@@ -56,7 +40,11 @@ TEST_SUITE("IComponentManager") {
 
     // 测试添加 nullptr（不应崩溃或添加）
     manager->AddObject(nullptr);
-    CHECK(manager->AllObjects().size() == 3);  // Still 3, nullptr should be ignored or handled by Qt's QList
+    CHECK(manager->AllObjects().size() == 3);  // Should stay 3 as nullptr is ignored
+
+    manager->RemoveObject(obj1);
+    manager->RemoveObject(obj2);
+    manager->RemoveObject(obj3);
 
     delete obj1;
     delete obj2;
@@ -69,7 +57,9 @@ TEST_SUITE("IComponentManager") {
     QList<QObject*> current_objects = manager->AllObjects();
     for (QObject* obj : current_objects) {
       manager->RemoveObject(obj);
-      delete obj;
+      // Do not delete obj here as we might not own it or it might be dangling if previous test failed to cleanup properly.
+      // But assuming sequential tests and proper cleanup in previous test, this list should be empty or contain only safe-to-leave objects.
+      // However, to be safe against dangling pointers from buggy previous tests, we just remove them.
     }
 
     auto* obj1 = new QObject(nullptr);
@@ -106,7 +96,6 @@ TEST_SUITE("IComponentManager") {
     QList<QObject*> current_objects = manager->AllObjects();
     for (QObject* obj : current_objects) {
       manager->RemoveObject(obj);
-      delete obj;
     }
 
     auto* base_obj = new QObject(nullptr);
@@ -126,6 +115,10 @@ TEST_SUITE("IComponentManager") {
     auto* custom_obj = sss::extsystem::GetTObject<MyCustomObject>();
     CHECK(custom_obj == nullptr);
 
+    manager->RemoveObject(base_obj);
+    manager->RemoveObject(widget_obj);
+    manager->RemoveObject(button_obj);
+
     delete base_obj;
     delete widget_obj;
     delete button_obj;
@@ -137,7 +130,6 @@ TEST_SUITE("IComponentManager") {
     QList<QObject*> current_objects = manager->AllObjects();
     for (QObject* obj : current_objects) {
       manager->RemoveObject(obj);
-      delete obj;
     }
 
     auto* base_obj1 = new QObject(nullptr);
@@ -151,9 +143,11 @@ TEST_SUITE("IComponentManager") {
     manager->AddObject(widget_obj2);
 
     QList<QObject*> all_qobjects = sss::extsystem::GetTObjects<QObject>();
-    CHECK(all_qobjects.size() == 2);  // base_obj1 and base_obj2
+    CHECK(all_qobjects.size() == 4);  // All are QObject
     CHECK(all_qobjects.contains(base_obj1));
     CHECK(all_qobjects.contains(base_obj2));
+    CHECK(all_qobjects.contains(widget_obj1));
+    CHECK(all_qobjects.contains(widget_obj2));
 
     QList<QWidget*> all_qwidgets = sss::extsystem::GetTObjects<QWidget>();
     CHECK(all_qwidgets.size() == 2);  // widget_obj1 and widget_obj2
@@ -164,6 +158,11 @@ TEST_SUITE("IComponentManager") {
 
     QList<MyCustomObject*> custom_objects = sss::extsystem::GetTObjects<MyCustomObject>();
     CHECK(custom_objects.isEmpty());
+
+    manager->RemoveObject(base_obj1);
+    manager->RemoveObject(base_obj2);
+    manager->RemoveObject(widget_obj1);
+    manager->RemoveObject(widget_obj2);
 
     delete base_obj1;
     delete base_obj2;

@@ -8,23 +8,6 @@
 #include <QPluginLoader>
 #include <QTemporaryDir>
 
-// 确保测试中 Qt 对象可用的 QCoreApplication 的测试夹具
-struct QCoreApplicationFixture {
-  QCoreApplication* app;  // NOLINT
-  QCoreApplicationFixture() : app(nullptr) {
-    if (QCoreApplication::instance() == nullptr) {
-      static int argc = 0;
-      app = new QCoreApplication(argc, nullptr);
-    }
-  }
-  ~QCoreApplicationFixture() { delete app; }
-};
-
-namespace {
-// QCoreApplication 的夹具实例
-QCoreApplicationFixture app_fixture;
-}  // namespace
-
 TEST_SUITE("ComponentLoader") {
   TEST_CASE("AddComponents with empty folder") {
     QTemporaryDir temp_dir;
@@ -65,11 +48,11 @@ TEST_SUITE("ComponentLoader") {
     // 在Windows上，典型扩展名为.dll
     QString plugin_extension;
 #if defined(Q_OS_LINUX)
-    pluginExtension = ".so";
+    plugin_extension = ".so";
 #elif defined(Q_OS_WINDOWS)
     plugin_extension = ".dll";
 #else
-    pluginExtension = ".dummy_plugin_ext";  // 其他操作系统的后备选项
+    plugin_extension = ".dummy_plugin_ext";  // 其他操作系统的后备选项
 #endif
 
     QFile file1(temp_dir.filePath("dummy_plugin" + plugin_extension));
