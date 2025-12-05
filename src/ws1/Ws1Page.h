@@ -59,6 +59,7 @@ class Ws1Page : public sss::dscore::IMode {
   QPointer<QLabel> coords_label_;
   QPointer<QLabel> info_label_;
   QPointer<QLabel> status_label_;
+  QPointer<QLabel> squeeze_widget_;
 
   QPointer<QPushButton> enable_button_;
   QPointer<QPushButton> disable_button_;

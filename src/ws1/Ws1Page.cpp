@@ -56,6 +56,7 @@ Ws1Page::~Ws1Page() {
   delete device_panel_;
   delete func_bar_;
   delete coords_label_;
+  delete squeeze_widget_;
   delete model_;
 }
 
@@ -95,6 +96,10 @@ void Ws1Page::Activate() {
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopRight, device_panel_, 0, mode_ctx, {});
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomCenter, func_bar_, 0, mode_ctx, {});
   workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomLeft, coords_label_, 0, mode_ctx, {});
+
+  // Squeeze Widget - Visible only when sub_context_id_ is active
+  QList<int> squeeze_visible_ctx = {sub_context_id_};
+  workbench->AddSqueezeWidget(sss::dscore::SqueezeSide::kTop, squeeze_widget_, 100, squeeze_visible_ctx, {});
 
   // Notification
   QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(Ws1Strings::WelcomeMessage(), 3000); });
@@ -152,6 +157,11 @@ void Ws1Page::setupDefaultUi() {
   // 5. 坐标
   coords_label_ = new QLabel("X: 100.0 Y: 200.5 Z: 15.3");
   coords_label_->setObjectName("overlay_coords_label");
+
+  // 6. Squeeze Widget
+  squeeze_widget_ = new QLabel("Top Message Banner (Squeeze Widget)");
+  squeeze_widget_->setAlignment(Qt::AlignCenter);
+  squeeze_widget_->setStyleSheet("background-color: #FFD700; color: black; padding: 5px;");
 }
 
 void Ws1Page::UpdateIcons(const QString& /*theme_id*/) {
@@ -211,6 +221,13 @@ void Ws1Page::retranslateUi() {
 
   if (enable_button_ != nullptr) enable_button_->setText(Ws1Strings::EnableContext());
   if (disable_button_ != nullptr) disable_button_->setText(Ws1Strings::DisableContext());
+
+  if (squeeze_widget_ != nullptr) {
+    auto* lbl = qobject_cast<QLabel*>(squeeze_widget_);
+    if (lbl != nullptr) {
+      lbl->setText("Top Message Banner (Squeeze Widget)");
+    }
+  }
 }
 
 }  // namespace sss::ws1
