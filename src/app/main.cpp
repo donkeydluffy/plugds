@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QTranslator>
 #include <QtGlobal>
+#include <chrono>
 
 #include "SplashScreen.h"
 #include "extsystem/Component.h"
@@ -21,14 +22,58 @@
 
 auto constexpr kSplashscreenTimeout = 3000;
 
+/**
+ * 日志级别控制：
+ *
+ * 命令行参数用法：
+ *   ./executable --log-level debug    # 显示所有调试信息（默认）
+ *   ./executable --log-level info     # 只显示重要信息
+ *   ./executable --log-level warn     # 只显示警告和错误
+ *   ./executable --log-level err    # 只显示错误信息
+ *
+ * 日志级别说明：
+ *   - trace: 最详细的跟踪信息
+ *   - debug: 调试信息（开发用）
+ *   - info: 重要的业务信息（生产环境推荐）
+ *   - warn: 警告信息，但程序可正常运行
+ *   - err: 错误信息，可能影响功能
+ *   - critical: 严重错误，程序可能无法继续
+ */
 int main(int argc, char** argv) {
+  QApplication application_instance(argc, argv);
+
+  // 解析命令行参数
+  QStringList args = QApplication::arguments();
+  spdlog::level::level_enum log_level = spdlog::level::debug;  // 默认debug级别
+
+  for (int i = 1; i < args.size(); ++i) {
+    if (args[i] == "--log-level" && i + 1 < args.size()) {
+      QString level_str = args[i + 1].toLower();
+      if (level_str == "trace") {
+        log_level = spdlog::level::trace;
+      } else if (level_str == "debug") {
+        log_level = spdlog::level::debug;
+      } else if (level_str == "info") {
+        log_level = spdlog::level::info;
+      } else if (level_str == "warn") {
+        log_level = spdlog::level::warn;
+      } else if (level_str == "err") {
+        log_level = spdlog::level::err;
+      } else if (level_str == "critical") {
+        log_level = spdlog::level::critical;
+      }
+      break;
+    }
+  }
+
   // 初始化spdlog日志系统
   auto file_logger = spdlog::basic_logger_mt("main", "ds.log", true);
   spdlog::set_default_logger(file_logger);
-  spdlog::set_level(spdlog::level::debug);
+  spdlog::set_level(log_level);
   spdlog::flush_on(spdlog::level::info);
 
-  SPDLOG_INFO("应用程序正在启动...");
+  auto app_start_time = std::chrono::high_resolution_clock::now();
+  SPDLOG_INFO("应用程序正在启动... (日志级别: {})", spdlog::level::to_string_view(log_level));
 
   qApp->setApplicationName("DefinSight");
   qApp->setOrganizationName("3d-scantech");
@@ -36,8 +81,6 @@ int main(int argc, char** argv) {
 #if (QT_VERSION_MAJOR < 6)
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
 #endif
-
-  auto* application_instance = new QApplication(argc, argv);
 
   QList<QTranslator*> translators;
 
@@ -170,7 +213,9 @@ int main(int argc, char** argv) {
 
     exit_code = QApplication::exec();
 
-    SPDLOG_INFO("事件循环退出，代码: {}", exit_code);
+    auto app_shutdown_time = std::chrono::high_resolution_clock::now();
+    auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(app_shutdown_time - app_start_time);
+    SPDLOG_INFO("事件循环退出，代码: {} (应用总运行时间: {}ms)", exit_code, total_duration.count());
   } else {
     SPDLOG_ERROR("错误：找不到主窗口！应用程序将退出。");
     exit_code = 1;
@@ -178,13 +223,10 @@ int main(int argc, char** argv) {
 
   component_loader->UnloadComponents();
 
-  SPDLOG_INFO("卸载组件...");
+  SPDLOG_DEBUG("卸载组件...");
 
   delete component_loader;
-  SPDLOG_INFO("组件加载器已删除。");
-
-  delete application_instance;
-  SPDLOG_INFO("应用程序实例已删除。");
+  SPDLOG_DEBUG("组件加载器已删除。");
 
   return exit_code;
 }

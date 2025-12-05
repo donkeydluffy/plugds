@@ -15,17 +15,12 @@ sss::dscore::Core::Core() {
   SPDLOG_INFO("[Core] Core constructor called");
 
   main_window_ = std::make_unique<sss::dscore::MainWindow>();
-  SPDLOG_INFO("[Core] Created MainWindow: {}", (void*)main_window_.get());
-
   sss::extsystem::AddObject(main_window_.get());
-  SPDLOG_INFO("[Core] Added MainWindow to object manager");
 
   statusbar_manager_ = std::make_unique<StatusbarManager>(main_window_->statusBar());
   sss::extsystem::AddObject(statusbar_manager_.get());
-  SPDLOG_INFO("[Core] Created and registered StatusbarManager");
 
   random_generator_ = std::make_unique<std::mt19937>(random_device_());
-  SPDLOG_INFO("[Core] Random generator initialized");
 }
 
 sss::dscore::Core::~Core() {
@@ -33,12 +28,10 @@ sss::dscore::Core::~Core() {
 
   if (statusbar_manager_) {
     sss::extsystem::RemoveObject(statusbar_manager_.get());
-    SPDLOG_INFO("[Core] Removed StatusbarManager from object manager");
   }
 
   if (main_window_) {
     sss::extsystem::RemoveObject(main_window_.get());
-    SPDLOG_INFO("[Core] Removed MainWindow from object manager");
   }
   // unique_ptr auto deletes main_window_
 

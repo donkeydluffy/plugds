@@ -13,6 +13,7 @@
 #include <QStyleFactory>
 #include <QWidget>
 #include <algorithm>
+#include <chrono>
 #include <utility>
 
 namespace sss::dscore {
@@ -135,18 +136,20 @@ ThemeService::ThemeService() {
 }
 
 auto ThemeService::LoadTheme(const QString& theme_id) -> void {
-  SPDLOG_INFO("\n=== ThemeService: Starting theme load for ID: {} ===", theme_id.toStdString());
+  auto start_time = std::chrono::high_resolution_clock::now();
+  SPDLOG_INFO("开始加载主题: {}", theme_id.toStdString());
   QString config_path = QString(":/dscore/resources/themes/%1.ini").arg(theme_id);
 
   if (!QFile::exists(config_path)) {
-    SPDLOG_ERROR("ThemeService: CRITICAL ERROR - INI file does not exist at path: {}", config_path.toStdString());
+    SPDLOG_WARN("主题配置文件不存在: {}，回退到默认主题", config_path.toStdString());
+    LoadTheme("default");
     return;
   }
 
   QSettings settings(config_path, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError) {
-    SPDLOG_ERROR("ThemeService: QSettings failed to parse INI file: {} Status: {}", config_path.toStdString(),
-                 settings.status());
+    SPDLOG_WARN("主题配置文件解析失败: {} (状态: {})，回退到默认主题", config_path.toStdString(), settings.status());
+    LoadTheme("default");
     return;
   }
 
@@ -181,7 +184,7 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   // 2. 解析 [Colors] 组 -> Theme::ColorRole
   settings.beginGroup("Colors");
   QStringList color_keys = settings.childKeys();
-  SPDLOG_INFO("ThemeService: Found {} custom color entries.", color_keys.size());
+  SPDLOG_DEBUG("ThemeService: Found {} custom color entries.", color_keys.size());
 
   for (const auto& key : settings.childKeys()) {
     Theme::ColorRole role = stringToThemeColorRole(key);
@@ -202,7 +205,7 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   QString generated_qss;
 
   if (qss_file.open(QFile::ReadOnly | QFile::Text)) {
-    SPDLOG_INFO("ThemeService: QSS template loaded. Size: {}", qss_file.size());
+    SPDLOG_DEBUG("ThemeService: QSS template loaded. Size: {}", qss_file.size());
     generated_qss = qss_file.readAll();
     qss_file.close();
 
@@ -245,7 +248,7 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
     }
 
     new_theme->SetStyleSheet(generated_qss);
-    SPDLOG_INFO("ThemeService: QSS generated successfully. Size: {}", generated_qss.length());
+    SPDLOG_DEBUG("ThemeService: QSS generated successfully. Size: {}", generated_qss.length());
 
   } else {
     SPDLOG_ERROR("ThemeService: Failed to open QSS template file: {}", qss_template_path.toStdString());
@@ -254,13 +257,15 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   current_theme_ = std::move(new_theme);
 
   // 应用新的主题
-  SPDLOG_INFO("\nThemeService: Applying palette to application...");
+  SPDLOG_DEBUG("ThemeService: Applying palette to application...");
   applyPaletteToQapp();
 
-  SPDLOG_INFO("ThemeService: Applying stylesheet to application...");
+  SPDLOG_DEBUG("ThemeService: Applying stylesheet to application...");
   applyStyleSheetToQapp();
 
-  SPDLOG_INFO("=== ThemeService: Theme {} applied completely ===\n", theme_id.toStdString());
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::high_resolution_clock::now() - start_time);
+  SPDLOG_INFO("主题加载完成: {} (耗时: {}ms)", theme_id.toStdString(), duration.count());
 
   emit ThemeChanged(theme_id);
 }

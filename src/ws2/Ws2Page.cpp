@@ -61,7 +61,6 @@ int Ws2Page::ContextId() const { return context_id_; }
 int Ws2Page::Priority() const { return 20; }  // 更高优先级或只是不同顺序
 
 void Ws2Page::Activate() {
-  SPDLOG_INFO("Ws2Page::Activate called.");
   auto* workbench = sss::extsystem::GetTObject<sss::dscore::IWorkbench>();
   if (workbench == nullptr) {
     SPDLOG_ERROR("找不到全局 IWorkbench！");
@@ -91,7 +90,7 @@ void Ws2Page::Activate() {
   }
 }
 
-void Ws2Page::Deactivate() { SPDLOG_INFO("Ws2Page::Deactivate called."); }
+void Ws2Page::Deactivate() { SPDLOG_DEBUG("Ws2Page::Deactivate called."); }
 
 void Ws2Page::setupDefaultUi() {
   // 1. 树视图
@@ -145,7 +144,6 @@ void Ws2Page::UpdateIcons(const QString& /*theme_id*/) {
 void Ws2Page::SetSubContextId(int id) { sub_context_id_ = id; }
 
 void Ws2Page::onEnableSubContext() const {
-  SPDLOG_INFO("Ws2Page::onEnableSubContext called");
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if ((context_manager != nullptr) && sub_context_id_ != 0) {
     context_manager->AddActiveContext(sub_context_id_);
@@ -153,7 +151,6 @@ void Ws2Page::onEnableSubContext() const {
 }
 
 void Ws2Page::onDisableSubContext() const {
-  SPDLOG_INFO("Ws2Page::onDisableSubContext called");
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if ((context_manager != nullptr) && sub_context_id_ != 0) {
     context_manager->RemoveActiveContext(sub_context_id_);

@@ -29,13 +29,12 @@ auto sss::dscore::ContextManager::SetContext(int context_identifier) -> int {
 }
 
 auto sss::dscore::ContextManager::AddActiveContext(int context_id) -> void {
-  SPDLOG_INFO("ContextManager::AddActiveContext called with context_id: {}", context_id);
   if (context_id == kGlobalContext) {
-    SPDLOG_INFO("AddActiveContext: ignoring kGlobalContext");
+    SPDLOG_DEBUG("AddActiveContext: ignoring kGlobalContext");
     return;
   }
   if (active_contexts_.contains(context_id)) {
-    SPDLOG_INFO("AddActiveContext: context {} already active", context_id);
+    SPDLOG_DEBUG("AddActiveContext: context {} already active", context_id);
     return;
   }
   int old_primary_context = Context();
@@ -46,19 +45,18 @@ auto sss::dscore::ContextManager::AddActiveContext(int context_id) -> void {
     mode_sub_contexts_storage_[current_mode_context_id_].insert(context_id);
   }
 
-  SPDLOG_INFO("AddActiveContext: added context {}, new primary: {}, active_contexts size: {}", context_id, Context(),
+  SPDLOG_DEBUG("AddActiveContext: added context {}, new primary: {}, active_contexts size: {}", context_id, Context(),
               active_contexts_.size());
   Q_EMIT ContextChanged(Context(), old_primary_context);
 }
 
 auto sss::dscore::ContextManager::RemoveActiveContext(int context_id) -> void {
-  SPDLOG_INFO("ContextManager::RemoveActiveContext called with context_id: {}", context_id);
   if (context_id == kGlobalContext) {
-    SPDLOG_INFO("RemoveActiveContext: ignoring kGlobalContext");
+    SPDLOG_DEBUG("RemoveActiveContext: ignoring kGlobalContext");
     return;
   }
   if (!active_contexts_.contains(context_id)) {
-    SPDLOG_INFO("RemoveActiveContext: context {} not active", context_id);
+    SPDLOG_DEBUG("RemoveActiveContext: context {} not active", context_id);
     return;
   }
   int old_primary_context = Context();
@@ -69,7 +67,7 @@ auto sss::dscore::ContextManager::RemoveActiveContext(int context_id) -> void {
     mode_sub_contexts_storage_[current_mode_context_id_].remove(context_id);
   }
 
-  SPDLOG_INFO("RemoveActiveContext: removed context {}, new primary: {}, active_contexts size: {}", context_id,
+  SPDLOG_DEBUG("RemoveActiveContext: removed context {}, new primary: {}, active_contexts size: {}", context_id,
               Context(), active_contexts_.size());
   Q_EMIT ContextChanged(Context(), old_primary_context);
 }
@@ -110,7 +108,7 @@ auto sss::dscore::ContextManager::ActivateMode(int mode_context_id) -> void {
     }
   }
 
-  SPDLOG_INFO("ActivateMode: switched to context {}, active count: {}", mode_context_id, active_contexts_.size());
+  SPDLOG_DEBUG("ActivateMode: switched to context {}, active count: {}", mode_context_id, active_contexts_.size());
   Q_EMIT ContextChanged(Context(), old_primary_context);
 }
 

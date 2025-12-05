@@ -72,7 +72,6 @@ int Ws1Page::ContextId() const { return context_id_; }
 int Ws1Page::Priority() const { return 10; }
 
 void Ws1Page::Activate() {
-  SPDLOG_INFO("Ws1Page::Activate called.");
   auto* workbench = sss::extsystem::GetTObject<sss::dscore::IWorkbench>();
   if (workbench == nullptr) {
     SPDLOG_ERROR("Global IWorkbench not found!");
@@ -110,7 +109,7 @@ void Ws1Page::Activate() {
 }
 
 void Ws1Page::Deactivate() {
-  SPDLOG_INFO("Ws1Page::Deactivate called.");
+  SPDLOG_DEBUG("Ws1Page::Deactivate called.");
   // Workbench::Clear() 由 ModeManager 在下次激活前调用。
   // 除非我们想保存状态，否则我们不需要做太多事情。
 }
@@ -167,7 +166,6 @@ void Ws1Page::UpdateIcons(const QString& /*theme_id*/) {
 void Ws1Page::SetSubContextId(int id) { sub_context_id_ = id; }
 
 void Ws1Page::onEnableSubContext() {  // NOLINT
-  SPDLOG_INFO("Ws1Page::onEnableSubContext called");
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if ((context_manager != nullptr) && sub_context_id_ != 0) {
     context_manager->AddActiveContext(sub_context_id_);
@@ -175,7 +173,6 @@ void Ws1Page::onEnableSubContext() {  // NOLINT
 }
 
 void Ws1Page::onDisableSubContext() {  // NOLINT
-  SPDLOG_INFO("Ws1Page::onDisableSubContext called");
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if ((context_manager != nullptr) && sub_context_id_ != 0) {
     context_manager->RemoveActiveContext(sub_context_id_);

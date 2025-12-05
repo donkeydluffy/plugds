@@ -26,9 +26,9 @@ void MenuAndToolbarManager::Build() {  // NOLINT
 
   // 0. 首先注册命令
   // 这是关键的：命令必须在添加到菜单/工具栏之前进行注册。
-  SPDLOG_INFO("[MenuAndToolbarManager] Collecting Command Providers...");
+  SPDLOG_DEBUG("[MenuAndToolbarManager] Collecting Command Providers...");
   auto command_providers = sss::extsystem::GetTObjects<sss::dscore::ICommandProvider>();
-  SPDLOG_INFO("[MenuAndToolbarManager] Found {} Command Providers.", command_providers.size());
+  SPDLOG_DEBUG("[MenuAndToolbarManager] Found {} Command Providers.", command_providers.size());
   for (auto* provider : command_providers) {
     if (provider != nullptr) {
       auto* qobj = dynamic_cast<QObject*>(provider);
@@ -48,9 +48,9 @@ void MenuAndToolbarManager::Build() {  // NOLINT
   }
 
   // 2. 发现并调用菜单提供者
-  SPDLOG_INFO("[MenuAndToolbarManager] Collecting Menu Providers...");
+  SPDLOG_DEBUG("[MenuAndToolbarManager] Collecting Menu Providers...");
   auto menu_providers = sss::extsystem::GetTObjects<sss::dscore::IMenuProvider>();
-  SPDLOG_INFO("[MenuAndToolbarManager] Found {} Menu Providers.", menu_providers.size());
+  SPDLOG_DEBUG("[MenuAndToolbarManager] Found {} Menu Providers.", menu_providers.size());
   for (auto* provider : menu_providers) {
     if (provider != nullptr) {
       auto* qobj = dynamic_cast<QObject*>(provider);
@@ -61,9 +61,9 @@ void MenuAndToolbarManager::Build() {  // NOLINT
   }
 
   // 3. 发现并调用工具栏提供者
-  SPDLOG_INFO("[MenuAndToolbarManager] Collecting Toolbar Providers...");
+  SPDLOG_DEBUG("[MenuAndToolbarManager] Collecting Toolbar Providers...");
   auto toolbar_providers = sss::extsystem::GetTObjects<sss::dscore::IToolbarProvider>();
-  SPDLOG_INFO("[MenuAndToolbarManager] Found {} Toolbar Providers.", toolbar_providers.size());
+  SPDLOG_DEBUG("[MenuAndToolbarManager] Found {} Toolbar Providers.", toolbar_providers.size());
   for (auto* provider : toolbar_providers) {
     if (provider != nullptr) {
       auto* qobj = dynamic_cast<QObject*>(provider);

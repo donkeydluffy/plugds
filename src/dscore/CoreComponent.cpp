@@ -31,23 +31,19 @@ auto CoreComponent::InitialiseEvent() -> void {
 
   // 1. 首先初始化基础设施服务
   context_manager_ = std::make_unique<sss::dscore::ContextManager>();
-  SPDLOG_INFO("[CoreComponent] 已创建 ContextManager 实例：{}", (void*)context_manager_.get());
   sss::extsystem::AddObject(context_manager_.get());
 
   command_manager_ = std::make_unique<sss::dscore::CommandManager>();
-  SPDLOG_INFO("[CoreComponent] 已创建 CommandManager 实例：{}", (void*)command_manager_.get());
   sss::extsystem::AddObject(command_manager_.get());
 
   // 语言和主题服务
   language_service_ = std::make_unique<sss::dscore::LanguageService>();
-  SPDLOG_INFO("[CoreComponent] 已创建 LanguageService 实例：{}", (void*)language_service_.get());
   sss::extsystem::AddObject(language_service_.get());
 
   // 注册 dscore 翻译文件
   language_service_->RegisterTranslator("dscore", ":/dscore/i18n");
 
   theme_service_ = std::make_unique<sss::dscore::ThemeService>();
-  SPDLOG_INFO("[CoreComponent] 已创建 ThemeService 实例：{}", (void*)theme_service_.get());
   sss::extsystem::AddObject(theme_service_.get());
 
   // 加载默认主题
@@ -60,11 +56,9 @@ auto CoreComponent::InitialiseEvent() -> void {
 
   // 3. 初始化 Core（创建 MainWindow 和 PageManager，依赖于服务）
   core_ = std::make_unique<sss::dscore::Core>();
-  SPDLOG_INFO("[CoreComponent] 已创建 Core 实例：{}", (void*)core_.get());
   sss::extsystem::AddObject(core_.get());
 
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
-  SPDLOG_INFO("[CoreComponent] 已获取 MainWindow：{}", (void*)main_window);
 
   main_window->Initialise();
   SPDLOG_INFO("[CoreComponent] MainWindow 已初始化");

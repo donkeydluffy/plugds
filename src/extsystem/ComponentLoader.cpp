@@ -66,40 +66,31 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     auto component_filename = dir.fileInfo().absoluteFilePath();
 
-    SPDLOG_INFO("找到文件：{}（是否为目录：{}）", component_filename.toStdString(),
-                dir.fileInfo().isDir() ? "是" : "否");
-
     if (dir.fileInfo().isDir()) {
-      SPDLOG_INFO("跳过目录：{}", component_filename.toStdString());
       continue;
     }
 
     bool is_lib = QLibrary::isLibrary(component_filename);
-    SPDLOG_INFO("文件 {} 是否为库：{}", component_filename.toStdString(), is_lib ? "是" : "否");
-
     if (!is_lib) {
-      SPDLOG_INFO("跳过非库文件：{}", component_filename.toStdString());
       continue;
     }
 
     auto* plugin_loader = new QPluginLoader(component_filename);
 
-    SPDLOG_INFO("Processing library: {}", component_filename.toStdString());
+    SPDLOG_DEBUG("Processing library: {}", component_filename.toStdString());
 
     auto meta_data_object = plugin_loader->metaData();
 
     if (meta_data_object.isEmpty()) {
-      SPDLOG_INFO("Library {} has empty metadata", component_filename.toStdString());
+      SPDLOG_DEBUG("Library {} has empty metadata", component_filename.toStdString());
       delete plugin_loader;
       continue;
     }
 
-    SPDLOG_INFO("Library {} has metadata", component_filename.toStdString());
-
     auto debug_build = meta_data_object.value("debug");
     auto qt_version = meta_data_object.value("version");
 
-    SPDLOG_INFO("Library {} metadata keys: {}", component_filename.toStdString(),
+    SPDLOG_DEBUG("Library {} metadata keys: {}", component_filename.toStdString(),
                 QStringList(meta_data_object.keys()).join(",").toStdString());
 
     // 尝试从 "MetaData" 和直接在根目录中获取组件元数据
@@ -108,52 +99,13 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
     // 如果 MetaData 不存在，使用根元数据对象
     if (component_metadata.isNull() || component_metadata.isUndefined()) {
       component_metadata = QJsonValue(meta_data_object);
-      SPDLOG_INFO("Library {} using root metadata as component metadata", component_filename.toStdString());
     }
-
-    // 检查 component_metadata 的实际类型
-    QString metadata_type;
-    switch (component_metadata.type()) {
-      case QJsonValue::Null:
-        metadata_type = "Null";
-        break;
-      case QJsonValue::Bool:
-        metadata_type = "Bool";
-        break;
-      case QJsonValue::Double:
-        metadata_type = "Double";
-        break;
-      case QJsonValue::String:
-        metadata_type = "String";
-        break;
-      case QJsonValue::Array:
-        metadata_type = "Array";
-        break;
-      case QJsonValue::Object:
-        metadata_type = "Object";
-        break;
-      case QJsonValue::Undefined:
-        metadata_type = "Undefined";
-        break;
-      default:
-        metadata_type = "Unknown";
-        break;
-    }
-
-    SPDLOG_INFO("Library {} MetaData type: {}", component_filename.toStdString(), metadata_type.toStdString());
-    SPDLOG_INFO("Library {} has debug flag: {}", component_filename.toStdString(),
-                !debug_build.isNull() ? "true" : "false");
-    SPDLOG_INFO("Library {} has version flag: {}", component_filename.toStdString(),
-                !qt_version.isNull() ? "true" : "false");
 
     if (debug_build.isNull() || qt_version.isNull() || (component_metadata.type() != QJsonValue::Object)) {
-      SPDLOG_INFO("Library {} missing required metadata fields", component_filename.toStdString());
+      SPDLOG_DEBUG("Library {} missing required metadata fields", component_filename.toStdString());
       delete plugin_loader;
       continue;
     }
-
-    SPDLOG_INFO("Library {} debug flag: {}, application debug: {}", component_filename.toStdString(),
-                debug_build.toBool() ? "true" : "false", application_debug_build ? "true" : "false");
 
     // 出于调试目的，即使存在调试/发布不匹配也允许加载组件
     // if (debug_build != application_debug_build) {
@@ -217,16 +169,16 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     if (component_qt_version.majorVersion() != application_qt_version.majorVersion()) {
       component->load_flags_.setFlag(LoadFlag::kIncompatibleQtVersion);
-      SPDLOG_INFO("Library {} incompatible Qt version", component_filename.toStdString());
+      SPDLOG_WARN("Library {} incompatible Qt version", component_filename.toStdString());
     }
 
     if (component_search_list_.contains(component_name.toString())) {
       component->load_flags_.setFlag(LoadFlag::kNameClash);
-      SPDLOG_INFO("Library {} name clash", component_filename.toStdString());
+      SPDLOG_DEBUG("Library {} name clash", component_filename.toStdString());
     }
 
     component_search_list_[component_name.toString()] = component;
-    SPDLOG_INFO("Library {} added to component_search_list as {}", component_filename.toStdString(),
+    SPDLOG_DEBUG("Library {} added to component_search_list as {}", component_filename.toStdString(),
                 component_name.toString().toStdString());
 
     delete plugin_loader;
@@ -288,9 +240,9 @@ auto sss::extsystem::ComponentLoader::LoadComponents(
     }
   }
 
-  SPDLOG_INFO("Final component load order:");
+  SPDLOG_DEBUG("Final component load order:");
   for (auto* component : resolved_load_list) {
-    SPDLOG_INFO("- {}", component->Name().toStdString());
+    SPDLOG_DEBUG("- {}", component->Name().toStdString());
   }
 
   // 加载我们已满足依赖项的组件
