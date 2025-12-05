@@ -41,7 +41,7 @@ auto sss::dscore::ActionProxy::SetActive(QAction* action) -> void {
     setCheckable(action->isCheckable());
 
     // 2. Sync State Properties: Proxy -> Real Action
-    // The ContextManager controls the Proxy's state. The Real Action must obey.
+    // ContextManager控制代理的状态。真实动作必须服从。
     action->setEnabled(isEnabled());
     action->setVisible(isVisible());
     if (action->isCheckable() && isCheckable()) {
@@ -80,7 +80,7 @@ auto sss::dscore::ActionProxy::ConnectAction() -> void {
   });
 
   // 2. Proxy -> Real Action (State)
-  // When Proxy state changes (via SetContext), sync to Real Action
+  // 当代理状态改变时（通过SetContext），同步到真实动作
   connect(this, &QAction::changed, [this]() {
     if (action_ != nullptr) {
       if (action_->isEnabled() != isEnabled()) action_->setEnabled(isEnabled());

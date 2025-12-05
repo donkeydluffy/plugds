@@ -42,7 +42,7 @@ void Ws1UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manag
 }
 
 void Ws1UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
-  auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
+  auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kMainMenubar);
   if (main_menu_bar != nullptr) {
     // 定位在设置（100）和帮助（900）之间。设置为 500。
     auto* ws1_menu =
@@ -55,11 +55,12 @@ void Ws1UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manag
 }
 
 void Ws1UIProvider::ContributeToToolbar(sss::dscore::ICommandManager* command_manager) {
-  auto* ws1_toolbar =
-      command_manager->CreateActionContainer("Ws1Toolbar", sss::dscore::ContainerType::kToolBar, nullptr, 200);
-  if (ws1_toolbar != nullptr) {
-    ws1_toolbar->InsertGroup("Ws1.ToolbarGroup", 0);
-    ws1_toolbar->AppendCommand("ws1.sample_command", "Ws1.ToolbarGroup");
+  auto* main_toolbar = command_manager->FindContainer(sss::dscore::constants::toolbars::kMainToolbar);
+  if (main_toolbar != nullptr) {
+    // 在主工具栏中插入 Ws1 的分组，权重设为 200（Core 默认为 100）
+    const QString group_id = "Ws1.ToolbarGroup";
+    main_toolbar->InsertGroup(group_id, 200);
+    main_toolbar->AppendCommand("ws1.sample_command", group_id);
   }
 }
 

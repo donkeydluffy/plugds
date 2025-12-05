@@ -38,7 +38,7 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
   // 加载新的翻译器
   for (const auto& comp : components_) {
     auto translator = std::make_unique<QTranslator>();
-    // Format: name_lang_country.qm, e.g., ws1_zh_CN.qm or ws1_zh.qm
+    // 格式：name_lang_country.qm，例如：ws1_zh_CN.qm 或 ws1_zh.qm
     QString filename = QString("%1_%2").arg(comp.name, locale.name());
     qDebug() << "尝试加载翻译器：" << filename << "从" << comp.path;
 

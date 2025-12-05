@@ -3,8 +3,8 @@
 
 #include <QCoreApplication>
 #include <QObject>
-#include <QPushButton>  // 用于测试不同的 QObject 类型
-#include <QWidget>      // 用于测试不同的 QObject 类型
+#include <QPushButton>
+#include <QWidget>
 
 #include "test_classes.h"
 
@@ -21,7 +21,7 @@ TEST_SUITE("IComponentManager") {
     QList<QObject*> current_objects = manager->AllObjects();
     for (QObject* obj : current_objects) {
       manager->RemoveObject(obj);
-      // delete obj; // Unsafe
+      // delete obj; // 不安全
     }
     CHECK(manager->AllObjects().isEmpty());
 
@@ -40,7 +40,7 @@ TEST_SUITE("IComponentManager") {
 
     // 测试添加 nullptr（不应崩溃或添加）
     manager->AddObject(nullptr);
-    CHECK(manager->AllObjects().size() == 3);  // Should stay 3 as nullptr is ignored
+    CHECK(manager->AllObjects().size() == 3);  // 应保持3，因为nullptr被忽略
 
     manager->RemoveObject(obj1);
     manager->RemoveObject(obj2);
@@ -57,9 +57,10 @@ TEST_SUITE("IComponentManager") {
     QList<QObject*> current_objects = manager->AllObjects();
     for (QObject* obj : current_objects) {
       manager->RemoveObject(obj);
-      // Do not delete obj here as we might not own it or it might be dangling if previous test failed to cleanup properly.
-      // But assuming sequential tests and proper cleanup in previous test, this list should be empty or contain only safe-to-leave objects.
-      // However, to be safe against dangling pointers from buggy previous tests, we just remove them.
+      // 这里不要删除obj，因为我们可能不拥有它，或者如果前一个测试未能正确清理，
+      // 它可能是悬空指针。但假设是顺序测试和前一个测试的正确清理，这个列表应该是空的或
+      // 只包含可以安全留下的对象。为了防止来自错误的前一个测试的悬空指针，
+      // 先只是移除它们。
     }
 
     auto* obj1 = new QObject(nullptr);
@@ -80,7 +81,7 @@ TEST_SUITE("IComponentManager") {
     // 尝试移除一个不存在的对象
     auto* obj_non_existent = new QObject(nullptr);
     manager->RemoveObject(obj_non_existent);
-    CHECK(manager->AllObjects().size() == 2);  // 大小应保持为 2
+    CHECK(manager->AllObjects().size() == 2);  // 大小应保持为2
 
     // 移除剩余对象
     manager->RemoveObject(obj1);
@@ -106,9 +107,9 @@ TEST_SUITE("IComponentManager") {
     manager->AddObject(widget_obj);
     manager->AddObject(button_obj);
 
-    CHECK(sss::extsystem::GetTObject<QObject>() == base_obj);        // 第一个添加的 QObject
-    CHECK(sss::extsystem::GetTObject<QWidget>() == widget_obj);      // 第一个添加的 QWidget
-    CHECK(sss::extsystem::GetTObject<QPushButton>() == button_obj);  // 第一个添加的 QPushButton
+    CHECK(sss::extsystem::GetTObject<QObject>() == base_obj);        // 第一个添加的QObject
+    CHECK(sss::extsystem::GetTObject<QWidget>() == widget_obj);      // 第一个添加的QWidget
+    CHECK(sss::extsystem::GetTObject<QPushButton>() == button_obj);  // 第一个添加的QPushButton
 
     // 测试不存在的类型
 
@@ -143,14 +144,14 @@ TEST_SUITE("IComponentManager") {
     manager->AddObject(widget_obj2);
 
     QList<QObject*> all_qobjects = sss::extsystem::GetTObjects<QObject>();
-    CHECK(all_qobjects.size() == 4);  // All are QObject
+    CHECK(all_qobjects.size() == 4);  // 所有都是QObject
     CHECK(all_qobjects.contains(base_obj1));
     CHECK(all_qobjects.contains(base_obj2));
     CHECK(all_qobjects.contains(widget_obj1));
     CHECK(all_qobjects.contains(widget_obj2));
 
     QList<QWidget*> all_qwidgets = sss::extsystem::GetTObjects<QWidget>();
-    CHECK(all_qwidgets.size() == 2);  // widget_obj1 and widget_obj2
+    CHECK(all_qwidgets.size() == 2);  // widget_obj1和widget_obj2
     CHECK(all_qwidgets.contains(widget_obj1));
     CHECK(all_qwidgets.contains(widget_obj2));
 

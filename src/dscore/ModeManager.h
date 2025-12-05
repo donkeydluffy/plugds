@@ -20,7 +20,7 @@ class DS_CORE_DLLSPEC ModeManager : public IModeManager {
   explicit ModeManager(QObject* parent = nullptr);
   ~ModeManager() override;
 
-  // IModeManager interface
+  // IModeManager接口
   void AddMode(IMode* mode) override;
   void ActivateMode(const QString& id) override;
   [[nodiscard]] IMode* ActiveMode() const override;

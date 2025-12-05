@@ -77,9 +77,9 @@ void Ws2Page::Activate() {
   // 3. 覆盖层
   QList<int> mode_ctx = {context_id_};
 
-  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopLeft, device_panel_, 0, mode_ctx);
-  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomRight, func_bar_, 0, mode_ctx);
-  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopCenter, coords_label_, 0, mode_ctx);
+  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopLeft, device_panel_, 0, mode_ctx, {});
+  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomRight, func_bar_, 0, mode_ctx, {});
+  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopCenter, coords_label_, 0, mode_ctx, {});
 
   QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(Ws2Strings::WelcomeMessage(), 3000); });
 

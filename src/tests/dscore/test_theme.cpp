@@ -1,7 +1,8 @@
 #include <doctest/doctest.h>
 #include <dscore/Theme.h>
-#include <QPalette>
+
 #include <QColor>
+#include <QPalette>
 
 TEST_SUITE("Theme") {
   TEST_CASE("Initialization") {
@@ -12,27 +13,21 @@ TEST_SUITE("Theme") {
 
   TEST_CASE("Set and Get Color") {
     sss::dscore::Theme theme("test");
-    QColor testColor = Qt::red;
-    theme.SetColor(sss::dscore::Theme::kBrandColor, testColor);
-    
-    CHECK(theme.Color(sss::dscore::Theme::kBrandColor) == testColor);
-    
-    // Default or unset colors might behave specifically, but implementation shows it uses QVector<QColor> colors_.
-    // Typically initialized to default QColor() which is invalid.
-    // Implementation initializes to Qt::magenta, which is VALID.
-    // And out of bounds also returns Qt::magenta.
-    CHECK(theme.Color(sss::dscore::Theme::kCount) == QColor(Qt::magenta)); 
+    QColor test_color = Qt::red;
+    theme.SetColor(sss::dscore::Theme::kBrandColor, test_color);
+
+    CHECK(theme.Color(sss::dscore::Theme::kBrandColor) == test_color);
+
+    // 默认或未设置的颜色可能有特定的行为，但实现显示它使用 QVector<QColor> colors_。
+    CHECK(theme.Color(sss::dscore::Theme::kCount) == QColor(Qt::magenta));
   }
 
   TEST_CASE("Set and Get Palette Color") {
     sss::dscore::Theme theme("test");
-    QColor windowColor = Qt::black;
-    theme.SetPaletteColor(QPalette::Active, QPalette::Window, windowColor);
-    
-    CHECK(theme.Palette().color(QPalette::Active, QPalette::Window) == windowColor);
-    
-    // Check if other groups are unaffected unless set
-    // QPalette defaults might be system dependent, but we set one specific role/group.
+    QColor window_color = Qt::black;
+    theme.SetPaletteColor(QPalette::Active, QPalette::Window, window_color);
+
+    CHECK(theme.Palette().color(QPalette::Active, QPalette::Window) == window_color);
   }
 
   TEST_CASE("Set Style Sheet") {

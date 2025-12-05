@@ -42,7 +42,7 @@ void Ws2UIProvider::RegisterCommands(sss::dscore::ICommandManager* command_manag
 }
 
 void Ws2UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
-  auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
+  auto* main_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kMainMenubar);
   if (main_menu_bar != nullptr) {
     // 定位在 Ws1（500）和帮助（900）之间。设置为 600。
     auto* ws2_menu =
@@ -55,12 +55,12 @@ void Ws2UIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manag
 }
 
 void Ws2UIProvider::ContributeToToolbar(sss::dscore::ICommandManager* command_manager) {
-  // 为 WS2 创建单独的工具栏，还是添加到现有的？让我们创建一个新的。
-  auto* ws2_toolbar =
-      command_manager->CreateActionContainer("Ws2Toolbar", sss::dscore::ContainerType::kToolBar, nullptr, 210);
-  if (ws2_toolbar != nullptr) {
-    ws2_toolbar->InsertGroup("Ws2.ToolbarGroup", 0);
-    ws2_toolbar->AppendCommand("ws2.sample_command", "Ws2.ToolbarGroup");
+  // 添加到主工具栏，而不是创建新的
+  auto* main_toolbar = command_manager->FindContainer(sss::dscore::constants::toolbars::kMainToolbar);
+  if (main_toolbar != nullptr) {
+    const QString group_id = "Ws2.ToolbarGroup";
+    main_toolbar->InsertGroup(group_id, 300);
+    main_toolbar->AppendCommand("ws2.sample_command", group_id);
   }
 }
 

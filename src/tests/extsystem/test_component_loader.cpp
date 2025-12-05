@@ -65,7 +65,6 @@ TEST_SUITE("ComponentLoader") {
     sss::extsystem::ComponentLoader loader;
     loader.AddComponents(temp_dir.path());
 
-    // 根据 ComponentLoader 的描述，它"查找兼容的组件"
     // 不是有效 Qt 插件的文件（即没有 Q_PLUGIN_METADATA）
     // 不会被视为兼容的组件。
     // 因此，Components() 应该为空。

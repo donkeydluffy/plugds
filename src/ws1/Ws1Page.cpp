@@ -93,9 +93,9 @@ void Ws1Page::Activate() {
   // 对此模式全局（模式上下文活动时可见）
   QList<int> mode_ctx = {context_id_};
 
-  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopRight, device_panel_, 0, mode_ctx);
-  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomCenter, func_bar_, 0, mode_ctx);
-  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomLeft, coords_label_, 0, mode_ctx);
+  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kTopRight, device_panel_, 0, mode_ctx, {});
+  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomCenter, func_bar_, 0, mode_ctx, {});
+  workbench->AddOverlayWidget(sss::dscore::OverlayZone::kBottomLeft, coords_label_, 0, mode_ctx, {});
 
   // Notification
   QTimer::singleShot(500, [workbench, this]() { workbench->ShowNotification(Ws1Strings::WelcomeMessage(), 3000); });

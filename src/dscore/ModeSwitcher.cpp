@@ -112,7 +112,7 @@ void ModeSwitcher::AddModeButton(const QString& id, const QString& title, const 
   btn->setProperty("mode_id", id);
   btn->setToolTip(title);
 
-  // Use Preferred for vertical to respect sizeHint (content size)
+  // 垂直方向使用Preferred以尊重sizeHint（内容大小）
   btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
   // Limits

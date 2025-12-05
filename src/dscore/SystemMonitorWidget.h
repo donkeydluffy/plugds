@@ -22,7 +22,7 @@ class SystemMonitorWidget : public QWidget {
   QLabel* mem_label_ = nullptr;
   QTimer* update_timer_ = nullptr;
 
-  // CPU calculation state
+  // CPU计算状态
   uint64_t prev_idle_time_ = 0;
   uint64_t prev_total_time_ = 0;
 };

@@ -29,7 +29,6 @@ class DS_CORE_DLLSPEC IConfiguration {
    */
   virtual auto LoadConfiguration(QJsonObject configuration) -> bool = 0;
 
-  // 具有虚函数的类不应有公共的虚析构函数：
   virtual ~IConfiguration() = default;
 };
 }  // namespace sss::dscore

@@ -23,41 +23,41 @@ void CoreUIProvider::RegisterCommands(sss::dscore::ICommandManager* command_mana
   auto* lang_service = sss::extsystem::GetTObject<sss::dscore::ILanguageService>();
   auto* theme_service = sss::extsystem::GetTObject<sss::dscore::IThemeService>();
 
-  // --- About ---
+  // --- 关于 ---
   auto* about_action = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kAbout));
   about_action->setMenuRole(QAction::ApplicationSpecificRole);
   command_manager->RegisterAction(about_action, sss::dscore::constants::commands::kAbout, sss::dscore::kGlobalContext);
 
-  // --- Open ---
+  // --- 打开 ---
   auto* open_action = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kOpen));
   command_manager->RegisterAction(open_action, sss::dscore::constants::commands::kOpen, sss::dscore::kGlobalContext);
 
-  // --- Save ---
+  // --- 保存 ---
   auto* save_action = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kSave));
   command_manager->RegisterAction(save_action, sss::dscore::constants::commands::kSave, sss::dscore::kGlobalContext);
 
-  // --- Language: English ---
+  // --- 语言：英文 ---
   auto* act_en = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kLangEnglish));
   connect(act_en, &QAction::triggered, [lang_service]() {
     if (lang_service) lang_service->SwitchLanguage(QLocale("en_US"));
   });
   command_manager->RegisterAction(act_en, sss::dscore::constants::commands::kLangEnglish, sss::dscore::kGlobalContext);
 
-  // --- Language: Chinese ---
+  // --- 语言：中文 ---
   auto* act_zh = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kLangChinese));
   connect(act_zh, &QAction::triggered, [lang_service]() {
     if (lang_service) lang_service->SwitchLanguage(QLocale("zh_CN"));
   });
   command_manager->RegisterAction(act_zh, sss::dscore::constants::commands::kLangChinese, sss::dscore::kGlobalContext);
 
-  // --- Theme: Dark ---
+  // --- 主题：深色 ---
   auto* act_dark = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kThemeDark));
   connect(act_dark, &QAction::triggered, [theme_service]() {
     if (theme_service) theme_service->LoadTheme("dark");
   });
   command_manager->RegisterAction(act_dark, sss::dscore::constants::commands::kThemeDark, sss::dscore::kGlobalContext);
 
-  // --- Theme: Light ---
+  // --- 主题：浅色 ---
   auto* act_light = new QAction(sss::dscore::constants::CommandText(sss::dscore::constants::commands::kThemeLight));
   connect(act_light, &QAction::triggered, [theme_service]() {
     if (theme_service) theme_service->LoadTheme("light");
@@ -65,7 +65,7 @@ void CoreUIProvider::RegisterCommands(sss::dscore::ICommandManager* command_mana
   command_manager->RegisterAction(act_light, sss::dscore::constants::commands::kThemeLight,
                                   sss::dscore::kGlobalContext);
 
-  // --- Icon Updates ---
+  // --- 图标更新 ---
   auto update_icons = [command_manager, theme_service](const QString& /*theme_id*/) {
     if (!command_manager || !theme_service) return;
 
@@ -95,7 +95,7 @@ void CoreUIProvider::RegisterCommands(sss::dscore::ICommandManager* command_mana
 
 void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_manager) {
   // 查找应用程序菜单栏（由 MenuAndToolbarManager 创建）
-  auto* app_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
+  auto* app_menu_bar = command_manager->FindContainer(sss::dscore::constants::menubars::kMainMenubar);
 
   // 设置菜单
   // 注意：传递 app_menu_bar 作为父对象确保它附加到菜单栏，而不是创建包装器。
@@ -103,8 +103,8 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
                                                                sss::dscore::ContainerType::kMenu, app_menu_bar, 100);
 
   if (settings_menu != nullptr) {
-    settings_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupLanguage, 100);
-    settings_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupTheme, 200);
+    settings_menu->InsertGroup(sss::dscore::constants::menugroups::kSettingsCoreGroup,
+                               100);  // 暂时没用，用来指定直接放入Settings的Command的group
   }
 
   // 语言子菜单
@@ -129,8 +129,9 @@ void CoreUIProvider::ContributeToMenu(sss::dscore::ICommandManager* command_mana
   auto* help_menu = command_manager->CreateActionContainer(sss::dscore::constants::menus::kHelp,
                                                            sss::dscore::ContainerType::kMenu, app_menu_bar, 900);
   if (help_menu != nullptr) {
-    help_menu->InsertGroup(sss::dscore::constants::menugroups::kGroupHelp, 100);
-    help_menu->AppendCommand(sss::dscore::constants::commands::kAbout, sss::dscore::constants::menugroups::kGroupHelp);
+    help_menu->InsertGroup(sss::dscore::constants::menugroups::kHelpCoreGroup, 100);
+    help_menu->AppendCommand(sss::dscore::constants::commands::kAbout,
+                             sss::dscore::constants::menugroups::kHelpCoreGroup);
   }
 }
 
@@ -139,11 +140,11 @@ void CoreUIProvider::ContributeToToolbar(sss::dscore::ICommandManager* command_m
                                                               sss::dscore::ContainerType::kToolBar, nullptr, 100);
 
   if (main_toolbar != nullptr) {
-    main_toolbar->InsertGroup(sss::dscore::constants::menugroups::kGroupToolbarMain, 100);
+    main_toolbar->InsertGroup(sss::dscore::constants::menugroups::kMainToolbarCore, 100);
     main_toolbar->AppendCommand(sss::dscore::constants::commands::kOpen,
-                                sss::dscore::constants::menugroups::kGroupToolbarMain);
+                                sss::dscore::constants::menugroups::kMainToolbarCore);
     main_toolbar->AppendCommand(sss::dscore::constants::commands::kSave,
-                                sss::dscore::constants::menugroups::kGroupToolbarMain);
+                                sss::dscore::constants::menugroups::kMainToolbarCore);
   }
 }
 

@@ -88,6 +88,14 @@
         <translation>主题</translation>
     </message>
     <message>
+      <source>Dark Theme</source>
+      <translation>暗黑主题</translation>
+    </message>
+    <message>
+      <source>Light Theme</source>
+      <translation>明亮主题</translation>
+    </message>
+    <message>
         <source>CPU: --.--%</source>
         <translation>CPU: --.--%</translation>
     </message>

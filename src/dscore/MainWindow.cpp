@@ -36,7 +36,7 @@ sss::dscore::MainWindow::MainWindow(QWidget* parent)
 
   showMaximized();
 
-  setWindowTitle(QString(tr("Ds")));
+  setWindowTitle(QString("Ds"));
 
   // 初始化 ModeManager 并注册服务
   if (mode_manager_ != nullptr) {
@@ -74,8 +74,6 @@ void sss::dscore::MainWindow::changeEvent(QEvent* event) {
     if (command_manager != nullptr) {
       command_manager->RetranslateUi();
     }
-    // 同时重新翻译 MainWindow 通用UI（如果有的话，如 setWindowTitle 等）
-    setWindowTitle(QString(tr("Ds")));
   }
   QMainWindow::changeEvent(event);
 }

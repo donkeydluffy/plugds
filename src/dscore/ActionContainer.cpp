@@ -156,7 +156,7 @@ auto sss::dscore::ActionContainer::findGroup(const QString& group_identifier)
 }
 
 auto sss::dscore::ActionContainer::InsertGroup(QString group_identifier, int order) -> void {
-  // Priority-based insertion
+  // 基于优先级的插入
   auto it = group_list_.begin();
   while (it != group_list_.end()) {
     if (it->order_ > order) {

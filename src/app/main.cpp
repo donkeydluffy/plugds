@@ -158,13 +158,8 @@ int main(int argc, char** argv) {
   if (main_window != nullptr) {
     SPDLOG_INFO("找到主窗口: {}", (void*)main_window);
 
-#if defined(Q_OS_WINDOWS)
     SPDLOG_INFO("设置窗口图标 (Windows)");
     qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
-#else
-    SPDLOG_INFO("设置窗口图标 (其他)");
-    qApp->setWindowIcon(QIcon(":/app/images/appicon/colour/appicon-512x512@2x.png"));
-#endif
 
     SPDLOG_INFO("启动事件循环...");
 

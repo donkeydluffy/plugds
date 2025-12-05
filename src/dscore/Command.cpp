@@ -42,7 +42,7 @@ auto Command::RegisterAction(QAction* action, const sss::dscore::ContextList& vi
                              const sss::dscore::ContextList& enabled_contexts) -> void {
   action->setParent(this);
 
-  // Note: ActionProxy's enabled/visible state is now managed by Command::SetContext.
+  // 注意：ActionProxy的启用/可见状态现在由Command::SetContext管理。
   // 原始 action 的状态可能被 ActionProxy 用来决定其活动状态。
   connect(action, &QAction::changed, [action, this] { action_->setEnabled(action->isEnabled()); });
 

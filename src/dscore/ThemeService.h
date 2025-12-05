@@ -17,7 +17,7 @@ class DS_CORE_DLLSPEC ThemeService : public sss::dscore::IThemeService {
   ThemeService();
   ~ThemeService() override = default;
 
-  // IThemeService implementation
+  // IThemeService接口实现
   auto LoadTheme(const QString& theme_id) -> void override;
   [[nodiscard]] auto Theme() const -> const sss::dscore::Theme* override;
   [[nodiscard]] auto GetColor(Theme::ColorRole role) const -> QColor override;

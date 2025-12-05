@@ -1,16 +1,18 @@
 #include <doctest/doctest.h>
-#include "CommandManager.h"
-#include "ContextManager.h"
-#include <dscore/ICore.h>
-#include <dscore/ICommand.h>
 #include <dscore/IActionContainer.h>
+#include <dscore/ICommand.h>
+#include <dscore/ICore.h>
 #include <extsystem/IComponentManager.h>
+
 #include <QAction>
-#include <QMainWindow>
 #include <QApplication>
+#include <QMainWindow>
 #include <QTimer>
 
-// Mock Core for MainWindow
+#include "CommandManager.h"
+#include "ContextManager.h"
+
+// MainWindow的模拟Core
 class MockCore : public sss::dscore::ICore {
   Q_OBJECT
   Q_INTERFACES(sss::dscore::ICore)
@@ -20,53 +22,53 @@ class MockCore : public sss::dscore::ICore {
   ~MockCore() override { delete main_window_; }
 
   auto GetMainWindow() -> QMainWindow* override { return main_window_; }
-  auto Random(int min, int max) -> int override { return min + (max - min) / 2; }
+  auto Random(int min, int max) -> int override { return min + ((max - min) / 2); }
   auto StorageFolder() -> QString override { return "."; }
 
  private:
   QMainWindow* main_window_;
 };
 
-// Test Fixture
+// 测试夹具
 struct CommandManagerFixture {
-  sss::extsystem::IComponentManager* comp_mgr = nullptr;
-  sss::dscore::ContextManager* context_mgr = nullptr;
-  MockCore* mock_core = nullptr;
-  sss::dscore::CommandManager* cmd_mgr = nullptr;
+  sss::extsystem::IComponentManager* comp_mgr = nullptr;  // NOLINT
+  sss::dscore::ContextManager* context_mgr = nullptr;     // NOLINT
+  MockCore* mock_core = nullptr;                          // NOLINT
+  sss::dscore::CommandManager* cmd_mgr = nullptr;         // NOLINT
 
   CommandManagerFixture() {
     comp_mgr = sss::extsystem::IComponentManager::GetInstance();
-    
-    // Clean up existing objects to ensure clean state
+
+    // 清理现有对象以确保清洁状态
     auto all_objects = comp_mgr->AllObjects();
     for (auto* obj : all_objects) {
       comp_mgr->RemoveObject(obj);
     }
-    
-    // Register ContextManager
+
+    // 注册上下文管理器
     context_mgr = new sss::dscore::ContextManager();
     comp_mgr->AddObject(context_mgr);
 
-    // Register MockCore
+    // 注册模拟Core
     mock_core = new MockCore();
     comp_mgr->AddObject(mock_core);
 
-    // Create CommandManager (it will look up ContextManager)
+    // 创建命令管理器（它会查找上下文管理器）
     cmd_mgr = new sss::dscore::CommandManager();
     comp_mgr->AddObject(cmd_mgr);
   }
 
   ~CommandManagerFixture() {
-    // Cleanup in reverse order of dependency
-    if (cmd_mgr) {
+    // 按依赖关系的相反顺序清理
+    if (cmd_mgr != nullptr) {
       comp_mgr->RemoveObject(cmd_mgr);
       delete cmd_mgr;
     }
-    if (mock_core) {
+    if (mock_core != nullptr) {
       comp_mgr->RemoveObject(mock_core);
       delete mock_core;
     }
-    if (context_mgr) {
+    if (context_mgr != nullptr) {
       comp_mgr->RemoveObject(context_mgr);
       delete context_mgr;
     }
@@ -79,43 +81,40 @@ TEST_SUITE("CommandManager") {
     QString id = "test.action";
     sss::dscore::ContextList contexts = {1};
 
-    // Register
+    // 注册
     sss::dscore::ICommand* cmd = cmd_mgr->RegisterAction(action, id, contexts, contexts);
-    
+
     CHECK(cmd != nullptr);
-    // Command creates a proxy action, so pointers won't match. Check text or other properties.
+    // 命令创建一个代理动作，所以指针不会匹配。检查文本或其他属性。
     CHECK(cmd->Action()->text() == action->text());
-    
-    // Find
+
+    // 查找
     auto* found_cmd = cmd_mgr->FindCommand(id);
     CHECK(found_cmd == cmd);
-    
-    // Verify Context behavior
-    // Initially active context is 0 (global usually) or empty.
-    // Our mock ContextManager starts with some state.
-    // Let's set context and see if command updates.
-    
-    // context_mgr->SetContext(1); // This might need more setup in ContextManager
-    
-    delete action; // Command doesn't own the QAction pointer passed to it initially? 
-                   // Wait, CommandManager::RegisterAction documentation doesn't say it takes ownership of QAction,
-                   // but Command implementation might.
-                   // Looking at Command.cpp, it stores QAction* in a map.
-                   // Usually QAction is owned by parent or created on heap.
-                   // Let's assume we manage it or QObject parentage handles it.
+
+    // 验证上下文行为
+    // 初始活动上下文为0（通常是全局的）或为空。
+    // 模拟上下文管理器以某种状态开始。
+    // 设置上下文并查看命令是否更新。
+
+    // context_mgr->SetContext(1); // 这可能需要在ContextManager中进行更多设置
+
+    delete action;  // 命令不拥有最初传递给它的QAction指针？
+                    // 通常QAction由父对象拥有或在堆上创建。
+                    // 我们假设我们管理它或QObject父子关系处理它。
   }
 
   TEST_CASE_FIXTURE(CommandManagerFixture, "CreateActionContainer") {
     QString id = "test.menu";
     auto* container = cmd_mgr->CreateActionContainer(id, sss::dscore::ContainerType::kMenu, nullptr, 0);
-    
+
     CHECK(container != nullptr);
     CHECK(cmd_mgr->FindContainer(id) == container);
-    
-    // Create a child menu
+
+    // 创建一个子菜单
     QString child_id = "test.menu.child";
     auto* child_container = cmd_mgr->CreateActionContainer(child_id, sss::dscore::ContainerType::kMenu, container, 0);
-    
+
     CHECK(child_container != nullptr);
     CHECK(cmd_mgr->FindContainer(child_id) == child_container);
   }

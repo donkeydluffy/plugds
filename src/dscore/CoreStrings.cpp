@@ -22,7 +22,11 @@ auto CoreStrings::Settings() -> QString { return tr("Settings"); }
 auto CoreStrings::Help() -> QString { return tr("Help"); }
 auto CoreStrings::About() -> QString { return tr("About"); }
 auto CoreStrings::Language() -> QString { return tr("Language"); }
+auto CoreStrings::EnglishLanguage() -> QString { return "English"; };
+auto CoreStrings::ChineseLanguage() -> QString { return "中文"; };
 auto CoreStrings::Theme() -> QString { return tr("Theme"); }
+auto CoreStrings::DarkTheme() -> QString { return tr("Dark Theme"); }
+auto CoreStrings::LightTheme() -> QString { return tr("Light Theme"); }
 
 auto CoreStrings::CpuLabel() -> QString { return tr("CPU: --.--%"); }
 auto CoreStrings::MemLabel() -> QString { return tr("MEM: --.--%"); }
@@ -32,10 +36,9 @@ auto CoreStrings::MemValueInit() -> QString { return tr("MEM: -%"); }
 auto CoreStrings::MemTooltip(uint64_t used, uint64_t total, uint64_t swap_used, uint64_t swap_total) -> QString {
   return tr("RAM: %1 / %2 MB\nSwap: %3 / %4 MB").arg(used).arg(total).arg(swap_used).arg(swap_total);
 }
-// Assuming DWORD is available or using uint32_t. Since this cpp file might not include windows.h, we use
-// uint32_t/unsigned long. Actually, CoreStrings.cpp includes CoreStrings.h which includes QObject. To be safe with
-// types and avoiding windows.h dependency here if possible, we stick to standard types. DWORD is unsigned long on
-// Windows.
+// 假设DWORD可用或使用uint32_t。由于此cpp文件可能不包含windows.h，我们使用
+// uint32_t/unsigned long。实际上，CoreStrings.cpp包含CoreStrings.h，后者包含QObject。为了类型安全和避免
+// windows.h依赖（如果可能），我们坚持使用标准类型。DWORD在Windows上是unsigned long。
 auto CoreStrings::MemTooltipWin(uint32_t load, uint64_t virt_used, uint64_t virt_total) -> QString {
   return tr("Physical Load: %1%\nVirtual Usage: %2 / %3 MB").arg(load).arg(virt_used).arg(virt_total);
 }

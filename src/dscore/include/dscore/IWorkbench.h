@@ -46,7 +46,7 @@ class IWorkbench {
    * @param[in]   title 选项卡的标题。
    * @param[in]   icon 选项卡的图标（可选）。
    */
-  virtual void AddSidePanel(const QString& id, QWidget* panel, const QString& title, const QIcon& icon = QIcon()) = 0;
+  virtual void AddSidePanel(const QString& id, QWidget* panel, const QString& title, const QIcon& icon) = 0;
 
   /**
    * @brief       设置中央背景小部件（例如 3D 视图）。
@@ -63,8 +63,8 @@ class IWorkbench {
    * @param[in]   visible_contexts 此小部件可见的上下文ID列表。空列表表示全局可见。
    * @param[in]   enable_contexts 此小部件启用的上下文ID列表。空列表表示全局启用。
    */
-  virtual void AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority = 0,
-                                const QList<int>& visible_contexts = {}, const QList<int>& enable_contexts = {}) = 0;
+  virtual void AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority, const QList<int>& visible_contexts,
+                                const QList<int>& enable_contexts) = 0;
 
   /**
    * @brief       添加浮动覆盖小部件。
@@ -74,15 +74,15 @@ class IWorkbench {
    * @param[in]   visible_contexts 此小部件可见的上下文ID列表。空列表表示全局可见。
    * @param[in]   enable_contexts 此小部件启用的上下文ID列表。空列表表示全局启用。
    */
-  virtual void AddOverlayWidget(OverlayZone zone, QWidget* widget, int priority = 0,
-                                const QList<int>& visible_contexts = {}, const QList<int>& enable_contexts = {}) = 0;
+  virtual void AddOverlayWidget(OverlayZone zone, QWidget* widget, int priority, const QList<int>& visible_contexts,
+                                const QList<int>& enable_contexts) = 0;
 
   /**
    * @brief       在顶部中心区域显示瞬时通知消息。
    * @param[in]   message 要显示的文本。
    * @param[in]   duration_ms 持续时间（毫秒）。
    */
-  virtual void ShowNotification(const QString& message, int duration_ms = 3000) = 0;
+  virtual void ShowNotification(const QString& message, int duration_ms) = 0;
 
   /**
    * @brief       从工作台中清除所有内容（侧面板、挤压小部件、覆盖小部件）。

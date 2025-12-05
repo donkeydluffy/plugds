@@ -31,13 +31,13 @@ class DS_CORE_DLLSPEC WorkbenchLayout : public QWidget, public IWorkbench {
   ~WorkbenchLayout() override;
 
   // 到组件的代理方法
-  void AddSidePanel(const QString& id, QWidget* panel, const QString& title, const QIcon& icon = QIcon()) override;
+  void AddSidePanel(const QString& id, QWidget* panel, const QString& title, const QIcon& icon) override;
   void SetBackgroundWidget(QWidget* widget) override;
-  void AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority = 0, const QList<int>& visible_contexts = {},
-                        const QList<int>& enable_contexts = {}) override;
-  void AddOverlayWidget(OverlayZone zone, QWidget* widget, int priority = 0, const QList<int>& visible_contexts = {},
-                        const QList<int>& enable_contexts = {}) override;
-  void ShowNotification(const QString& message, int duration_ms = 3000) override;
+  void AddSqueezeWidget(SqueezeSide side, QWidget* widget, int priority, const QList<int>& visible_contexts,
+                        const QList<int>& enable_contexts) override;
+  void AddOverlayWidget(OverlayZone zone, QWidget* widget, int priority, const QList<int>& visible_contexts,
+                        const QList<int>& enable_contexts) override;
+  void ShowNotification(const QString& message, int duration_ms) override;
 
   /**
    * @brief 从工作台中清除所有内容（侧边面板、挤压控件、覆盖控件）。

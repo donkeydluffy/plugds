@@ -68,9 +68,6 @@ class DS_CORE_DLLSPEC ICore : public QObject {
    */
   virtual auto StorageFolder() -> QString = 0;
 
-  /**
-   * 具有虚函数的类不应具有公共的非虚析构函数：
-   */
   ~ICore() override = default;
 };
 

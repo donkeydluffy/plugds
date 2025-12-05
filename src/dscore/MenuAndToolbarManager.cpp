@@ -24,7 +24,7 @@ void MenuAndToolbarManager::Build() {  // NOLINT
     return;
   }
 
-  // 0. Register Commands FIRST
+  // 0. 首先注册命令
   // 这是关键的：命令必须在添加到菜单/工具栏之前进行注册。
   SPDLOG_INFO("[MenuAndToolbarManager] Collecting Command Providers...");
   auto command_providers = sss::extsystem::GetTObjects<sss::dscore::ICommandProvider>();
@@ -38,16 +38,16 @@ void MenuAndToolbarManager::Build() {  // NOLINT
     }
   }
 
-  // 1. Create Base Menu Structure (File, View, Help, etc.)
+  // 1. 创建基础菜单结构（文件、视图、帮助等）
   // 这确保主菜单栏存在。
-  auto* app_menu = command_manager->FindContainer(sss::dscore::constants::menubars::kApplication);
+  auto* app_menu = command_manager->FindContainer(sss::dscore::constants::menubars::kMainMenubar);
   if (app_menu == nullptr) {
     SPDLOG_INFO("[MenuAndToolbarManager] Creating Application Menu Bar root.");
-    command_manager->CreateActionContainer(sss::dscore::constants::menubars::kApplication,
+    command_manager->CreateActionContainer(sss::dscore::constants::menubars::kMainMenubar,
                                            sss::dscore::ContainerType::kMenuBar, nullptr, 0);
   }
 
-  // 2. Discover and Invoke Menu Providers
+  // 2. 发现并调用菜单提供者
   SPDLOG_INFO("[MenuAndToolbarManager] Collecting Menu Providers...");
   auto menu_providers = sss::extsystem::GetTObjects<sss::dscore::IMenuProvider>();
   SPDLOG_INFO("[MenuAndToolbarManager] Found {} Menu Providers.", menu_providers.size());
@@ -60,7 +60,7 @@ void MenuAndToolbarManager::Build() {  // NOLINT
     }
   }
 
-  // 3. Discover and Invoke Toolbar Providers
+  // 3. 发现并调用工具栏提供者
   SPDLOG_INFO("[MenuAndToolbarManager] Collecting Toolbar Providers...");
   auto toolbar_providers = sss::extsystem::GetTObjects<sss::dscore::IToolbarProvider>();
   SPDLOG_INFO("[MenuAndToolbarManager] Found {} Toolbar Providers.", toolbar_providers.size());
@@ -73,7 +73,7 @@ void MenuAndToolbarManager::Build() {  // NOLINT
     }
   }
 
-  // 4. Refresh UI Text (Retranslate) to ensure initial labels are correct
+  // 4. 刷新UI文本（重新翻译）以确保初始标签正确
   command_manager->RetranslateUi();
 
   SPDLOG_INFO("[MenuAndToolbarManager] UI Build Phase Completed.");

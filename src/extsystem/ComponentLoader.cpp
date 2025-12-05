@@ -431,8 +431,7 @@ auto sss::extsystem::ComponentLoader::UnloadComponents() -> void {
     if (plugin_loader != nullptr) {
 #if !defined(Q_OS_MACOS)
       /**
-       * 注意：在 macOS 上调用 unload 会导致应用程序崩溃，所以我们泄漏内存，
-       * 因为这没有后果，所有内存将在我们退出时释放。
+       * 注意：在 macOS 上调用 unload 会导致应用程序崩溃，这里泄漏内存没关系，所有内存将在我们退出时释放。
        * 对于 Windows 和 Linux，我们包含 unload 以完整性并阻止内存泄漏分析器报告泄漏。
        */
       plugin_loader->unload();

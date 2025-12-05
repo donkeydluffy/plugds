@@ -75,7 +75,7 @@ class ContextManager : public sss::dscore::IContextManager {
   int next_context_id_;
   QMap<QString, int> context_ids_;
 
-  // Hierarchy Management
+  // 层次管理
   int current_mode_context_id_{0};
   QMap<int, QSet<int>> mode_sub_contexts_storage_;
 

@@ -55,7 +55,6 @@ class DS_CORE_DLLSPEC IStatusbarManager : public QObject {
    */
   virtual void RemovePermanentWidget(QWidget* widget) = 0;
 
-  // 具有虚函数的类不应有公共的虚析构函数：
   ~IStatusbarManager() override = default;
 };
 }  // namespace sss::dscore

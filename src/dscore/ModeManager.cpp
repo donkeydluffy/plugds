@@ -26,7 +26,7 @@ void ModeManager::AddMode(IMode* mode) {
   }
 
   // 如果这是第一个模式，是否激活它？还是等待显式激活。
-  // 让我们等待通过UI或配置进行显式激活。
+  // 等待通过UI或配置进行显式激活。
 }
 
 void ModeManager::ActivateMode(const QString& id) {
@@ -41,7 +41,7 @@ void ModeManager::ActivateMode(const QString& id) {
   IMode* old_mode = active_mode_;
   SPDLOG_INFO("Switching Mode: {} -> {}", old_mode ? old_mode->Id().toStdString() : "None", id.toStdString());
 
-  // 1. Deactivate old mode
+  // 1. 停用旧模式
   if (old_mode != nullptr) {
     old_mode->Deactivate();
   }
@@ -49,7 +49,7 @@ void ModeManager::ActivateMode(const QString& id) {
   // 2. Update Active Mode Pointer
   active_mode_ = new_mode;
 
-  // 3. Activate new mode
+  // 3. 激活新模式
   if (active_mode_ != nullptr) {
     // Set Context (Switch Mode)
     auto* cm = IContextManager::GetInstance();
@@ -57,7 +57,7 @@ void ModeManager::ActivateMode(const QString& id) {
       cm->ActivateMode(active_mode_->ContextId());
     }
 
-    // Setup Workbench Content
+    // 设置工作台内容
     if (workbench_ != nullptr) {
       workbench_->Clear();
       workbench_->SetActiveModeButton(active_mode_->Id());

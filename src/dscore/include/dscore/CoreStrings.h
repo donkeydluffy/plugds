@@ -38,7 +38,11 @@ class DS_CORE_DLLSPEC CoreStrings : public QObject {
   static auto Help() -> QString;
   static auto About() -> QString;
   static auto Language() -> QString;
+  static auto EnglishLanguage() -> QString;
+  static auto ChineseLanguage() -> QString;
   static auto Theme() -> QString;
+  static auto DarkTheme() -> QString;
+  static auto LightTheme() -> QString;
 
   // --- System Monitor ---
   static auto CpuLabel() -> QString;              // "CPU: --.--%"
