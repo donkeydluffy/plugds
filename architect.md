@@ -154,11 +154,11 @@ graph TD
     classDef plugin fill:#dfd,stroke:#333,stroke-width:2px;
 
     subgraph "Infrastructure (基础层)"
-        ExtSystem[ExtSystem<br/>(Loader, Registry, IComponent)]:::infrastructure
+        ExtSystem["ExtSystem\n(Loader, Registry, IComponent)"]:::infrastructure
     end
 
     subgraph "Core (核心层)"
-        DScore[DScore<br/>(MainWindow, Managers, Workbench)]:::core
+        DScore["DScore\n(MainWindow, Managers, Workbench)"]:::core
         DScore -->|Implements| ExtSystem
     end
 
