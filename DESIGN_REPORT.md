@@ -36,7 +36,28 @@ To support the complex layout requirements of a CAD/GIS-like application, the la
     *   **Role**: A generic reusable widget with a header toggle button and a content area.
     *   **Usage**: Used for the "Device Info" panel to allow users to minimize space usage over the 3D view.
 
-### 2.2 Business Plugin (`ws1`)
+### 2.3 Core Services
+
+New foundational services were added to `dscore` to centralize application-wide concerns.
+
+*   **Translation Management (`ILanguageService`)**:
+    *   **Role**: Manages application localization and dynamic language switching.
+    *   **Mechanism**:
+        *   **Registration**: Plugins register their translation path via `RegisterTranslator` during initialization.
+        *   **Loading**: When `SwitchLanguage` is called, the service iterates through all registered components. It attempts to load the specific locale (e.g., `ws1_zh_CN.qm`) and falls back to the language code (e.g., `ws1_zh.qm`) if the specific region is missing.
+        *   **Optimization**: Temporarily disables `updatesEnabled` on top-level widgets during the switch to prevent flickering and redundant repaints while `QTranslator`s are installed.
+    *   **Key Methods**: `RegisterTranslator`, `SwitchLanguage`, `GetCurrentLocale`.
+
+*   **Theme Management (`IThemeService`)**:
+    *   **Role**: Controls the visual appearance via QPalette, QSS, and semantic colors.
+    *   **Architecture**:
+        *   **INI Configuration**: Themes are defined in INI files (e.g., `dark.ini`). The `[Palette]` section maps directly to `QPalette::ColorRole`, while `[Colors]` defines semantic roles (e.g., `THEME_COLOR_BrandColor`).
+        *   **QSS Generation**: Uses a template (`base.qss`) containing placeholders like `@@THEME_COLOR_PanelBackground@@`. At runtime, these are replaced with values from the active INI configuration to generate the final stylesheet.
+        *   **Icon Abstraction**: `GetIcon` automatically resolves icon paths based on the current theme type (e.g., returning `.../dark/icon.svg` vs `.../light/icon.svg`), simplifying plugin logic.
+    *   **Key Methods**: `LoadTheme`, `GetColor`, `GetIcon`.
+    *   **Performance**: Similar to the Language Service, it disables UI updates during the heavy `qApp->setStyleSheet` operation to ensure a smooth transition.
+
+### 2.4 Business Plugin (`ws1`)
 
 The `Ws1` plugin was refactored to become a consumer of the new `dscore` facilities.
 
@@ -45,7 +66,10 @@ The `Ws1` plugin was refactored to become a consumer of the new `dscore` facilit
     *   **Initialization**: Uses `SetupDefaultUi` to populate the `WorkbenchLayout`.
     *   **Theme Integration**:
         *   Connects to `IThemeService::ThemeChanged` signal.
-        *   Dynamically updates the 3D view background color (e.g., dark grey for Dark theme, light grey for Light theme) via `UpdateIcons`.
+        *   Dynamically updates icons for buttons and actions via `UpdateIcons` to ensure contrast against the active theme (e.g., loading dark icons for light themes).
+    *   **Language Integration**:
+        *   Connects to `ILanguageService::LanguageChanged` signal.
+        *   Implements `retranslateUi` to dynamically refresh UI text (labels, buttons, tree models) when the system language changes.
     *   **Content**:
         *   **Left Sidebar**: Contains a `QTreeView` ("Model Tree").
         *   **Center**: A placeholder `QLabel` representing the 3D rendering area.
@@ -80,7 +104,7 @@ The `Ws1` plugin was refactored to become a consumer of the new `dscore` facilit
     *   **Horizontal Sidebar**: Fixed by applying a targeted Stylesheet to `left_tab_widget_` in C++ to force proper West tab rendering.
     *   **Broken Tree**: Fixed by ensuring the model is set on the `QTreeView` *after* proper initialization.
 *   **Theming**:
-    *   Background colors for custom widgets (like the 3D placeholder) are manually updated in the `ThemeChanged` slot, bridging the gap between Qt Stylesheets and custom painting requirements.
+    *   Switched from manual color updates in C++ to a QSS-driven approach. Custom widgets (like the 3D placeholder) are now assigned specific object names (e.g., `#ws1_bg_label`), allowing the `ThemeService` to automatically apply colors via the generated stylesheet.
 
 ## 5. Pending Tasks & Future Work
 

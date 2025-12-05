@@ -6,7 +6,7 @@
 
 ---
 
-## 1. 架构总览 (Architecture Overview)
+## 1. 架构总览
 
 本项目采用了严格的 **Shim + Plugins (微内核)** 架构模式。
 
@@ -58,7 +58,7 @@
 
 ---
 
-## 3. 模块详解：DScore (DeepSight Core)
+## 3. 模块详解：DScore
 
 `dscore` 是应用层的核心，它实现了 `extsystem` 定义的组件接口，并作为所有 UI 插件的上层依赖。
 
@@ -103,14 +103,46 @@
 #### `IContextManager.h` (状态管理)
 
 * **职责**: 维护应用程序当前的“状态集合”。
+
 * **工作流**:
+
     1. 业务插件进入某种模式，调用 `ContextManager::AddContext(kMyModeId)`。
+
     2. `ContextManager` 发出信号。
+
     3. `CommandManager` 捕获信号，遍历所有 Action，检查它们是否符合当前上下文集合，自动更新 UI 的 Enable/Visible 状态。
+
+#### `ILanguageService.h` & `LanguageService.cpp` (语言服务)
+
+* **职责**: 管理应用程序的全球化（i18n）和本地化（l10n），实现运行时语言切换。
+
+* **机制**:
+
+  * **插件注册**: 各插件在其 `InitialiseEvent` 阶段向 `ILanguageService` 注册自身的翻译文件路径。
+
+  * **动态加载**: 当调用 `SwitchLanguage` 时，服务会卸载旧的翻译器，并根据注册信息为所有插件加载对应新语言的 `.qm` 文件，同时优化 UI 更新流程以避免闪烁。
+
+  * **解耦**: 插件通过 `ILanguageService` 接口与语言管理机制交互，无需关注底层 `QTranslator` 的复杂性。
+
+#### `IThemeService.h` & `ThemeService.cpp` (主题服务)
+
+* **职责**: 提供应用程序的统一主题管理能力，控制视觉外观、颜色和图标，支持多主题切换。
+
+* **机制**:
+
+  * **配置驱动**: 主题通过 INI 配置文件定义，包含 `QPalette` 颜色映射和语义颜色（如 `BrandColor`）。
+
+  * **QSS 动态生成**: 服务读取通用的 QSS 模板文件，并根据当前主题配置中的颜色值动态替换模板中的占位符（如 `@@THEME_COLOR_PanelBackground@@`），生成最终的样式表应用于应用程序。
+
+  * **图标抽象**: 提供 `GetIcon` 方法，能根据当前激活的主题类型（如 `dark`/`light`）自动加载相应的主题化图标，简化插件图标管理。
+
+  * **性能考量**: 在应用新的样式表和调色板时，会暂时禁用 UI 更新以确保平滑过渡和避免视觉伪影。
+
+* **设计意义**: 将应用程序的视觉风格与业务逻辑彻底分离，使主题切换和自定义变得简单高效。
 
 ---
 
-## 4. 架构图示 (Visualizing the Architecture)
+## 4. 架构图示
 
 ### 4.1 模块依赖关系图
 
@@ -133,7 +165,7 @@ graph TD
     subgraph "Plugins (业务层)"
         PluginA[Analysis Plugin]:::plugin
         PluginB[Visual Plugin]:::plugin
-        
+
         PluginA -->|Depends on| DScore
         PluginB -->|Depends on| DScore
         PluginA -->|Registers| ExtSystem
@@ -153,15 +185,15 @@ sequenceDiagram
     participant CoreUI as MenuAndToolbarManager
 
     App->>Loader: LoadComponents()
-    
+
     Note over Loader: 阶段 1: 依赖解析与加载
     Loader->>Loader: Resolve Dependencies (Topological Sort)
-    
+
     Note over Loader: 阶段 2: 初始化 (InitialiseEvent)
     Loader->>Core: InitialiseEvent()
     Core->>Registry: AddObject(CommandManager)
     Core->>Registry: AddObject(Workbench)
-    
+
     Loader->>Feature: InitialiseEvent()
     Feature->>Registry: AddObject(MyFeatureService)
 
@@ -211,7 +243,7 @@ classDiagram
 
     CoreComponent *-- IWorkbench : Provides
     CoreComponent *-- ICommandManager : Provides
-    
+
     class FeaturePlugin {
     }
     IComponent <|-- FeaturePlugin
@@ -222,7 +254,7 @@ classDiagram
 
 ---
 
-## 5. 开发规范与制约 (Development Guidelines)
+## 5. 开发规范与制约
 
 在后续开发新插件时，必须遵循以下规范：
 
