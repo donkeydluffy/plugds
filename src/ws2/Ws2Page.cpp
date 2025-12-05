@@ -63,7 +63,7 @@ int Ws2Page::Priority() const { return 20; }  // 更高优先级或只是不同�
 void Ws2Page::Activate() {
   auto* workbench = sss::extsystem::GetTObject<sss::dscore::IWorkbench>();
   if (workbench == nullptr) {
-    SPDLOG_ERROR("找不到全局 IWorkbench！");
+    SPDLOG_ERROR("Global IWorkbench not found!");
     return;
   }
 

@@ -40,6 +40,9 @@ auto constexpr kSplashscreenTimeout = 3000;
  *   - critical: 严重错误，程序可能无法继续
  */
 int main(int argc, char** argv) {
+#if (QT_VERSION_MAJOR < 6)
+  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+#endif
   QApplication application_instance(argc, argv);
 
   // 解析命令行参数
@@ -73,14 +76,10 @@ int main(int argc, char** argv) {
   spdlog::flush_on(spdlog::level::info);
 
   auto app_start_time = std::chrono::high_resolution_clock::now();
-  SPDLOG_INFO("应用程序正在启动... (日志级别: {})", spdlog::level::to_string_view(log_level));
+  SPDLOG_INFO("Application starting... (Log level: {})", spdlog::level::to_string_view(log_level));
 
   qApp->setApplicationName("DefinSight");
   qApp->setOrganizationName("3d-scantech");
-
-#if (QT_VERSION_MAJOR < 6)
-  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-#endif
 
   QList<QTranslator*> translators;
 
@@ -111,28 +110,28 @@ int main(int argc, char** argv) {
 
   sss::SplashScreen* splash_screen = sss::SplashScreen::GetInstance();
 
-  SPDLOG_INFO("已创建启动画面。");
+  SPDLOG_INFO("Splash screen created.");
 
   splash_screen->show();
 
   auto* component_manager = sss::extsystem::IComponentManager::GetInstance();
 
-  SPDLOG_INFO("已获取组件管理器实例。");
+  SPDLOG_INFO("Component manager instance obtained.");
 
   component_manager->AddObject(component_loader);
 
-  // SPDLOG_DEBUG("应用程序已启动。");
+  // SPDLOG_DEBUG("Application started.");
 
   QStringList component_locations = QStringList() << "APPDIR" << "DS_COMPONENT_DIR";
 
-  SPDLOG_INFO("组件位置: {}", component_locations.join(", ").toStdString());
+  SPDLOG_INFO("Component locations: {}", component_locations.join(", ").toStdString());
 
   for (const auto& dir_name : component_locations) {
     if (QProcessEnvironment::systemEnvironment().contains(dir_name)) {
       auto dir_path = QProcessEnvironment::systemEnvironment().value(dir_name);
       auto components_path = dir_path + "/components";
 
-      SPDLOG_INFO("通过 {} 找到组件路径: {}", dir_name.toStdString(), components_path.toStdString());
+      SPDLOG_INFO("Found component path via {}: {}", dir_name.toStdString(), components_path.toStdString());
 
       component_loader->AddComponents(components_path);
     }
@@ -141,7 +140,7 @@ int main(int argc, char** argv) {
   if (application_dir.exists("components")) {
     auto components_path = application_dir.absoluteFilePath("components");
 
-    SPDLOG_INFO("找到本地组件路径: {}", components_path.toStdString());
+    SPDLOG_INFO("Found local component path: {}", components_path.toStdString());
 
     component_loader->AddComponents(components_path);
   }
@@ -173,7 +172,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  SPDLOG_INFO("开始加载组件...");
+  SPDLOG_INFO("Starting component loading...");
 
   // 生命周期管理：
   // 1. 阶段1 (核心初始化): CoreComponent (依赖根节点) 首先初始化，设置管理器。
@@ -184,30 +183,30 @@ int main(int argc, char** argv) {
     auto component_id = (component->Name() + "." + component->Vendor()).toLower();
     bool should_load = !disabled_components.contains(component_id);
 
-    SPDLOG_INFO("组件 {}: 可被禁用={}, 应该加载={}", component_id.toStdString(),
+    SPDLOG_INFO("Component {}: can_be_disabled={}, should_load={}", component_id.toStdString(),
                 component->CanBeDisabled() ? "true" : "false", should_load ? "true" : "false");
 
     return should_load;
   });
 
   auto components = component_loader->Components();
-  SPDLOG_INFO("总共加载的组件数: {}", components.size());
+  SPDLOG_INFO("Total components loaded: {}", components.size());
 
-  SPDLOG_INFO("组件加载完成。");
+  SPDLOG_INFO("Component loading completed.");
 
   int exit_code;
   auto* main_window = (sss::extsystem::GetTObject<QMainWindow>());
 
   if (main_window != nullptr) {
-    SPDLOG_INFO("找到主窗口: {}", (void*)main_window);
+    SPDLOG_INFO("Main window found: {}", (void*)main_window);
 
-    SPDLOG_INFO("设置窗口图标 (Windows)");
+    SPDLOG_INFO("Setting window icon (Windows)");
     qApp->setWindowIcon(QIcon(":/app/AppIcon.ico"));
 
-    SPDLOG_INFO("启动事件循环...");
+    SPDLOG_INFO("Starting event loop...");
 
     QTimer::singleShot(kSplashscreenTimeout, [=]() {
-      SPDLOG_INFO("关闭启动画面...");
+      SPDLOG_INFO("Closing splash screen...");
       splash_screen->deleteLater();
     });
 
@@ -215,18 +214,18 @@ int main(int argc, char** argv) {
 
     auto app_shutdown_time = std::chrono::high_resolution_clock::now();
     auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(app_shutdown_time - app_start_time);
-    SPDLOG_INFO("事件循环退出，代码: {} (应用总运行时间: {}ms)", exit_code, total_duration.count());
+    SPDLOG_INFO("Event loop exited with code: {} (Total runtime: {}ms)", exit_code, total_duration.count());
   } else {
-    SPDLOG_ERROR("错误：找不到主窗口！应用程序将退出。");
+    SPDLOG_ERROR("Error: Main window not found! Application will exit.");
     exit_code = 1;
   }
 
   component_loader->UnloadComponents();
 
-  SPDLOG_DEBUG("卸载组件...");
+  SPDLOG_DEBUG("Unloading components...");
 
   delete component_loader;
-  SPDLOG_DEBUG("组件加载器已删除。");
+  SPDLOG_DEBUG("Component loader deleted.");
 
   return exit_code;
 }

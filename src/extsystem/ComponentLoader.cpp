@@ -55,7 +55,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 #endif
   // SPDLOG_INFO(QString("Searching folder for components %1").arg(component_folder).toStdString());
 
-  SPDLOG_INFO("正在搜索文件夹 {} 中的组件", component_folder.toStdString());
+  SPDLOG_INFO("Searching for components in folder: {}", component_folder.toStdString());
 
   QDirIterator dir(component_folder);
 
@@ -116,7 +116,7 @@ auto sss::extsystem::ComponentLoader::AddComponents(const QString& component_fol
 
     // 仍然记录关于不匹配的警告
     if (debug_build != application_debug_build) {
-      SPDLOG_WARN("组件 {} 与应用程序的调试/发布模式不匹配。这可能导致不稳定。", component_filename.toStdString());
+      SPDLOG_WARN("Component {} debug/release mode mismatch with application. This may cause instability.", component_filename.toStdString());
     }
 
     // 检查 "Name" 和 "name"，因为大小写敏感可能是个问题

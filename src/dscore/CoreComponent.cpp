@@ -22,7 +22,7 @@ CoreComponent::CoreComponent() = default;
 CoreComponent::~CoreComponent() = default;
 
 auto CoreComponent::InitialiseEvent() -> void {
-  SPDLOG_INFO("[CoreComponent] InitialiseEvent 开始（第一阶段：基础设施初始化）");
+  SPDLOG_INFO("[CoreComponent] InitialiseEvent started (Phase 1: Infrastructure initialization)");
 
   // 第一阶段：基础设施初始化
   // 在此阶段，我们建立核心管理器。插件将依赖这些已存在的管理器
@@ -52,7 +52,7 @@ auto CoreComponent::InitialiseEvent() -> void {
   // 2. 创建并注册 UI 提供者
   core_ui_provider_ = std::make_unique<sss::dscore::CoreUIProvider>();
   sss::extsystem::AddObject(core_ui_provider_.get());
-  SPDLOG_INFO("[CoreComponent] 已创建并注册 CoreUIProvider");
+  SPDLOG_INFO("[CoreComponent] Created and registered CoreUIProvider");
 
   // 3. 初始化 Core（创建 MainWindow 和 PageManager，依赖于服务）
   core_ = std::make_unique<sss::dscore::Core>();
@@ -61,13 +61,13 @@ auto CoreComponent::InitialiseEvent() -> void {
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
 
   main_window->Initialise();
-  SPDLOG_INFO("[CoreComponent] MainWindow 已初始化");
+  SPDLOG_INFO("[CoreComponent] MainWindow initialized");
 
-  SPDLOG_INFO("[CoreComponent] InitialiseEvent 已完成");
+  SPDLOG_INFO("[CoreComponent] InitialiseEvent completed");
 }
 
 auto CoreComponent::InitialisationFinishedEvent() -> void {
-  SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent 开始（第三阶段：UI 组合与展示）");
+  SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent started (Phase 3: UI composition and display)");
 
   // 第三阶段：UI 组合与展示
   // 此事件按反向加载顺序调用。由于 Core 最先加载，此函数最后执行。
@@ -80,7 +80,7 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
 
   auto* main_window = qobject_cast<sss::dscore::MainWindow*>(sss::dscore::ICore::GetInstance()->GetMainWindow());
   if (main_window == nullptr) {
-    SPDLOG_ERROR("[CoreComponent] 在 InitialisationFinishedEvent 中获取 MainWindow 实例失败。");
+    SPDLOG_ERROR("[CoreComponent] Failed to get MainWindow instance in InitialisationFinishedEvent.");
     return;
   }
 
@@ -94,7 +94,7 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
     auto* statusbar_manager = sss::extsystem::GetTObject<sss::dscore::IStatusbarManager>();
     if (statusbar_manager != nullptr) {
       auto statusbar_providers = sss::extsystem::GetTObjects<sss::dscore::IStatusbarProvider>();
-      SPDLOG_INFO("[CoreComponent] 找到 {} 个状态栏提供者。", statusbar_providers.size());
+      SPDLOG_INFO("[CoreComponent] Found {} statusbar providers.", statusbar_providers.size());
       for (auto* provider : statusbar_providers) {
         provider->ContributeToStatusbar(statusbar_manager);
       }
@@ -108,58 +108,58 @@ auto CoreComponent::InitialisationFinishedEvent() -> void {
         // 注意：将来从 ISettingsService 读取"LastMode"。
         // 目前选择第一个（如果加载了，可能是 WS1）。
         auto* first_mode = modes.first();
-        SPDLOG_INFO("[CoreComponent] 正在激活初始模式：{}", first_mode->Title().toStdString());
+        SPDLOG_INFO("[CoreComponent] Activating initial mode: {}", first_mode->Title().toStdString());
         mode_manager->ActivateMode(first_mode->Id());
       } else {
-        SPDLOG_WARN("[CoreComponent] 没有注册任何模式。应用程序可能为空。");
+        SPDLOG_WARN("[CoreComponent] No modes registered. Application may be empty.");
       }
     } else {
-      SPDLOG_ERROR("[CoreComponent] 找不到 IModeManager。");
+      SPDLOG_ERROR("[CoreComponent] IModeManager not found.");
     }
 
     core_->Open();
-    SPDLOG_INFO("[CoreComponent] Core 已打开，主窗口现在应该可见");
+    SPDLOG_INFO("[CoreComponent] Core opened, main window should now be visible");
   } else {
-    SPDLOG_ERROR("[CoreComponent] Core 实例为空，无法打开。");
+    SPDLOG_ERROR("[CoreComponent] Core instance is null, cannot open.");
   }
 
-  SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent 已完成");
+  SPDLOG_INFO("[CoreComponent] InitialisationFinishedEvent completed");
 }
 
 auto CoreComponent::FinaliseEvent() -> void {
-  SPDLOG_INFO("[CoreComponent] FinaliseEvent 开始");
+  SPDLOG_INFO("[CoreComponent] FinaliseEvent started");
 
   if (core_) {
     sss::extsystem::RemoveObject(core_.get());
-    SPDLOG_INFO("[CoreComponent] Core 已移除");
+    SPDLOG_INFO("[CoreComponent] Core removed");
   }
 
   if (core_ui_provider_) {
     sss::extsystem::RemoveObject(core_ui_provider_.get());
-    SPDLOG_INFO("[CoreComponent] CoreUIProvider 已移除");
+    SPDLOG_INFO("[CoreComponent] CoreUIProvider removed");
   }
 
   if (context_manager_) {
     sss::extsystem::RemoveObject(context_manager_.get());
-    SPDLOG_INFO("[CoreComponent] ContextManager 已移除");
+    SPDLOG_INFO("[CoreComponent] ContextManager removed");
   }
 
   if (command_manager_) {
     sss::extsystem::RemoveObject(command_manager_.get());
-    SPDLOG_INFO("[CoreComponent] CommandManager 已移除");
+    SPDLOG_INFO("[CoreComponent] CommandManager removed");
   }
 
   if (language_service_) {
     sss::extsystem::RemoveObject(language_service_.get());
-    SPDLOG_INFO("[CoreComponent] LanguageService 已移除");
+    SPDLOG_INFO("[CoreComponent] LanguageService removed");
   }
 
   if (theme_service_) {
     sss::extsystem::RemoveObject(theme_service_.get());
-    SPDLOG_INFO("[CoreComponent] ThemeService 已移除");
+    SPDLOG_INFO("[CoreComponent] ThemeService removed");
   }
 
   // unique_ptr 将在此处自动删除
 
-  SPDLOG_INFO("[CoreComponent] FinaliseEvent 已完成");
+  SPDLOG_INFO("[CoreComponent] FinaliseEvent completed");
 }

@@ -39,9 +39,9 @@ void ModeManager::ActivateMode(const QString& id) {
   if (active_mode_ == new_mode) return;
 
   IMode* old_mode = active_mode_;
-  // 记录用户切换工作空间的关键操作
-  SPDLOG_INFO("用户切换工作空间: {} -> {}",
-              old_mode ? old_mode->Title().toStdString() : "无",
+  // Record user workspace switching operation
+  SPDLOG_INFO("User switched workspace: {} -> {}",
+              old_mode ? old_mode->Title().toStdString() : "None",
               new_mode->Title().toStdString());
 
   // 1. 停用旧模式

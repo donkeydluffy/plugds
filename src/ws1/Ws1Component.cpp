@@ -24,7 +24,7 @@ void Ws1Component::InitialiseEvent() {
 
   auto* context_manager = sss::dscore::IContextManager::GetInstance();
   if (context_manager == nullptr) {
-    SPDLOG_ERROR("获取 IContextManager 失败。");
+    SPDLOG_ERROR("Failed to get IContextManager.");
     return;
   }
 
@@ -43,7 +43,7 @@ void Ws1Component::InitialiseEvent() {
     // 模式激活涉及 UI 操作，应该在阶段 3（InitialisationFinishedEvent）或更晚进行。
     // mode_manager->ActivateMode(ws1_mode_->Id());
   } else {
-    SPDLOG_ERROR("获取 IModeManager 失败。");
+    SPDLOG_ERROR("Failed to get IModeManager.");
   }
 
   // 3. 语言和主题服务集成
@@ -51,7 +51,7 @@ void Ws1Component::InitialiseEvent() {
   if (lang_service != nullptr) {
     lang_service->RegisterTranslator("ws1", ":/ws1/i18n");
   } else {
-    SPDLOG_WARN("ILanguageService 不可用。");
+    SPDLOG_WARN("ILanguageService not available.");
   }
 
   // 4. 创建并注册 UI 提供者

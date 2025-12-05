@@ -40,22 +40,22 @@ auto LanguageService::SwitchLanguage(const QLocale& locale) -> void {
     auto translator = std::make_unique<QTranslator>();
     // 格式：name_lang_country.qm，例如：ws1_zh_CN.qm 或 ws1_zh.qm
     QString filename = QString("%1_%2").arg(comp.name, locale.name());
-    qDebug() << "尝试加载翻译器：" << filename << "从" << comp.path;
+    qDebug() << "Attempting to load translator:" << filename << "from" << comp.path;
 
     if (translator->load(filename, comp.path)) {
-      qDebug() << "成功加载：" << filename;
+      qDebug() << "Successfully loaded:" << filename;
       QCoreApplication::installTranslator(translator.get());
       active_translators_.push_back(std::move(translator));
     } else {
       // 尝试回退到仅语言代码（如 ws1_zh.qm）
       QString short_filename = QString("%1_%2").arg(comp.name, locale.name().split('_').first());
-      qDebug() << "尝试回退：" << short_filename;
+      qDebug() << "Attempting fallback:" << short_filename;
       if (translator->load(short_filename, comp.path)) {
-        qDebug() << "成功加载回退：" << short_filename;
+        qDebug() << "Successfully loaded fallback:" << short_filename;
         QCoreApplication::installTranslator(translator.get());
         active_translators_.push_back(std::move(translator));
       } else {
-        qWarning() << "加载翻译器失败：" << comp.name;
+        qWarning() << "Failed to load translator:" << comp.name;
       }
     }
   }

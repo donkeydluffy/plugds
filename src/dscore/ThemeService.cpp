@@ -27,7 +27,7 @@ auto ThemeService::stringToPaletteColorRole(const QString& str) -> QPalette::Col
   // 使用keyToValue进行字符串到枚举值的直接转换
   int val = meta_enum.keyToValue(str.toLatin1().constData());
   if (val == -1) {
-    qWarning() << "ThemeService：未知的 QPalette::ColorRole 字符串：" << str;
+    qWarning() << "ThemeService: Unknown QPalette::ColorRole string:" << str;
     return QPalette::NColorRoles;  // 返回无效角色
   }
   return static_cast<QPalette::ColorRole>(val);
@@ -65,7 +65,7 @@ auto ThemeService::stringToThemeColorRole(const QString& str) -> Theme::ColorRol
       {"THEME_COLOR_OverlayAccent", Theme::kOverlayAccent}};
   Theme::ColorRole role = kStringToRoleMap.value(str, Theme::kCount);  // 正确：使用.value()和QString键
   if (role == Theme::kCount) {
-    qWarning() << "ThemeService：未知的 Theme::ColorRole 查找字符串：" << str;
+    qWarning() << "ThemeService: Unknown Theme::ColorRole lookup string:" << str;
   }
   return role;
 }
@@ -137,18 +137,18 @@ ThemeService::ThemeService() {
 
 auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   auto start_time = std::chrono::high_resolution_clock::now();
-  SPDLOG_INFO("开始加载主题: {}", theme_id.toStdString());
+  SPDLOG_INFO("Starting to load theme: {}", theme_id.toStdString());
   QString config_path = QString(":/dscore/resources/themes/%1.ini").arg(theme_id);
 
   if (!QFile::exists(config_path)) {
-    SPDLOG_WARN("主题配置文件不存在: {}，回退到默认主题", config_path.toStdString());
+    SPDLOG_WARN("Theme configuration file does not exist: {}, falling back to default theme", config_path.toStdString());
     LoadTheme("default");
     return;
   }
 
   QSettings settings(config_path, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError) {
-    SPDLOG_WARN("主题配置文件解析失败: {} (状态: {})，回退到默认主题", config_path.toStdString(), settings.status());
+    SPDLOG_WARN("Failed to parse theme configuration file: {} (status: {}), falling back to default theme", config_path.toStdString(), settings.status());
     LoadTheme("default");
     return;
   }
@@ -160,10 +160,10 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
   // 1. 解析 [Palette] 组 -> QPalette
   settings.beginGroup("Palette");
   QStringList palette_keys = settings.childKeys();
-  qDebug() << "ThemeService：找到" << palette_keys.size() << "个调色板条目。";
+  qDebug() << "ThemeService: Found" << palette_keys.size() << "palette entries.";
 
   if (palette_keys.isEmpty()) {
-    qWarning() << "ThemeService：[Palette] 部分为空或缺失！";
+    qWarning() << "ThemeService: [Palette] section is empty or missing!";
   }
 
   for (const auto& key : settings.childKeys()) {
@@ -265,7 +265,7 @@ auto ThemeService::LoadTheme(const QString& theme_id) -> void {
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
       std::chrono::high_resolution_clock::now() - start_time);
-  SPDLOG_INFO("主题加载完成: {} (耗时: {}ms)", theme_id.toStdString(), duration.count());
+  SPDLOG_INFO("Theme loading completed: {} (took: {}ms)", theme_id.toStdString(), duration.count());
 
   emit ThemeChanged(theme_id);
 }
